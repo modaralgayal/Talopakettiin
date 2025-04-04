@@ -1,29 +1,26 @@
-// Step 1:
-const summa = (x, y) => x + y;
-
-let arvo = summa(5, 6);
-
-console.log(arvo);
-
-// Step 2:
-let num1 = 5;
-let num2 = 6;
-
-// Tapa 1
-console.log("Arvojen", num1, " + ", num2, " summa on ", arvo);
-// Tapa 2
-console.log(`Arvojen ${num1} + ${num2} = ${num1 + num2}`);
-
-function greeting(name = "Guest", name2) {
-  return `Hello ${name} and ${name2}`;
-}
-
-const greeting2 = (name) => {
-  if (name) {
-    return `Hello ${name}!`;
-  } else {
-    return "Something went wrong";
-  }
+const multiply = (a = 2, b = 2) => {
+  return a * b;
 };
 
-console.log(greeting2());
+console.log(multiply(6, 7));
+
+function greeting(userName = "Guest") {
+  return `Hello ${userName}!`;
+}
+
+let muuttuja = ``;
+
+console.log(greeting());
+
+// (" Javascript    ").trim() --> "Javascript"
+const trimText = (str) => str.trim();
+const makeItSmaller = (str) => str.toUpperCase();
+
+const cleanText = (text) => {
+  // Yhdistä funktiot
+  return makeItSmaller(trimText(text));
+};
+
+const input = "    turHan Iso texti       ";
+console.log(input);
+console.log(cleanText(input));

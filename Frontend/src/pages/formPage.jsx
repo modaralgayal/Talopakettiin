@@ -5,52 +5,12 @@ import { SisapuoliForm } from "./hakemusTiedot/sisäPuoliForm";
 import { LämmitysForm } from "./hakemusTiedot/lämmitysForm";
 import { TalotekniikkaForm } from "./hakemusTiedot/talotekniikkaForm";
 import { OmatTiedotForm } from "./hakemusTiedot/omatTiedotForm";
+import { useFormContext } from "../context/formContext";
+import { sendFormData } from "../controllers/formController";
 
 export const ApplicationForm = () => {
+  const { formData, setFormData, resetForm } = useFormContext();
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({
-    // Perustiedot fields
-    rakennusvuosi: "",
-    pintaAla: "",
-    huoneistoja: "",
-    asukasluku: "",
-    rakennustyyppi: "",
-    osoite: "",
-    postinumero: "",
-    kaupunki: "",
-    
-    // Ulkopuoli fields
-    talonMateriaali: "",
-    talonMateriaaliMuu: "",
-    vesikatto: "",
-    vesikattoMuu: "",
-    
-    // Sisäpuoli fields
-    lattia: "",
-    lattiaDetails: "",
-    valiseinat: "",
-    valiseinatDetails: "",
-    sisakatto: "",
-    sisakattoDetails: "",
-    
-    // Lämmitys fields
-    lämmitysmuoto: [],
-    muuLämmitysmuoto: "",
-    takka: "",
-    varaavuus: "",
-    leivinuuni: "",
-    muuTieto: "",
-    
-    // Talotekniikka fields
-    minuaKiinnostaa: [],
-    muuMinuaKiinnostaa: "",
-    haluanTarjous: [],
-    muuHaluanTarjous: "",
-    
-    // Omat Tiedot fields
-    olen: [],
-    vapaamuotoisiaLisatietoja: "",
-  });
 
   const steps = [
     { number: 1, title: "Perustiedot" },
@@ -76,23 +36,28 @@ export const ApplicationForm = () => {
   const handleSubmit = () => {
     console.log("Form submitted with data:", formData);
     alert("Form submitted! Check console for data.");
+    sendFormData(formData)
+    resetForm();
   };
 
   return (
     <div className="min-h-screen bg-gray-50 pt-12 pb-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Rakennushakemus</h1>
-          <p className="text-lg text-gray-600">Täytä kaikki vaaditut tiedot vaiheittain</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Rakennushakemus
+          </h1>
+          <p className="text-lg text-gray-600">
+            Täytä kaikki vaaditut tiedot vaiheittain
+          </p>
         </div>
 
-        {/* Step Indicator */}
         <div className="relative mb-12">
           <div className="absolute top-1/2 left-0 right-0 h-1 bg-gray-200 -z-10"></div>
           <div className="flex justify-between">
             {steps.map(({ number, title }) => (
-              <div 
-                key={number} 
+              <div
+                key={number}
                 className="flex flex-col items-center cursor-pointer"
                 onClick={() => goToStep(number)}
               >
@@ -105,9 +70,11 @@ export const ApplicationForm = () => {
                 >
                   <span className="font-medium">{number}</span>
                 </div>
-                <span className={`mt-3 text-sm font-medium ${
-                  step >= number ? "text-blue-600" : "text-gray-500"
-                }`}>
+                <span
+                  className={`mt-3 text-sm font-medium ${
+                    step >= number ? "text-blue-600" : "text-gray-500"
+                  }`}
+                >
                   {title}
                 </span>
               </div>
@@ -115,7 +82,6 @@ export const ApplicationForm = () => {
           </div>
         </div>
 
-        {/* Form Content */}
         <div className="bg-white shadow-xl rounded-lg overflow-hidden">
           <div className="p-8">
             {step === 1 && (
@@ -131,14 +97,16 @@ export const ApplicationForm = () => {
               <LämmitysForm formData={formData} setFormData={setFormData} />
             )}
             {step === 5 && (
-              <TalotekniikkaForm formData={formData} setFormData={setFormData} />
+              <TalotekniikkaForm
+                formData={formData}
+                setFormData={setFormData}
+              />
             )}
             {step === 6 && (
               <OmatTiedotForm formData={formData} setFormData={setFormData} />
             )}
           </div>
 
-          {/* Navigation Buttons */}
           <div className="px-8 py-6 bg-gray-50 border-t border-gray-200 flex justify-between">
             <button
               onClick={prevStep}
@@ -151,7 +119,7 @@ export const ApplicationForm = () => {
             >
               Edellinen
             </button>
-            
+
             {step === steps.length ? (
               <button
                 onClick={handleSubmit}

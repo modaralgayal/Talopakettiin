@@ -23,18 +23,50 @@ const provinces = [
 ];
 
 export const PerustiedotForm = ({ formData, setFormData }) => {
-  const [showDetails, setShowDetails] = useState({
+  // Initialize all possible fields in formData
+  const initialDetailsState = {
     kodinhoitohuone: false,
     arkieteinen: false,
     terassi: false,
     autokatos: false,
     autotalli: false,
-  });
-
-  const handleRadioChange = (field, value) => {
-    setFormData({ ...formData, [field]: value });
-    setShowDetails((prev) => ({ ...prev, [field]: value === "Kyllä" }));
   };
+  
+  const [showDetails, setShowDetails] = useState(initialDetailsState);
+
+  // Handle radio button changes
+  const handleRadioChange = (field, value) => {
+    setFormData({ 
+      ...formData, 
+      [field]: value,
+      // Clear details if "Ei" is selected
+      ...(value === "Ei" && { [`${field}Details`]: "" })
+    });
+    setShowDetails(prev => ({ ...prev, [field]: value === "Kyllä" }));
+  };
+
+  // Handle number inputs with validation
+  const handleNumberInput = (field, value) => {
+    const numValue = value === "" ? "" : Number(value);
+    setFormData({ ...formData, [field]: numValue });
+  };
+
+  // Handle text input changes
+  const handleTextInput = (field, value) => {
+    setFormData({ ...formData, [field]: value });
+  };
+
+  // Field configurations for dynamic rendering
+  const radioFields = [
+    { label: "Kodinhoitohuone *", field: "kodinhoitohuone" },
+    { label: "Arkieteinen *", field: "arkieteinen" },
+    { label: "Terassi *", field: "terassi" },
+  ];
+
+  const garageFields = [
+    { label: "Autokatos *", field: "autokatos" },
+    { label: "Autotalli *", field: "autotalli" },
+  ];
 
   return (
     <div className="space-y-6">
@@ -42,14 +74,19 @@ export const PerustiedotForm = ({ formData, setFormData }) => {
         Perustiedot
       </h2>
 
-      {/* City */}
+      {/* City (Required) */}
       <div>
-        <label className="block text-lg font-medium text-gray-700">Kaupunki *</label>
+        <label className="block text-lg font-medium text-gray-700">
+          Kaupunki *
+          {!formData.kaupunki && (
+            <span className="text-red-500 text-sm ml-2">Pakollinen kenttä</span>
+          )}
+        </label>
         <select
           className="w-full p-3 border rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500"
-          onChange={(e) =>
-            setFormData({ ...formData, kaupunki: e.target.value })
-          }
+          value={formData.kaupunki || ""}
+          onChange={(e) => handleTextInput("kaupunki", e.target.value)}
+          required
         >
           <option value="">Valitse kaupunki</option>
           {finnishCities.map((city) => (
@@ -60,14 +97,19 @@ export const PerustiedotForm = ({ formData, setFormData }) => {
         </select>
       </div>
 
-      {/* Province */}
+      {/* Province (Required) */}
       <div>
-        <label className="block text-lg font-medium text-gray-700">Maakunta *</label>
+        <label className="block text-lg font-medium text-gray-700">
+          Maakunta *
+          {!formData.maakunta && (
+            <span className="text-red-500 text-sm ml-2">Pakollinen kenttä</span>
+          )}
+        </label>
         <select
           className="w-full p-3 border rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500"
-          onChange={(e) =>
-            setFormData({ ...formData, maakunta: e.target.value })
-          }
+          value={formData.maakunta || ""}
+          onChange={(e) => handleTextInput("maakunta", e.target.value)}
+          required
         >
           <option value="">Valitse maakunta</option>
           {provinces.map((province) => (
@@ -78,7 +120,7 @@ export const PerustiedotForm = ({ formData, setFormData }) => {
         </select>
       </div>
 
-      {/* Budget */}
+      {/* Budget Range */}
       <div>
         <label className="block text-lg font-medium text-gray-700">Budjetti (€)</label>
         <div className="flex gap-2">
@@ -86,22 +128,22 @@ export const PerustiedotForm = ({ formData, setFormData }) => {
             type="number"
             placeholder="Min"
             className="w-1/2 p-3 border rounded-lg"
-            onChange={(e) =>
-              setFormData({ ...formData, minBudget: e.target.value })
-            }
+            value={formData.minBudget ?? ""}
+            onChange={(e) => handleNumberInput("minBudget", e.target.value)}
+            min="0"
           />
           <input
             type="number"
             placeholder="Max"
             className="w-1/2 p-3 border rounded-lg"
-            onChange={(e) =>
-              setFormData({ ...formData, maxBudget: e.target.value })
-            }
+            value={formData.maxBudget ?? ""}
+            onChange={(e) => handleNumberInput("maxBudget", e.target.value)}
+            min={formData.minBudget || "0"}
           />
         </div>
       </div>
 
-      {/* House Size */}
+      {/* House Size Range */}
       <div>
         <label className="block text-lg font-medium text-gray-700">Talon Koko (m²)</label>
         <div className="flex gap-2">
@@ -109,30 +151,36 @@ export const PerustiedotForm = ({ formData, setFormData }) => {
             type="number"
             placeholder="Min"
             className="w-1/2 p-3 border rounded-lg"
-            onChange={(e) =>
-              setFormData({ ...formData, minSize: e.target.value })
-            }
+            value={formData.minSize ?? ""}
+            onChange={(e) => handleNumberInput("minSize", e.target.value)}
+            min="0"
           />
           <input
             type="number"
             placeholder="Max"
             className="w-1/2 p-3 border rounded-lg"
-            onChange={(e) =>
-              setFormData({ ...formData, maxSize: e.target.value })
-            }
+            value={formData.maxSize ?? ""}
+            onChange={(e) => handleNumberInput("maxSize", e.target.value)}
+            min={formData.minSize || "0"}
           />
         </div>
       </div>
 
-      {/* Bedrooms */}
+      {/* Bedrooms (Required) */}
       <div>
-        <label className="block text-lg font-medium text-gray-700">Makuuhuoneiden määrä *</label>
+        <label className="block text-lg font-medium text-gray-700">
+          Makuuhuoneiden määrä *
+          {!formData.bedrooms && (
+            <span className="text-red-500 text-sm ml-2">Pakollinen kenttä</span>
+          )}
+        </label>
         <select
           className="w-full p-3 border rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500"
-          onChange={(e) =>
-            setFormData({ ...formData, bedrooms: e.target.value })
-          }
+          value={formData.bedrooms || ""}
+          onChange={(e) => handleTextInput("bedrooms", e.target.value)}
+          required
         >
+          <option value="">Valitse määrä</option>
           {[1, 2, 3, 4, 5, 6, 7, "8+"].map((num) => (
             <option key={num} value={num}>
               {num}
@@ -141,14 +189,15 @@ export const PerustiedotForm = ({ formData, setFormData }) => {
         </select>
       </div>
 
-      {/* Dynamic Fields with Radio Buttons */}
-      {[
-        { label: "Kodinhoitohuone *", field: "kodinhoitohuone" },
-        { label: "Arkieteinen *", field: "arkieteinen" },
-        { label: "Terassi *", field: "terassi" },
-      ].map(({ label, field }) => (
+      {/* Dynamic Radio Fields */}
+      {radioFields.map(({ label, field }) => (
         <div key={field}>
-          <label className="block text-lg font-medium text-gray-700">{label}</label>
+          <label className="block text-lg font-medium text-gray-700">
+            {label}
+            {!formData[field] && (
+              <span className="text-red-500 text-sm ml-2">Pakollinen kenttä</span>
+            )}
+          </label>
           <div className="flex gap-4 mt-2">
             {["Kyllä", "Ei"].map((option) => (
               <label key={option} className="flex items-center gap-2">
@@ -159,6 +208,7 @@ export const PerustiedotForm = ({ formData, setFormData }) => {
                   checked={formData[field] === option}
                   onChange={(e) => handleRadioChange(field, e.target.value)}
                   className="accent-blue-500"
+                  required
                 />
                 {option}
               </label>
@@ -169,11 +219,9 @@ export const PerustiedotForm = ({ formData, setFormData }) => {
               type="text"
               className="w-full mt-2 p-3 border rounded-lg"
               placeholder={`${label} - Lisätietoja`}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  [`${field}Details`]: e.target.value,
-                })
+              value={formData[`${field}Details`] || ""}
+              onChange={(e) => 
+                handleTextInput(`${field}Details`, e.target.value)
               }
             />
           )}
@@ -181,12 +229,14 @@ export const PerustiedotForm = ({ formData, setFormData }) => {
       ))}
 
       {/* Garage Options */}
-      {[
-        { label: "Autokatos *", field: "autokatos" },
-        { label: "Autotalli *", field: "autotalli" },
-      ].map(({ label, field }) => (
+      {garageFields.map(({ label, field }) => (
         <div key={field}>
-          <label className="block text-lg font-medium text-gray-700">{label}</label>
+          <label className="block text-lg font-medium text-gray-700">
+            {label}
+            {!formData[field] && (
+              <span className="text-red-500 text-sm ml-2">Pakollinen kenttä</span>
+            )}
+          </label>
           <div className="flex gap-4 mt-2">
             {["Kyllä", "Ei"].map((option) => (
               <label key={option} className="flex items-center gap-2">
@@ -197,6 +247,7 @@ export const PerustiedotForm = ({ formData, setFormData }) => {
                   checked={formData[field] === option}
                   onChange={(e) => handleRadioChange(field, e.target.value)}
                   className="accent-blue-500"
+                  required
                 />
                 {option}
               </label>
@@ -207,36 +258,32 @@ export const PerustiedotForm = ({ formData, setFormData }) => {
               <div className="flex gap-2 mt-2">
                 <input
                   type="number"
-                  placeholder="Min size"
+                  placeholder="Min koko (m²)"
                   className="w-1/2 p-3 border rounded-lg"
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      [`${field}Min`]: e.target.value,
-                    })
+                  value={formData[`${field}Min`] ?? ""}
+                  onChange={(e) => 
+                    handleNumberInput(`${field}Min`, e.target.value)
                   }
+                  min="0"
                 />
                 <input
                   type="number"
-                  placeholder="Max size"
+                  placeholder="Max koko (m²)"
                   className="w-1/2 p-3 border rounded-lg"
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      [`${field}Max`]: e.target.value,
-                    })
+                  value={formData[`${field}Max`] ?? ""}
+                  onChange={(e) => 
+                    handleNumberInput(`${field}Max`, e.target.value)
                   }
+                  min={formData[`${field}Min`] || "0"}
                 />
               </div>
               <input
                 type="text"
                 className="w-full mt-2 p-3 border rounded-lg"
                 placeholder={`${label} - Lisätietoja`}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    [`${field}Details`]: e.target.value,
-                  })
+                value={formData[`${field}Details`] || ""}
+                onChange={(e) => 
+                  handleTextInput(`${field}Details`, e.target.value)
                 }
               />
             </>

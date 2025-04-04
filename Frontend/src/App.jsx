@@ -16,6 +16,7 @@ import { CustomerHeader } from "./headers/customerHeader";
 
 function App() {
   const [userType, setUserType] = useState(null);
+  const [formData, setFormData] = useState();
 
   // Function to get userType from localStorage
   const getUserTypeFromLocalStorage = () => {
@@ -27,20 +28,17 @@ function App() {
   // Function to handle logout
   const handleLogout = () => {
     console.log("User logged out");
-
-    // Remove userType from localStorage
     localStorage.removeItem("userType");
-
-    // Clear the userType state
     setUserType(null);
   };
 
-  // Check userType from localStorage when the component mounts or whenever it changes
+  // Check userType from localStorage on mount
   useEffect(() => {
     const storedUserType = getUserTypeFromLocalStorage();
-    setUserType(storedUserType); // Update the state based on localStorage value
+    setUserType(storedUserType);
+    localStorage.setItem("formData", JSON.stringify(formData));
     console.log(`Found user type in localStorage: ${storedUserType}`);
-  }, []); // Empty dependency array ensures this effect runs only once when the component mounts
+  }, []);
 
   return (
     <Router>
@@ -67,7 +65,15 @@ function App() {
               path="/providersignin"
               element={<ProviderSignIn setUserType={setUserType} />}
             />
-            <Route path="/formpage" element={<ApplicationForm />} />
+            <Route
+              path="/formpage"
+              element={
+                <ApplicationForm
+                  formData={formData}
+                  setFormData={setFormData}
+                />
+              }
+            />
             <Route path="/confirmuser" element={<ConfirmUser />} />
             <Route path="/viewmyapplications" element={<MyApplications />} />
           </Routes>

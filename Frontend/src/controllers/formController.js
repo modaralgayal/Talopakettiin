@@ -3,13 +3,13 @@ import axios from "axios";
 const API_URL = "http://localhost:8000/api/forms";
 
 // Send Form Data
-export const sendFormData = async (formData, token) => {
+export const sendFormData = async (formData) => {
+  console.log("Received formData: ", formData);
   try {
     const response = await axios.post(
       `${API_URL}/receive-form-data`,
       formData,
       {
-        headers: { Authorization: `Bearer ${token}` },
         withCredentials: true,
       }
     );

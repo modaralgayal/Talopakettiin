@@ -1,8 +1,37 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export const UlkopuoliForm = ({ formData, setFormData }) => {
   const [showCustomMaterial, setShowCustomMaterial] = useState(false);
   const [showCustomRoof, setShowCustomRoof] = useState(false);
+
+  useEffect(() => {
+    setShowCustomMaterial(formData.talonMateriaali === "Muu, mikä?");
+    setShowCustomRoof(formData.vesikatto === "Muu, mikä?");
+  }, [formData.talonMateriaali, formData.vesikatto]);
+
+  const handleSelectChange = (field, value) => {
+    const update = { ...formData, [field]: value };
+
+    if (field === "talonMateriaali") {
+      setShowCustomMaterial(value === "Muu, mikä?");
+      if (value !== "Muu, mikä?") {
+        update.talonMateriaaliMuu = "";
+      }
+    }
+
+    if (field === "vesikatto") {
+      setShowCustomRoof(value === "Muu, mikä?");
+      if (value !== "Muu, mikä?") {
+        update.vesikattoMuu = "";
+      }
+    }
+
+    setFormData(update);
+  };
+
+  const handleTextInput = (field, value) => {
+    setFormData({ ...formData, [field]: value });
+  };
 
   return (
     <div className="space-y-6">
@@ -13,11 +42,8 @@ export const UlkopuoliForm = ({ formData, setFormData }) => {
         <label className="block text-lg font-medium text-gray-700">Talon Materiaali *</label>
         <select
           className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3 border bg-white"
-          onChange={(e) => {
-            const value = e.target.value;
-            setShowCustomMaterial(value === "Muu, mikä?");
-            setFormData({ ...formData, talonMateriaali: value });
-          }}
+          value={formData.talonMateriaali || ""}
+          onChange={(e) => handleSelectChange("talonMateriaali", e.target.value)}
         >
           <option value="">Valitse materiaali</option>
           {["Puu", "Hirsi", "CLT", "Betoni/Kivi", "Muu, mikä?"].map((option) => (
@@ -27,9 +53,10 @@ export const UlkopuoliForm = ({ formData, setFormData }) => {
         {showCustomMaterial && (
           <input
             type="text"
-            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3 border mt-3"
             placeholder="Syötä materiaali"
-            onChange={(e) => setFormData({ ...formData, talonMateriaaliMuu: e.target.value })}
+            className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-3 border mt-3"
+            value={formData.talonMateriaaliMuu || ""}
+            onChange={(e) => handleTextInput("talonMateriaaliMuu", e.target.value)}
           />
         )}
       </div>
@@ -39,11 +66,8 @@ export const UlkopuoliForm = ({ formData, setFormData }) => {
         <label className="block text-lg font-medium text-gray-700">Vesikatto *</label>
         <select
           className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3 border bg-white"
-          onChange={(e) => {
-            const value = e.target.value;
-            setShowCustomRoof(value === "Muu, mikä?");
-            setFormData({ ...formData, vesikatto: value });
-          }}
+          value={formData.vesikatto || ""}
+          onChange={(e) => handleSelectChange("vesikatto", e.target.value)}
         >
           <option value="">Valitse vesikatto</option>
           {["Pelti/Saumakatto", "Tiili", "Huopa", "Muu, mikä?"].map((option) => (
@@ -53,9 +77,10 @@ export const UlkopuoliForm = ({ formData, setFormData }) => {
         {showCustomRoof && (
           <input
             type="text"
-            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3 border mt-3"
             placeholder="Syötä vesikatto"
-            onChange={(e) => setFormData({ ...formData, vesikattoMuu: e.target.value })}
+            className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-3 border mt-3"
+            value={formData.vesikattoMuu || ""}
+            onChange={(e) => handleTextInput("vesikattoMuu", e.target.value)}
           />
         )}
       </div>
