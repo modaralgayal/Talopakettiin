@@ -1,0 +1,120 @@
+function wpf_prefill_form_script() {
+    if (is_page('form-page')) { // Replace 'form-page' with your page slug or ID
+        ?>
+        <script>
+            jQuery(function($) {
+                var formID = 613; // Replace with your form ID
+                var entryId = new URLSearchParams(window.location.search).get('entryId'); // Get entryId from URL
+
+                console.log("Entry ID from URL:", entryId);
+
+                if (entryId) {
+                    // Fetch application data
+                    $.ajax({
+                        url: "<?php echo admin_url('admin-ajax.php'); ?>",
+                        method: 'GET',
+                        data: {
+                            action: 'get_application_data',
+                            entryId: entryId
+                        },
+                        success: function(response) {
+                            console.log("AJAX response:", response);
+                            if (response.success) {
+                                const fields = Object.values(response.data.fields);
+                                console.log("All fields found: ",fields)
+                                prefillForm(fields);
+                            } else {
+                                console.error('Error fetching data:', response.data.message);
+                            }
+                        },
+                        error: function(error) {
+                            console.error('AJAX error:', error);
+                        }
+                    });
+                } else {
+                    console.warn("Entry ID not found in the URL.");
+                }
+
+                // Prefill form fields function
+                function prefillForm(fields) {
+                    fields.forEach(field => {
+                        var fieldSelector = `#wpforms-${formID}-field_${field.id}`;
+
+                        // Skip empty values
+                        if (!field.value) return;
+
+                        var $field = $(fieldSelector);
+
+                        if ($field.length === 0) {
+                            console.warn(`Field not found: ${field.id}`);
+                            return;
+                        }
+
+                        // Text inputs, number fields, and textareas
+                        if ($field.is('input[type="text"], input[type="number"], textarea')) {
+                            $field.val(field.value);
+
+                        // Select dropdowns
+                        } else if ($field.is('select')) {
+                            $field.val(field.value).change();
+
+                        // Radio buttons (single selection)
+                        } else if ($(`#wpforms-${formID}-field_${field.id}-container`).hasClass('wpforms-field-radio')) {
+                            var $radioContainer = $(`#wpforms-${formID}-field_${field.id}-container`);
+                            var $fieldset = $radioContainer.find('fieldset');
+
+                            if ($fieldset) {
+                                var $ul = $fieldset.find('ul');
+                                if ($ul.length > 0) {
+                                    $ul.find('li').each(function() {
+                                        var $li = $(this);
+                                        var $input = $li.find('input[type="radio"]');
+                                        if ($input.length > 0 && $input.val() == field.value) {
+                                            $li.addClass('wpforms-selected');
+                                            $input.attr('checked', 'checked');
+                                            $input.addClass('wpforms-valid');
+                                        }
+                                    });
+                                }
+                            }
+
+                        // Checkboxes (multiple selections)
+                        } else if ($(`#wpforms-${formID}-field_${field.id}-container`).hasClass('wpforms-field-checkbox')) {
+                            var $checkboxContainer = $(`#wpforms-${formID}-field_${field.id}-container`);
+                            var $fieldset = $checkboxContainer.find('fieldset');
+
+                            if ($fieldset) {
+                                var $ul = $fieldset.find('ul');
+                                if ($ul.length > 0) {
+                                    console.log("Found the field values: ", field.value);
+                                    
+                                    // Split the value_raw by newlines to get individual options
+                                    var prefilledValues = field.value_raw.split('\n');
+                                    console.log("Prefilled values split by newlines: ", prefilledValues);
+
+                                    // Loop through each prefilled value
+                                    prefilledValues.forEach(value => {
+                                        // If the value exists in the list of checkboxes
+                                        $ul.find('li').each(function() {
+                                            var $li = $(this);
+                                            var $input = $li.find('input[type="checkbox"]');
+                                            
+                                            if ($input.length > 0 && $input.val() == value) {
+                                                // If the checkbox input value matches, add 'wpforms-selected' to the <li> and set aria-invalid to false
+                                                $li.addClass('wpforms-selected');
+                                                $input.attr('checked', 'checked'); // Ensure the checkbox is checked
+                                                $input.addClass('wpforms-valid');
+                                            }
+                                        });
+                                    });
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        </script>
+        <?php
+    }
+}
+add_action('wp_footer', 'wpf_prefill_form_script');

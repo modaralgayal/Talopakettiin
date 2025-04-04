@@ -1,0 +1,242 @@
+
+<style>
+  #offers-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .offer {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 25px;
+    width: 100%;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+  }
+
+  .offer:hover {
+    transform: translateY(-5px);
+  }
+
+  .offer h3 {
+    margin-top: 0;
+    font-size: 2em;
+    color: #333;
+  }
+
+  .offer p {
+    margin: 10px 0;
+    font-size: 1.2em;
+    color: #555;
+  }
+
+  .offer .company-name,
+  .offer .price {
+    width: 48%;
+    display: inline-block;
+  }
+
+  .offer .price {
+    text-align: right;
+    float: right;
+    font-size: 1.5em;
+    color: #333;
+  }
+
+  .offer .description {
+    clear: both;
+    margin-top: 5px;
+    font-size: 1em;
+    color: #777;
+  }
+  
+.pdf-button {
+  display: inline-block;
+  text-align: center;
+  margin-top: 15px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #ffffff !important;
+  text-decoration: none !important; /* Ensure no underline */
+  border-radius: 5px;
+  font-size: 1.2em;
+  transition: background-color 0.2s ease;
+}
+
+.pdf-button:hover {
+  background-color: #0056b3;
+  color: #ffffff !important;
+  text-decoration: none !important; /* Ensure no underline on hover */
+}
+
+
+      .accept-button {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.2em;
+  }
+
+  .accept-button:hover {
+    background-color: #218838;
+  }
+  
+  .accepted-banner {
+      display: block;
+      text-align: center;
+      margin-top: 15px;
+      padding: 10px 20px;
+      background-color: #ffc107;
+      color: #333;
+      font-weight: bold;
+      border-radius: 5px;
+      font-size: 1.2em;
+    }
+
+</style>
+</head>
+<body>
+<div id="offers-container"></div>
+
+<!-- JavaScript -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("Page loaded");
+
+  // Construct the URL for the AJAX request
+  const url = ajax_object.ajax_url + "?action=get_offers";
+
+  // Fetch the offers using the AJAX action
+  fetch(url, {
+    method: "GET",
+    credentials: "same-origin",
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log("Data returned from get_offers:", data);
+
+      if (data.success) {
+        const offers = data.data.offers;
+        const offersContainer = document.getElementById("offers-container");
+
+        // Clear previous content
+        offersContainer.innerHTML = "";
+
+        // Display each offer
+        offers.forEach((offer) => {
+          console.log("This is one offer", offer);
+          const offerDiv = document.createElement("div");
+          offerDiv.classList.add("offer");
+
+          // Format the final price as a number, with number separation and currency using Finnish locale
+          const price = parseInt(offer.fields["Final Price"], 10);
+          const formattedPrice = price.toLocaleString("fi-FI", {
+            style: "decimal",
+            minimumFractionDigits: 0,
+          });
+          const priceWithEuro = `${formattedPrice} €`;
+
+          // Add offer details
+          offerDiv.innerHTML = `
+            <h3>${offer.fields["Full Name"]}</h3>
+            <div class="company-name">${offer.fields["Company Name"]}</div>
+            <div class="price">${priceWithEuro}</div>
+            <p class="description">Service Description: ${offer.fields["Service Description"]}</p>
+          `;
+
+          // Add PDF button if PDF URL exists
+          if (offer.fields["Full Offer Here:"]) {
+            const pdfButton = document.createElement("a");
+            pdfButton.href = offer.fields["Full Offer Here:"];
+            pdfButton.textContent = "View Offer";
+            pdfButton.target = "_blank"; // Open in new tab
+            pdfButton.classList.add("pdf-button"); // Add a class for styling
+            offerDiv.appendChild(pdfButton);
+          }
+
+          // Check if the offer is already accepted
+          if (offer.status === "Accepted") {
+            const acceptedBanner = document.createElement("div");
+            acceptedBanner.classList.add("accepted-banner");
+            acceptedBanner.textContent = "You accepted this offer";
+            offerDiv.appendChild(acceptedBanner);
+          } else {
+            // Add Accept Offer button with confirmation
+            const acceptButton = document.createElement("button");
+            acceptButton.classList.add("accept-button");
+            acceptButton.textContent = "Accept Offer";
+            acceptButton.onclick = () => {
+              if (
+                confirm(`Are you sure you want to accept an offer of ${priceWithEuro}?`)
+              ) {
+                acceptOffer(
+                  encodeURIComponent(
+                    JSON.stringify({
+                      id: offer.id,
+                      ...offer.fields,
+                    })
+                  )
+                );
+              }
+            };
+            offerDiv.appendChild(acceptButton);
+          }
+
+          // Append the offer div to the container
+          offersContainer.appendChild(offerDiv);
+        });
+      } else {
+        console.error("Error fetching offers:", data);
+      }
+    })
+    .catch((error) => console.error("Error during fetch:", error));
+});
+
+// Function to accept the offer
+function acceptOffer(encodedOffer) {
+  const offerThis = JSON.parse(decodeURIComponent(encodedOffer));
+  console.log("This is the offer content:", offerThis);
+
+  const sendThis = {
+    action: "accept_given_offer",
+    Offer: offerThis,
+  };
+  console.log("This is the command: ", JSON.stringify(sendThis));
+
+  fetch(ajax_object.ajax_url + "?action=accept_given_offer", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(sendThis),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        alert("Offer accepted successfully!");
+        location.reload(); // Reload page to reflect changes
+      } else {
+        console.error("Failed to accept the offer:", data);
+        alert("Failed to accept the offer. Please try again.");
+      }
+    })
+    .catch((error) => {
+      console.error("Error submitting the offer:", error);
+      alert("An error occurred. Please try again.");
+    });
+}
+
+</script>
+

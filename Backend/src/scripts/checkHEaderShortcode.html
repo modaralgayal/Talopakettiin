@@ -1,0 +1,114 @@
+<style>
+  #myPageFooter {
+    width: 100%;
+    position: relative;
+    top: 100vh;
+  }
+</style>
+
+<div id="shortcodeContent"></div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    console.log(custom_shortcode_ajax);
+
+    jQuery.ajax({
+      url: custom_shortcode_ajax.ajax_url,
+      type: "POST",
+      data: { action: "get_custom_shortcode" },
+      success: function (response) {
+        if (response.success) {
+          const body = document.body;
+          const shortcodeContainer = document.createElement("div");
+          shortcodeContainer.innerHTML = response.data;
+          body.insertBefore(shortcodeContainer, body.firstChild);
+
+          // Attach logout button listener after shortcode loads
+          attachLogoutListener();
+        } else {
+          console.error("Error:", response.data.message);
+        }
+      },
+      error: function (error) {
+        console.error("AJAX Error:", error);
+      },
+    });
+
+    console.log("Checking also for log out");
+
+    let isLoggingOut = false;
+
+    async function logoutUser() {
+      if (isLoggingOut) return;
+      isLoggingOut = true;
+
+      try {
+        const response = await fetch(
+          "/wp-admin/admin-ajax.php?action=log_out",
+          {
+            method: "POST",
+            credentials: "include",
+          }
+        );
+
+        const result = await response.json();
+        console.log(result);
+
+        if (response.ok && result.success) {
+          window.location.href = "https://talopakettiin.fi";
+        } else {
+          alert(result.message || "Logout failed. Please try again.");
+        }
+      } catch (error) {
+        console.error("Logout Error:", error);
+        alert("An error occurred while logging out. Please try again.");
+      } finally {
+        isLoggingOut = false; // Ensure flag is reset after logout attempt
+      }
+    }
+
+    function attachLogoutListener() {
+      const logoutButton = document.getElementById("logoutButton");
+
+      if (logoutButton) {
+        logoutButton.addEventListener("click", async function (e) {
+          e.preventDefault();
+
+          if (isLoggingOut) return;
+          console.log("Logging out");
+
+          const userConfirmed = confirm("Are you sure you want to log out?");
+          if (userConfirmed) {
+            await logoutUser();
+          }
+        });
+      } else {
+        console.warn("Logout button not found. Retrying in 1 second...");
+        setTimeout(attachLogoutListener, 1000); // Retry if button is not yet available
+      }
+    }
+
+    async function checkTokenValidity() {
+      try {
+        const response = await fetch(custom_shortcode_ajax.ajax_url, {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({ action: "validate_user_token" }),
+        });
+
+        const result = await response.json();
+        console.log("Token validation:", result);
+
+        if (!result.success) {
+          console.warn("Token expired. Logging out...");
+          await logoutUser();
+        }
+      } catch (error) {
+        console.error("Token validation error:", error);
+      }
+    }
+
+    setInterval(checkTokenValidity, 300000);
+    checkTokenValidity();
+  });
+</script>

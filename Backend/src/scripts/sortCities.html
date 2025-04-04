@@ -1,0 +1,320 @@
+<div id="applications" class="container">
+  <ul id="applicationsList"></ul>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const applicationsList = document.getElementById("applicationsList");
+
+    let applicationsData = [];
+    let criteria = {
+      city: "",
+      province: "", // New field for "Maakunta"
+      minBudget: 0,
+      maxBudget: 0,
+      minSize: 0,
+      maxSize: 0,
+    };
+
+    // Fetch applications from the server
+    fetchApplications();
+
+    function fetchApplications() {
+      const url = ajax_object.ajax_url + "?action=get_applications";
+
+      fetch(url, {
+        method: "GET",
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            applicationsData = data.data;
+            console.log("Applications fetched:", applicationsData);
+            renderApplications(applicationsData);
+          } else {
+            console.error("Error:", data.data.message);
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    }
+
+    // Attach onChange listeners to inputs
+    function attachOnChangeListeners() {
+      const cityInput = document.querySelector(".wpf-kaupunki-sort input");
+      const provinceInput = document.querySelector(".wpf-maakunta-sort input"); // Province dropdown or input
+      const minBudgetInput = document.querySelector(
+        ".wpf-num-min-limit-budjetti-sort input"
+      );
+      const maxBudgetInput = document.querySelector(
+        ".wpf-num-max-limit-budjetti-sort input"
+      );
+      const minSizeInput = document.querySelector(
+        ".wpf-num-min-limit-talo-sort input"
+      );
+      const maxSizeInput = document.querySelector(
+        ".wpf-num-max-limit-talo-sort input"
+      );
+
+      if (cityInput) {
+        cityInput.addEventListener("input", handleInputChange);
+      }
+      if (provinceInput) {
+        provinceInput.addEventListener("input", handleInputChange);
+      }
+      if (minBudgetInput) {
+        minBudgetInput.addEventListener("input", handleInputChange);
+      }
+      if (maxBudgetInput) {
+        maxBudgetInput.addEventListener("input", handleInputChange);
+      }
+      if (minSizeInput) {
+        minSizeInput.addEventListener("input", handleInputChange);
+      }
+      if (maxSizeInput) {
+        maxSizeInput.addEventListener("input", handleInputChange);
+      }
+
+      // Select the form by ID
+      const form = document.querySelector("#wpforms-2529");
+
+      // Prevent form submission when pressing Enter
+      form.addEventListener("submit", function (e) {
+        e.preventDefault(); // Prevent form submission
+      });
+
+      // Prevent form submission when Enter key is pressed in input fields
+      form.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          e.preventDefault(); // Prevent the form from being submitted
+        }
+      });
+    }
+
+    // Handle input changes
+    function handleInputChange() {
+      console.log("Input changed");
+
+      const cityInput = document.querySelector(".wpf-kaupunki-sort input");
+      const provinceInput = document.querySelector(".wpf-maakunta-sort input"); // Province
+
+      criteria.city = cityInput?.value || "";
+      criteria.province = provinceInput?.value || ""; // Capture province input value
+
+      criteria.minBudget =
+        parseInt(
+          document.querySelector(".wpf-num-min-limit-budjetti-sort input")
+            ?.value,
+          10
+        ) || 0;
+      criteria.maxBudget =
+        parseInt(
+          document.querySelector(".wpf-num-max-limit-budjetti-sort input")
+            ?.value,
+          10
+        ) || 0;
+      criteria.minSize =
+        parseInt(
+          document.querySelector(".wpf-num-min-limit-talo-sort input")?.value,
+          10
+        ) || 0;
+      criteria.maxSize =
+        parseInt(
+          document.querySelector(".wpf-num-max-limit-talo-sort input")?.value,
+          10
+        ) || 0;
+
+      console.log("Updated criteria:", criteria);
+      handleSort();
+    }
+
+    // Render applications
+    function renderApplications(applications) {
+      applicationsList.innerHTML = "";
+
+      applications.forEach((application) => {
+        const listItem = document.createElement("li");
+        listItem.classList.add("application-item");
+
+        const cityName = application.fields.Kaupunki || "Unknown City";
+        const provinceName = application.fields.Maakunta || "Unknown Province";
+
+        const title = document.createElement("button");
+        title.classList.add("application-title");
+        title.textContent = `${cityName}, ${provinceName}`;
+        listItem.appendChild(title);
+
+        const makeOfferButton = document.createElement("button");
+        makeOfferButton.classList.add("make-offer-button");
+        makeOfferButton.textContent = "Make Offer";
+        makeOfferButton.addEventListener("click", () => {
+          redirectToOfferForm(application.entryId);
+        });
+        listItem.appendChild(makeOfferButton);
+
+        const detailsContainer = document.createElement("div");
+        detailsContainer.classList.add("application-details");
+        detailsContainer.style.display = "none";
+
+        for (const [key, value] of Object.entries(application.fields)) {
+          const detail = document.createElement("p");
+          detail.classList.add("application-detail");
+          detail.innerHTML = `<strong>${key}:</strong> ${value}`;
+          detailsContainer.appendChild(detail);
+        }
+
+        title.addEventListener("click", () => {
+          detailsContainer.style.display =
+            detailsContainer.style.display === "none" ? "block" : "none";
+        });
+
+        listItem.appendChild(detailsContainer);
+        applicationsList.appendChild(listItem);
+      });
+    }
+
+    // Function to redirect to the offer form
+    function redirectToOfferForm(entryId) {
+      if (!entryId) {
+        console.error("Missing entryId for offer redirection.");
+        return;
+      }
+      const offerFormUrl = `make-offer-to-customer?entryId=${entryId}`; // Replace with your actual offer form URL
+      window.location.href = offerFormUrl;
+    }
+
+    // Sort applications
+    function sortApplications(applications, criteria) {
+      return applications.sort((a, b) => {
+        const scoreA = calculateMatchScore(a, criteria);
+        const scoreB = calculateMatchScore(b, criteria);
+        return scoreB - scoreA;
+      });
+    }
+
+    // Calculate match score
+    function calculateMatchScore(application, criteria) {
+      let score = 0;
+
+      if (application.fields.Kaupunki === criteria.city) score += 10;
+      if (application.fields.Maakunta === criteria.province) score += 5;
+
+      const appMinBudget = parseInt(
+        application.fields["Budjetti Min Price (€)"],
+        10
+      );
+      const appMaxBudget = parseInt(
+        application.fields["Budjetti Max Price (€)"],
+        10
+      );
+      if (
+        criteria.minBudget >= appMinBudget &&
+        criteria.maxBudget <= appMaxBudget
+      )
+        score += 5;
+
+      const appMinSize = parseInt(application.fields["Talo Min Size (m²)"], 10);
+      const appMaxSize = parseInt(application.fields["Talo Max Size (m²)"], 10);
+      if (criteria.minSize >= appMinSize && criteria.maxSize <= appMaxSize)
+        score += 5;
+
+      return score;
+    }
+
+    // Handle sorting and rendering
+    function handleSort() {
+      const sortedApplications = sortApplications(applicationsData, criteria);
+      renderApplications(sortedApplications);
+    }
+
+    // Initialize onChange listeners
+    attachOnChangeListeners();
+  });
+</script>
+
+<style>
+  /* Container to center the content on the page */
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+  }
+
+  /* Heading style */
+  h2 {
+    font-size: 50px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+
+  /* Basic styling for the applications list */
+  #applicationsList {
+    list-style-type: none;
+    padding: 0;
+    margin-top: 20px;
+  }
+
+  .application-item {
+    background-color: #f9f9f9;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: left;
+  }
+
+  .application-title {
+    width: 100%;
+    padding: 10px;
+    font-size: 1.2em;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: left;
+    margin-bottom: 10px;
+  }
+
+  .application-title:hover {
+    background-color: #45a049;
+  }
+
+  .make-offer-button {
+    width: 100%;
+    padding: 5px;
+    font-size: 0.9em;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 5px;
+    margin-bottom: 10px;
+  }
+
+  .make-offer-button:hover {
+    background-color: #0056b3;
+  }
+
+  .application-details {
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+  }
+
+  .application-detail {
+    font-size: 1em;
+    color: #555;
+    margin: 5px 0;
+  }
+
+  .application-detail strong {
+    color: #222;
+  }
+</style>

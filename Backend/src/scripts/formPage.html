@@ -1,0 +1,84 @@
+<div id="shortcodeContent"></div>
+<!-- This will be used to render the shortcode -->
+
+<style>
+  #myPageFooter {
+    width: 100%;
+    position: relative;
+    top: 100vh;
+  }
+</style>
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // jQuery AJAX request to fetch custom shortcode
+    console.log(custom_shortcode_ajax);
+
+    // Fetch the custom shortcode content with cache busting
+    jQuery.ajax({
+      url: custom_shortcode_ajax.ajax_url,
+      type: "POST",
+      data: {
+        action: "get_custom_shortcode", // Matches the AJAX action in PHP
+      },
+      success: function (response) {
+        if (response.success) {
+          // Get the body element and prepend the shortcode content to the top of the page
+          const body = document.body;
+          const shortcodeContainer = document.createElement("div");
+          shortcodeContainer.innerHTML = response.data;
+          body.insertBefore(shortcodeContainer, body.firstChild); // Insert at the top
+        } else {
+          console.error("Error:", response.data.message);
+        }
+      },
+      error: function (error) {
+        console.error("AJAX Error:", error);
+      }
+    });
+
+    // Add logout functionality with debounce
+    console.log("Checking also for log out");
+    
+    let isLoggingOut = false; // Prevent multiple logout attempts
+    document.addEventListener("click", async function (e) {
+      // Check if the clicked element has the "logoutButton" id
+      if (e.target && e.target.id === "logoutButton" && !isLoggingOut) {
+        isLoggingOut = true; // Lock logout action until it completes
+        e.preventDefault(); // Prevent default action of the <a> element
+        console.log("Logging out");
+
+        // Ask the user if they are sure they want to log out
+        const userConfirmed = confirm("Are you sure you want to log out?");
+        if (!userConfirmed) {
+          console.log("Logout cancelled");
+          isLoggingOut = false; // Allow further clicks if cancelled
+          return; // Exit the function if the user cancels
+        }
+
+        try {
+          // Send the logout request via AJAX
+          const response = await fetch('/wp-admin/admin-ajax.php?action=log_out', {
+            method: 'POST',
+            credentials: 'include', // Include cookies in the request
+          });
+
+          const result = await response.json();
+          console.log(result); // Log the result for debugging
+
+          if (response.ok && result.success) {
+            window.location.href = 'https://talopakettiin.fi'; // Redirect after logout
+          } else {
+            alert(result.message || "Logout failed. Please try again.");
+          }
+        } catch (error) {
+          console.error("Logout Error:", error);
+          alert("An error occurred while logging out. Please try again.");
+        } finally {
+          isLoggingOut = false; // Allow the user to attempt logout again after a response
+        }
+      }
+    });
+  });
+</script>

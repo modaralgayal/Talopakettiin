@@ -1,0 +1,33 @@
+<script type="text/javascript">
+    jQuery(function () {
+      // Budjetti
+      jQuery(".wpf-num-min-limit-budjetti-sort input").attr({
+        min: 800000,
+        max: 3000000,
+        step: 50000,
+      });
+      jQuery(".wpf-num-max-limit-budjetti-sort input").attr({
+        min: 800000,
+        max: 3000000,
+        step: 50000,
+      });
+  
+      // Talon Koko
+      jQuery(".wpf-num-min-limit-talo-sort input").attr({
+        min: 5,
+        max: 1000,
+        step: 5,
+      });
+      jQuery(".wpf-num-max-limit-talo-sort input").attr({
+        min: 5,
+        max: 1000,
+        step: 5,
+      });
+  
+      // Hide Submit Button Conditionally
+      const submitButton = jQuery("#wpforms-submit-2529");
+        submitButton.hide(); // Hides the submit button
+    });
+  </script>
+
+
