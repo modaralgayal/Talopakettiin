@@ -3,12 +3,16 @@ import React, { createContext, useState, useContext } from 'react';
 // Define the shape of your form data
 const defaultFormData = {
   // Perustiedot fields
-  rakennusvuosi: "",
-  pintaAla: "",
-  huoneistoja: "",
-  asukasluku: "",
-  rakennustyyppi: "",
-  kaupunki: "",
+  kaupunki: "",  // City
+  maakunta: "",  // Province/region
+  budjetti: "",  // Budget (€)
+  talonKoko: "",  // House size (m²)
+  makuuhuoneidenMaara: "",  // Number of bedrooms
+  kodinhoitohuone: "",  // Utility room (Yes/No)
+  arkieteinen: "",  // Arki entrance (Yes/No)
+  terassi: "",  // Terrace (Yes/No)
+  autokatos: "",  // Carport (Yes/No)
+  autotalli: "",
 
   // Ulkopuoli fields
   talonMateriaali: "",

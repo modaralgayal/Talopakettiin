@@ -8,7 +8,7 @@ import { CustomerSignIn } from "./pages/customerSignIn";
 import { ProviderSignIn } from "./pages/providerSignIn";
 import { ApplicationForm } from "./pages/formPage";
 import { ConfirmUser } from "./pages/confirmUserPage";
-import { MyApplications } from "./pages/myApplications";
+import { MyApplications } from "./pages/viewMyApplications";
 // Headers
 import { Header } from "./headers/Header";
 import { ProviderHeader } from "./headers/providerHeader";

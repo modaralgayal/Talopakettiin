@@ -9,7 +9,7 @@ import {
 import nodemailer from "nodemailer";
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 import { v4 as uuidv4 } from "uuid";
-import { getSecrets } from "../utils/secrets.js";
+import { getSecrets, parseDynamoItem } from "../utils/secrets.js";
 
 const initDynamoDBClient = async () => {
   const secrets = await getSecrets();
@@ -73,9 +73,9 @@ export const getApplicationsForUser = async (req, res) => {
 
     const command = new QueryCommand(params);
     const data = await client.send(command);
-    const applications = data.Items.map((item) => item.entryId.S);
 
-    console.log(applications);
+    const applications = data.Items.map(parseDynamoItem);
+    console.log("Parsed Applications:", applications);
     res.status(200).json({ applications });
   } catch (error) {
     console.error("Error fetching applications for user:", error);

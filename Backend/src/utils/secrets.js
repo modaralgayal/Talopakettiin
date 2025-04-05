@@ -34,3 +34,28 @@ export async function getSecrets() {
     throw error;
   }
 }
+// Recursively parse DynamoDB AttributeValue types
+export const parseDynamoItem = (item) => {
+  const parsed = {};
+  for (const key in item) {
+    parsed[key] = unwrapAttribute(item[key]);
+  }
+  return parsed;
+};
+
+const unwrapAttribute = (attr) => {
+  if (attr.S !== undefined) {
+    try {
+      // Try parsing stringified JSON
+      const parsed = JSON.parse(attr.S);
+      return typeof parsed === "object" ? parsed : attr.S;
+    } catch {
+      return attr.S;
+    }
+  }
+  if (attr.N !== undefined) return Number(attr.N);
+  if (attr.BOOL !== undefined) return attr.BOOL;
+  if (attr.M !== undefined) return parseDynamoItem(attr.M);
+  if (attr.L !== undefined) return attr.L.map(unwrapAttribute);
+  return null;
+};
