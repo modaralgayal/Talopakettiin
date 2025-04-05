@@ -9,6 +9,7 @@ import { ProviderSignIn } from "./pages/providerSignIn";
 import { ApplicationForm } from "./pages/formPage";
 import { ConfirmUser } from "./pages/confirmUserPage";
 import { MyApplications } from "./pages/viewMyApplications";
+import { ViewCustomerApplications } from "./pages/viewCustomerApplications";
 // Headers
 import { Header } from "./headers/Header";
 import { ProviderHeader } from "./headers/providerHeader";
@@ -76,6 +77,7 @@ function App() {
             />
             <Route path="/confirmuser" element={<ConfirmUser />} />
             <Route path="/viewmyapplications" element={<MyApplications />} />
+            <Route path="/allapplications" element={<ViewCustomerApplications />} />
           </Routes>
         </main>
       </div>

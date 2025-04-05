@@ -58,6 +58,11 @@ export const addApplicationToUser = async (item) => {
 };
 
 export const getApplicationsForUser = async (req, res) => {
+  if (req.user.usertype !== "customer") {
+    return res
+      .status(403)
+      .json({ error: "Access denied: User is not a customer" });
+  }
   try {
     const userId = req.user.userId;
     const client = await initDynamoDBClient();
@@ -84,9 +89,6 @@ export const getApplicationsForUser = async (req, res) => {
 };
 
 export const getAllEntryIds = async (req, res) => {
-  console.log("Trying to fetch all entries");
-  console.log("This is the usertype in the request: ", req.user.usertype);
-
   try {
     if (req.user.usertype !== "provider") {
       return res
@@ -124,6 +126,11 @@ export const getAllEntryIds = async (req, res) => {
 };
 
 export const getOffersForUser = async (req, res) => {
+  if (req.user.usertype !== "customer") {
+    return res
+      .status(403)
+      .json({ error: "Access denied: User is not a customer" });
+  }
   try {
     const userId = req.user.userId;
     const client = await initDynamoDBClient();
@@ -203,6 +210,11 @@ export const getOffersForUser = async (req, res) => {
 };
 
 export const deleteItemByEntryId = async (req, res) => {
+  if (req.user.usertype !== "customer") {
+    return res
+      .status(403)
+      .json({ error: "Access denied: User is not a customer" });
+  }
   const { entryIdToDelete } = req.body;
   console.log("Attempting to delete item with entryId: ", entryIdToDelete);
 
@@ -254,6 +266,11 @@ export const deleteItemByEntryId = async (req, res) => {
 };
 
 export const acceptOffer = async (req, res) => {
+  if (req.user.usertype !== "customer") {
+    return res
+      .status(403)
+      .json({ error: "Access denied: User is not a customer" });
+  }
   try {
     const dynamoDBClient = await initDynamoDBClient();
     const { id, entryId, "Email Address": emailAddress } = req.body;

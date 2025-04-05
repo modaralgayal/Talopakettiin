@@ -261,6 +261,7 @@ export const signIn = async (req, res) => {
       throw new Error("Invalid ID token.");
     }
 
+    // Extract userType from the decoded ID token
     const userTypeFromToken = decodedIdToken["custom:UserType"];
     if (userTypeFromToken !== userType) {
       throw new Error("User type mismatch. Access denied.");
@@ -269,21 +270,28 @@ export const signIn = async (req, res) => {
     // Continue with JWT signing or response setup
     const userSub = decodedIdToken.sub;
     const jwtToken = jwt.sign(
-      { sub: userSub, clientId: secrets.AWS_CLIENT_ID, username },
-      secrets.MY_SECRET_JWT_KEY,
-      { expiresIn: "1h" }
+      {
+        sub: userSub,  // user identifier (Cognito user sub)
+        clientId: secrets.AWS_CLIENT_ID,  // client id from secrets
+        username,  // username
+        userType: userTypeFromToken,  // Add userType to the custom JWT
+      },
+      secrets.MY_SECRET_JWT_KEY,  // Secret key to sign the JWT
+      { expiresIn: "1h" }  // Expiry time for the token
     );
 
     const isProduction = process.env.NODE_ENV === "production";
 
+    // Set the JWT token in a secure cookie
     res.cookie("token", jwtToken, {
-      secure: isProduction, // true in production, false in dev
-      httpOnly: true,
+      secure: isProduction,  // Use secure cookies in production
+      httpOnly: true,  // Ensure the cookie is HTTP only (cannot be accessed via JavaScript)
       path: "/",
-      sameSite: isProduction ? "None" : "Lax", // Lax for local, None for production
-      domain: isProduction ? "talopakettiin.fi" : undefined, // Remove domain for local testing
+      sameSite: isProduction ? "None" : "Lax",  // SameSite option for cross-site cookies
+      domain: isProduction ? "talopakettiin.fi" : undefined,  // Set domain for production
     });
 
+    // Send response with tokens and redirect URL
     res.json({
       success: true,
       message: "Sign in successful!",
@@ -297,6 +305,7 @@ export const signIn = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
 
 export const logOut = (req, res) => {
   console.log("Logging out");

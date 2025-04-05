@@ -35,6 +35,7 @@ export const authenticateJWT = async (req, res, next) => {
     }
 
     const decodedToken = await verifyAndDecodeJWT(token);
+    console.log("This is the decoded token: ", decodedToken);
 
     if (!decodedToken) {
       console.log("Invalid or expired token");
@@ -48,12 +49,8 @@ export const authenticateJWT = async (req, res, next) => {
       return res.sendStatus(403);
     }
 
-    const usertype = req.headers.usertype;
-    if (usertype) {
-      req.user = { userId, usertype, ...decodedToken };
-    } else {
-      req.user = { userId, ...decodedToken };
-    }
+    const usertype = decodedToken.userType;
+    req.user = { userId, usertype, ...decodedToken };
 
     next();
   } catch (err) {
