@@ -86,17 +86,23 @@ export const acceptOffer = async (offerId) => {
     throw error.response?.data || error.message;
   }
 };
-
-// Make Offer to User (assuming offerId is passed)
-export const makeOfferToUser = async (offerData, userId, entryId) => {
+// Make Offer to User with PDF support
+export const makeOfferToUser = async (offerData, userId, entryId, pdfFile) => {
   try {
-    const response = await axios.post(
-      `${API_URL}/make-offer`, // The endpoint to create the offer (adjust the path as needed)
-      { offerData, userId, entryId },
-      {
-        withCredentials: true, // Send cookies automatically
-      }
-    );
+    const formData = new FormData();
+
+    formData.append("userId", userId);
+    formData.append("entryId", entryId);
+    formData.append("pdfFile", pdfFile); // optional, can be null
+    formData.append("offerData", JSON.stringify(offerData)); // stringify nested object
+
+    const response = await axios.post(`${API_URL}/make-offer`, formData, {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;

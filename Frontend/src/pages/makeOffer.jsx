@@ -1,44 +1,66 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useOfferContext } from "../context/offerContext";
+import { makeOfferToUser } from "../controllers/formController";
 
 const MakeOffer = () => {
   const { offerData, updateOfferData } = useOfferContext(); // Access offer data from context
   const navigate = useNavigate();
 
   // Initialize state from the offerData
-  const [price, setPrice] = useState(offerData.price || ""); // Default value if offerData is empty
+  const [price, setPrice] = useState(offerData.price || "");
   const [firmName, setFirmName] = useState(offerData.firmName || "");
   const [description, setDescription] = useState(offerData.description || "");
-  const [providerEmail, setProviderEmail] = useState(offerData.providerEmail || "");
+  const [providerEmail, setProviderEmail] = useState(
+    offerData.providerEmail || ""
+  );
+  const [pdfFile, setPdfFile] = useState(null); // New: PDF file state
 
-  // Update offer data only when values change (not on every render)
   useEffect(() => {
-    // Set initial offer data when the component first loads
     setPrice(offerData.price || "");
     setFirmName(offerData.firmName || "");
     setDescription(offerData.description || "");
     setProviderEmail(offerData.providerEmail || "");
-    console.log("This is the application we are offering to: ", offerData.formData)
+    console.log(
+      "This is the application we are offering to: ",
+      offerData.formData
+    );
   }, [offerData]);
 
-  // Update context data when the local form state changes
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle offer submission logic (you could send data to an API, etc.)
-    console.log("Offer submitted:", { price, firmName, description, providerEmail });
-
-    // Update the context with the new offer data
-    updateOfferData({
+  
+    const updatedOffer = {
       ...offerData,
       price,
       firmName,
       description,
       providerEmail,
-    });
+      pdfFile, // include if you plan to support file upload later
+    };
+  
+    updateOfferData(updatedOffer);
+  
+    makeOfferToUser(updatedOffer, offerData.userId, offerData.entryId)
+      .then((res) => {
+        console.log("Offer successfully submitted:", res);
+        resetOfferData();
+        //navigate("/confirmation");
+      })
+      .catch((error) => {
+        console.error("Failed to submit offer:", error);
+        alert("There was an error submitting your offer. Please try again.");
+      });
+  };
+  
 
-    // Optionally navigate to a confirmation page or reset the context
-    navigate("/confirmation"); // Example of redirecting after submission
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file && file.type === "application/pdf") {
+      setPdfFile(file);
+    } else {
+      alert("Please upload a valid PDF file.");
+    }
   };
 
   return (
@@ -66,7 +88,10 @@ const MakeOffer = () => {
 
           {/* Firm Name Input */}
           <div>
-            <label htmlFor="firmName" className="block text-left font-medium mb-2">
+            <label
+              htmlFor="firmName"
+              className="block text-left font-medium mb-2"
+            >
               Firm Name
             </label>
             <input
@@ -82,7 +107,10 @@ const MakeOffer = () => {
 
           {/* Description Input */}
           <div>
-            <label htmlFor="description" className="block text-left font-medium mb-2">
+            <label
+              htmlFor="description"
+              className="block text-left font-medium mb-2"
+            >
               Description
             </label>
             <textarea
@@ -98,7 +126,10 @@ const MakeOffer = () => {
 
           {/* Provider Email Input */}
           <div>
-            <label htmlFor="providerEmail" className="block text-left font-medium mb-2">
+            <label
+              htmlFor="providerEmail"
+              className="block text-left font-medium mb-2"
+            >
               Provider Email
             </label>
             <input
@@ -112,6 +143,33 @@ const MakeOffer = () => {
             />
           </div>
 
+          {/* PDF Upload */}
+          <div>
+            <label className="block text-left font-medium mb-2">
+              Attach PDF (optional)
+            </label>
+
+            <div className="flex items-center space-x-4">
+              <label
+                htmlFor="pdfUpload"
+                className="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition"
+              >
+                Browse PDF
+              </label>
+              {pdfFile && (
+                <span className="text-sm text-green-700">{pdfFile.name}</span>
+              )}
+            </div>
+
+            {/* Hidden file input */}
+            <input
+              id="pdfUpload"
+              type="file"
+              accept="application/pdf"
+              onChange={handleFileChange}
+              className="hidden"
+            />
+          </div>
           {/* Submit Button */}
           <button
             type="submit"

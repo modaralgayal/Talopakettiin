@@ -14,6 +14,7 @@ import nodemailer from "nodemailer";
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 import { v4 as uuidv4 } from "uuid";
 import { getSecrets, parseDynamoItem } from "../utils/secrets.js";
+import multer from "multer";
 
 const initDynamoDBClient = async () => {
   const secrets = await getSecrets();
@@ -378,40 +379,65 @@ export const acceptOffer = async (req, res) => {
   }
 };
 
+const storage = multer.memoryStorage(); // Store in memory; can change to disk
+const upload = multer({ storage });
+
+export const makeOfferMiddleware = upload.single("pdfFile"); // handles multipart/form-data with one file field: pdfFile
+
 export const makeOffer = async (req, res) => {
-  if (req.user.usertype !== "provider") {
-    return res.status(403).json({ error: "Access denied: User is not a provider" });
-  }
-
-  const { offerData, userId, entryId } = req.body;
-  const providerId = req.user.userId; // Get provider's userId from authentication context
-
-  if (!offerData || !userId || !entryId) {
-    return res.status(400).json({ error: "Missing required parameters." });
-  }
-
   try {
-    const client = await initDynamoDBClient();
+    if (req.user.usertype !== "provider") {
+      return res
+        .status(403)
+        .json({ error: "Access denied: User is not a provider" });
+    }
 
-    // Create a new offer item
+    const { offerData, userId, entryId } = req.body;
+    const providerId = req.user.userId;
+
+    if (!offerData || !userId || !entryId) {
+      return res.status(400).json({ error: "Missing required parameters." });
+    }
+
+    // Parse offerData string back to object
+    let parsedOfferData;
+    try {
+      parsedOfferData = JSON.parse(offerData);
+    } catch (err) {
+      return res.status(400).json({ error: "Invalid offerData format." });
+    }
+
+    // Attach file buffer if present
+    if (req.file) {
+      parsedOfferData.pdfFile = {
+        filename: req.file.originalname,
+        mimetype: req.file.mimetype,
+        buffer: req.file.buffer.toString("base64"), // Base64 encoding for safe storage
+      };
+    }
+
     const offerId = uuidv4();
     const offerItem = {
       id: offerId,
-      offerData,
+      offerData: parsedOfferData,
       userId,
       providerId,
       entryId,
-      status: "Pending",
-      createdAt: new Date().toISOString(),
+      username: req.user.username,
+      entryType: "offer",
+      status: "pending",
+      timestamp: new Date().toISOString(),
     };
 
-    // DynamoDB params to insert the new offer into the table
+    const client = await initDynamoDBClient();
+
     const params = {
       TableName: "Talopakettiin-API",
       Item: marshall(offerItem),
     };
 
     await client.send(new PutItemCommand(params));
+
     res.status(200).json({ success: true, message: "Offer sent successfully" });
   } catch (error) {
     console.error("Error sending offer:", error);

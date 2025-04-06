@@ -19,12 +19,18 @@ export const useOfferContext = () => {
   return useContext(OfferContext);
 };
 
+
+
 // Provider component to wrap around the app
 export const OfferProvider = ({ children }) => {
   const [offerData, setOfferData] = useState(initialOfferData);
 
   const updateOfferData = (data) => {
     setOfferData(data); // Update the offer data
+  };
+
+  const resetOfferData = () => {
+    setOfferData(initialOfferData); // Simply reset to the initial state
   };
 
   return (
