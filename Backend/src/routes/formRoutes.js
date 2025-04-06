@@ -7,6 +7,7 @@ import {
   getAllEntryIds,
   getApplicationsForUser,
   getOffersForUser,
+  makeOffer,
 } from "../services/dynamoServices.js";
 
 const router = express.Router();
@@ -18,6 +19,6 @@ router.get("/get-all-entries", authenticateJWT, getAllEntryIds);
 router.get("/get-user-offers", authenticateJWT, getOffersForUser);
 router.put("/accept-given-offer", authenticateJWT, acceptOffer);
 router.get("/test-sub-content", authenticateJWT);
-
+router.post("/make-offer", authenticateJWT, makeOffer);
 
 export default router;

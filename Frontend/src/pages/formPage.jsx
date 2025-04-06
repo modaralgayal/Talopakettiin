@@ -33,11 +33,38 @@ export const ApplicationForm = () => {
     setStep(stepNumber);
   };
 
+  // Dynamically combine the values for 'budjetti' and 'talonKoko'
+  const getBudjetti = () => {
+    const minBudget = formData.minBudget;
+    const maxBudget = formData.maxBudget;
+    if (minBudget && maxBudget) {
+      return `${minBudget} € - ${maxBudget} €`;
+    }
+    return ""; // Return empty string if not set
+  };
+
+  const getTalonKoko = () => {
+    const minSize = formData.minSize;
+    const maxSize = formData.maxSize;
+    if (minSize && maxSize) {
+      return `${minSize} m² - ${maxSize} m²`;
+    }
+    return ""; // Return empty string if not set
+  };
+
   const handleSubmit = () => {
-    console.log("Form submitted with data:", formData);
+    // Dynamically combine the values before submission
+    const updatedFormData = {
+      ...formData,
+      budjetti: getBudjetti(), // Add combined budjetti value
+      talonKoko: getTalonKoko(), // Add combined talonKoko value
+    };
+
+    console.log("Form submitted with data:", updatedFormData);
     alert("Form submitted! Check console for data.");
-    sendFormData(formData)
-    resetForm();
+
+    sendFormData(updatedFormData); // Submit the updated form data
+    resetForm(); // Reset the form after submission
   };
 
   return (

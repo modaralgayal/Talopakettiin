@@ -43,7 +43,7 @@ export const confirmSignup = async (username, confirmationCode) => {
 // Sign In
 export const signIn = async (username, password, userType) => {
   try {
-    console.log("Received: ", { username, password, userType });
+    // console.log("Received: ", { username, password, userType });
     const response = await axios.post(
       `${API_URL}/signin`,
       { username, password, userType },

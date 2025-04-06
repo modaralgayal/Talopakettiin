@@ -6,6 +6,10 @@ import {
   DeleteItemCommand,
   PutItemCommand,
 } from "@aws-sdk/client-dynamodb";
+import {
+  CognitoIdentityProviderClient,
+  AdminGetUserCommand,
+} from "@aws-sdk/client-cognito-identity-provider";
 import nodemailer from "nodemailer";
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 import { v4 as uuidv4 } from "uuid";
@@ -101,20 +105,26 @@ export const getAllEntryIds = async (req, res) => {
 
     const params = {
       TableName: "Talopakettiin-API",
-      ProjectionExpression: "entryId, userId, #status",
-      FilterExpression: "#status <> :acceptedStatus",
-      ExpressionAttributeNames: { "#status": "status" },
-      ExpressionAttributeValues: { ":acceptedStatus": { S: "Accepted" } },
+      FilterExpression: "#entryType = :entryTypeVal",
+      ExpressionAttributeNames: {
+        "#entryType": "entryType",
+      },
+      ExpressionAttributeValues: {
+        ":entryTypeVal": { S: "application" },
+      },
     };
 
     const command = new ScanCommand(params);
     const data = await client.send(command);
     console.log("This is the data", data);
 
-    const result = data.Items.map((item) => ({
-      entryId: item.entryId.S,
-      userId: item.userId.S,
-    }));
+    const result = data.Items.map((item) => {
+      const parsedItem = {};
+      for (const key in item) {
+        parsedItem[key] = Object.values(item[key])[0];
+      }
+      return parsedItem;
+    });
 
     console.log("Fetched entries:", result);
 
@@ -365,5 +375,46 @@ export const acceptOffer = async (req, res) => {
       message: "Failed to process the request.",
       error: error.message,
     });
+  }
+};
+
+export const makeOffer = async (req, res) => {
+  if (req.user.usertype !== "provider") {
+    return res.status(403).json({ error: "Access denied: User is not a provider" });
+  }
+
+  const { offerData, userId, entryId } = req.body;
+  const providerId = req.user.userId; // Get provider's userId from authentication context
+
+  if (!offerData || !userId || !entryId) {
+    return res.status(400).json({ error: "Missing required parameters." });
+  }
+
+  try {
+    const client = await initDynamoDBClient();
+
+    // Create a new offer item
+    const offerId = uuidv4();
+    const offerItem = {
+      id: offerId,
+      offerData,
+      userId,
+      providerId,
+      entryId,
+      status: "Pending",
+      createdAt: new Date().toISOString(),
+    };
+
+    // DynamoDB params to insert the new offer into the table
+    const params = {
+      TableName: "Talopakettiin-API",
+      Item: marshall(offerItem),
+    };
+
+    await client.send(new PutItemCommand(params));
+    res.status(200).json({ success: true, message: "Offer sent successfully" });
+  } catch (error) {
+    console.error("Error sending offer:", error);
+    res.status(500).json({ error: "Failed to send offer" });
   }
 };

@@ -14,6 +14,7 @@ import { ViewCustomerApplications } from "./pages/viewCustomerApplications";
 import { Header } from "./headers/Header";
 import { ProviderHeader } from "./headers/providerHeader";
 import { CustomerHeader } from "./headers/customerHeader";
+import MakeOffer from "./pages/makeOffer";
 
 function App() {
   const [userType, setUserType] = useState(null);
@@ -77,7 +78,11 @@ function App() {
             />
             <Route path="/confirmuser" element={<ConfirmUser />} />
             <Route path="/viewmyapplications" element={<MyApplications />} />
-            <Route path="/allapplications" element={<ViewCustomerApplications />} />
+            <Route
+              path="/allapplications"
+              element={<ViewCustomerApplications />}
+            />
+            <Route path="/makeoffer/" element={<MakeOffer />} />
           </Routes>
         </main>
       </div>
