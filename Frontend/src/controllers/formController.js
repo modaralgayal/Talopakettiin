@@ -108,3 +108,15 @@ export const makeOfferToUser = async (offerData, userId, entryId, pdfFile) => {
     throw error.response?.data || error.message;
   }
 };
+
+export const getOffersForUser = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/get-user-offers`, {
+      withCredentials: true, // Important to include session cookie
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching offers:", error);
+    throw error.response?.data || error.message;
+  }
+};

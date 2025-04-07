@@ -142,12 +142,12 @@ export const getOffersForUser = async (req, res) => {
       .status(403)
       .json({ error: "Access denied: User is not a customer" });
   }
+
   try {
     const userId = req.user.userId;
     const client = await initDynamoDBClient();
 
-    console.log("User ID:", userId);
-
+    // Fetch application data for the logged-in user
     const applicationParams = {
       TableName: "Talopakettiin-API",
       IndexName: "userId-index",
@@ -157,25 +157,26 @@ export const getOffersForUser = async (req, res) => {
       },
     };
 
-    const applicationCommand = new QueryCommand(applicationParams);
-    console.log("Application Params:", applicationParams);
+    const applicationData = await client.send(
+      new QueryCommand(applicationParams)
+    );
 
-    const applicationData = await client.send(applicationCommand);
-    console.log("Application Data:", JSON.stringify(applicationData, null, 2));
-
-    // Safely extract entryId values
+    // Extract entryIds from application data
     const applicationIds = applicationData.Items.map(
       (item) => item.entryId?.S
-    ).filter((entryId) => entryId !== undefined); // Remove undefined values
-    console.log("Application IDs:", applicationIds);
+    ).filter((entryId) => entryId !== undefined);
 
-    if (applicationIds.length === 0) {
+    // Deduplicate entryIds (in case multiple applications have the same entryId)
+    const uniqueEntryIds = [...new Set(applicationIds)];
+
+    if (uniqueEntryIds.length === 0) {
       return res.status(200).json({ offers: [] });
     }
 
     let offers = [];
 
-    for (const entryId of applicationIds) {
+    // Loop over the unique entryIds and fetch offers
+    for (const entryId of uniqueEntryIds) {
       const offerParams = {
         TableName: "Talopakettiin-API",
         IndexName: "entryType-entryId-index",
@@ -186,33 +187,23 @@ export const getOffersForUser = async (req, res) => {
         },
       };
 
-      const offerCommand = new QueryCommand(offerParams);
-      const offerData = await client.send(offerCommand);
-      console.log("Offer Params:", offerParams);
-      console.log("Offer Data:", JSON.stringify(offerData, null, 2));
+      const offerData = await client.send(new QueryCommand(offerParams));
 
+      // If offers are found, map and add them to the offers array
       if (offerData.Items?.length > 0) {
-        // Map all attributes for each item
-        const mappedOffers = offerData.Items.map((item) => {
-          const attributes = {};
-          for (const key in item) {
-            // Dynamically handle both S (string) and N (number) types
-            attributes[key] = item[key]?.S || item[key]?.N || null;
-          }
-          return attributes;
-        });
+        const mappedOffers = offerData.Items.map((item) => unmarshall(item));
         offers.push(...mappedOffers);
-      } else {
-        console.log(`No offers found for entryId: ${entryId}`);
       }
     }
 
-    const cleanedEntry = JSON.stringify(offers, null, 2);
+    // Optional: Deduplicate offers based on offer ID
+    const dedupedOffers = Array.from(
+      new Map(offers.map((offer) => [offer.id, offer])).values()
+    );
 
-    console.log("Final Offers:", JSON.stringify(offers, null, 2));
     res.status(200).json({
       success: true,
-      data: { offers }, // Return offers in the expected format
+      data: { offers: dedupedOffers },
     });
   } catch (error) {
     console.error("Error fetching offers for user:", error);

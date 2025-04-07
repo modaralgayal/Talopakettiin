@@ -2,7 +2,7 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 
 export const CustomerHeader = ({ handleLogout }) => {
-  console.log("This is the Customer Header")
+  console.log("This is the Customer Header");
 
   return (
     <header className="bg-gray-600 py-4 shadow-md">
@@ -20,6 +20,7 @@ export const CustomerHeader = ({ handleLogout }) => {
             { name: "Contact Us", path: "/contact" },
             { name: "Form page", path: "/formpage" },
             { name: "View My Applications", path: "/viewmyapplications" },
+            { name: "View My Offers", path: "/viewmyoffers" },
           ].map((item) => (
             <li key={item.name} className="group">
               <NavLink

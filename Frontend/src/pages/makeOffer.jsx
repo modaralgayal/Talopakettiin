@@ -4,55 +4,49 @@ import { useOfferContext } from "../context/offerContext";
 import { makeOfferToUser } from "../controllers/formController";
 
 const MakeOffer = () => {
-  const { offerData, updateOfferData } = useOfferContext(); // Access offer data from context
+  const { offerData, updateOfferData } = useOfferContext();
   const navigate = useNavigate();
 
-  // Initialize state from the offerData
   const [price, setPrice] = useState(offerData.price || "");
   const [firmName, setFirmName] = useState(offerData.firmName || "");
   const [description, setDescription] = useState(offerData.description || "");
-  const [providerEmail, setProviderEmail] = useState(
-    offerData.providerEmail || ""
-  );
-  const [pdfFile, setPdfFile] = useState(null); // New: PDF file state
+  const [providerEmail, setProviderEmail] = useState(offerData.providerEmail || "");
+  const [pdfFile, setPdfFile] = useState(null); // PDF file state
 
   useEffect(() => {
     setPrice(offerData.price || "");
     setFirmName(offerData.firmName || "");
     setDescription(offerData.description || "");
     setProviderEmail(offerData.providerEmail || "");
-    console.log(
-      "This is the application we are offering to: ",
-      offerData.formData
-    );
+    console.log("This is the application we are offering to:", offerData.formData);
   }, [offerData]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-  
+
     const updatedOffer = {
       ...offerData,
       price,
       firmName,
       description,
       providerEmail,
-      pdfFile, // include if you plan to support file upload later
     };
-  
+
     updateOfferData(updatedOffer);
-  
-    makeOfferToUser(updatedOffer, offerData.userId, offerData.entryId)
+
+    console.log("Sending PDF file:", pdfFile);
+
+    makeOfferToUser(updatedOffer, offerData.userId, offerData.entryId, pdfFile) // ✅ Pass file separately
       .then((res) => {
         console.log("Offer successfully submitted:", res);
-        resetOfferData();
-        //navigate("/confirmation");
+        // Optionally reset form here
+        // navigate("/confirmation");
       })
       .catch((error) => {
         console.error("Failed to submit offer:", error);
         alert("There was an error submitting your offer. Please try again.");
       });
   };
-  
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -88,10 +82,7 @@ const MakeOffer = () => {
 
           {/* Firm Name Input */}
           <div>
-            <label
-              htmlFor="firmName"
-              className="block text-left font-medium mb-2"
-            >
+            <label htmlFor="firmName" className="block text-left font-medium mb-2">
               Firm Name
             </label>
             <input
@@ -107,10 +98,7 @@ const MakeOffer = () => {
 
           {/* Description Input */}
           <div>
-            <label
-              htmlFor="description"
-              className="block text-left font-medium mb-2"
-            >
+            <label htmlFor="description" className="block text-left font-medium mb-2">
               Description
             </label>
             <textarea
@@ -126,10 +114,7 @@ const MakeOffer = () => {
 
           {/* Provider Email Input */}
           <div>
-            <label
-              htmlFor="providerEmail"
-              className="block text-left font-medium mb-2"
-            >
+            <label htmlFor="providerEmail" className="block text-left font-medium mb-2">
               Provider Email
             </label>
             <input
@@ -170,6 +155,7 @@ const MakeOffer = () => {
               className="hidden"
             />
           </div>
+
           {/* Submit Button */}
           <button
             type="submit"

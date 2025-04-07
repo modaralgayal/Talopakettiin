@@ -15,6 +15,7 @@ import { Header } from "./headers/Header";
 import { ProviderHeader } from "./headers/providerHeader";
 import { CustomerHeader } from "./headers/customerHeader";
 import MakeOffer from "./pages/makeOffer";
+import GetOffers from "./pages/getOffers";
 
 function App() {
   const [userType, setUserType] = useState(null);
@@ -83,6 +84,7 @@ function App() {
               element={<ViewCustomerApplications />}
             />
             <Route path="/makeoffer/" element={<MakeOffer />} />
+            <Route path="/viewmyoffers/" element={<GetOffers />} />
           </Routes>
         </main>
       </div>
