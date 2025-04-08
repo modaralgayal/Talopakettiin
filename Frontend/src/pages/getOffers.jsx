@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getOffersForUser } from "../controllers/formController";
+import { getOffersForUser, acceptOffer } from "../controllers/formController";
 
 const GetOffers = () => {
   const [offers, setOffers] = useState([]);
@@ -9,7 +9,7 @@ const GetOffers = () => {
   useEffect(() => {
     getOffersForUser()
       .then((res) => {
-        //console.log("This is the response: ", res);
+        console.log("This is the response: ", res);
         setOffers(res.data?.offers || []);
       })
       .catch((err) => {
@@ -35,6 +35,19 @@ const GetOffers = () => {
       }
     } else {
       alert("No PDF available.");
+    }
+  };
+
+  const handleAcceptOffer = async (entryId, id, emailAddress) => {
+    console.log("Offer accepted:", entryId, id, emailAddress);
+
+    try {
+      const result = await acceptOffer(id, entryId, emailAddress); // Call the backend API to accept the offer
+      alert(result.message); // Display the message or do further UI updates based on the response
+      // Optionally, update the UI to reflect the accepted offer, e.g., change the offer status in the UI.
+    } catch (error) {
+      alert("Failed to accept the offer. Please try again.");
+      console.error("Error accepting offer:", error);
     }
   };
 
@@ -66,7 +79,10 @@ const GetOffers = () => {
                   <h3 className="text-lg font-semibold text-gray-800 mb-1">
                     {offer.offerData?.firmName}
                   </h3>
-
+                  <p className="text-gray-600 mb-2">
+                    <span className="font-medium">Provider:</span>{" "}
+                    {offer.offerData?.providerEmail}
+                  </p>
                   <p className="text-gray-700">
                     {offer.offerData?.description}
                   </p>
@@ -79,8 +95,8 @@ const GetOffers = () => {
                 </div>
               </div>
 
-              {offer.offerData.pdfFile && (
-                <div className="mt-4 flex justify-end">
+              <div className="mt-4 flex justify-end space-x-3">
+                {offer.offerData.pdfFile && (
                   <button
                     onClick={() => handleViewPdf(offer.offerData.pdfFile)}
                     className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center"
@@ -101,8 +117,34 @@ const GetOffers = () => {
                     </svg>
                     View Proposal
                   </button>
-                </div>
-              )}
+                )}
+                <button
+                  onClick={() =>
+                    handleAcceptOffer(
+                      offer.entryId,
+                      offer.id,
+                      offer.offerData?.providerEmail
+                    )
+                  } // Pass the offer object to accept the offer
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center"
+                >
+                  <svg
+                    className="w-4 h-4 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  Accept Offer
+                </button>
+              </div>
             </div>
           ))}
         </div>

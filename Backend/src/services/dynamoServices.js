@@ -273,17 +273,33 @@ export const acceptOffer = async (req, res) => {
       .status(403)
       .json({ error: "Access denied: User is not a customer" });
   }
+
   try {
     const dynamoDBClient = await initDynamoDBClient();
-    const { id, entryId, "Email Address": emailAddress } = req.body;
+    const { id, entryId } = req.body;
+    const secrets = await getSecrets();
 
-    console.log("Request Body: ", req.body);
+    console.log("Request Body:", req.body);
 
     if (!id || !entryId) {
       throw new Error("Missing 'id' or 'entryId' in request body.");
     }
 
-    // Step 1: Update Offer Status to "Accepted"
+    if (!req.user.userId) {
+      throw new Error("no current userId");
+    }
+
+    // Step 1: Fetch Provider's Email using Cognito
+    console.log("Fetching provider's email");
+    const emailAddress = req.body.emailAddress
+    console.log("Email fetched: ", emailAddress)
+
+
+    if (!emailAddress) {
+      throw new Error("Provider email not found.");
+    }
+
+    // Step 2: Update Offer Status to "Accepted"
     const offerUpdateParams = {
       TableName: "Talopakettiin-API",
       Key: { id: { S: id } },
@@ -296,10 +312,10 @@ export const acceptOffer = async (req, res) => {
     console.log("Updating Offer:", offerUpdateParams);
     await dynamoDBClient.send(new UpdateItemCommand(offerUpdateParams));
 
-    // Step 2: Query Applications using entryType-entryId GSI
+    // Step 3: Query Applications using entryType-entryId GSI
     const queryParams = {
       TableName: "Talopakettiin-API",
-      IndexName: "entryType-entryId-index", // Your GSI name
+      IndexName: "entryType-entryId-index",
       KeyConditionExpression: "entryType = :entryType AND entryId = :entryId",
       ExpressionAttributeValues: {
         ":entryType": { S: "application" },
@@ -315,7 +331,7 @@ export const acceptOffer = async (req, res) => {
 
     console.log("Applications Found:", applications.length);
 
-    // Step 3: Batch Update Application Statuses
+    // Step 4: Batch Update Application Statuses
     for (const app of applications) {
       const updateParams = {
         TableName: "Talopakettiin-API",
@@ -329,8 +345,7 @@ export const acceptOffer = async (req, res) => {
       await dynamoDBClient.send(new UpdateItemCommand(updateParams));
     }
 
-    // Step 4: Send Email Notification
-    const secrets = await getSecrets();
+    // Step 5: Send Email Notification
     const transporter = nodemailer.createTransport({
       host: "mail.smtp2go.com",
       port: 587,

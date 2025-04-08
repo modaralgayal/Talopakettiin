@@ -72,20 +72,24 @@ export const getUserOffers = async () => {
 };
 
 // Accept Given Offer
-export const acceptOffer = async (offerId) => {
+export const acceptOffer = async (id, entryId, emailAddress) => {
   try {
     const response = await axios.put(
       `${API_URL}/accept-given-offer`,
-      { offerId },
+      { id, entryId, emailAddress },
       {
-        withCredentials: true, // Send cookies automatically
+        withCredentials: true, // Include session cookie if needed for user authentication
       }
     );
-    return response.data;
+
+    console.log("Offer Accepted:", response.data);
+    return response.data; // You can handle success here, e.g., showing a success message.
   } catch (error) {
+    console.error("Error accepting offer:", error);
     throw error.response?.data || error.message;
   }
 };
+
 // Make Offer to User with PDF support
 export const makeOfferToUser = async (offerData, userId, entryId, pdfFile) => {
   try {
