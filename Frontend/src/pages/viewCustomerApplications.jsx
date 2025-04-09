@@ -2,13 +2,15 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAllEntries } from "../controllers/formController";
 import { useOfferContext } from "../context/offerContext";
+
 export const ViewCustomerApplications = () => {
   const [applications, setApplications] = useState([]);
   const [openedAppIndex, setOpenedAppIndex] = useState(null);
+  const [citySort, setCitySort] = useState(""); // Text input for city sort
+  const [provinceSort, setProvinceSort] = useState(""); // Text input for province sort
   const navigate = useNavigate();
 
-  // Access the OfferContext
-  const { updateOfferData } = useOfferContext(); // Get the function to update offer data
+  const { updateOfferData } = useOfferContext();
 
   useEffect(() => {
     getAllEntries()
@@ -37,109 +39,79 @@ export const ViewCustomerApplications = () => {
     return result;
   };
 
-  const groupedSections = [
-    {
-      title: "Perustiedot",
-      fields: [
-        "kaupunki",
-        "maakunta",
-        "budjetti",
-        "talonKoko",
-        "makuuhuoneidenMaara",
-        "kodinhoitohuone",
-        "arkieteinen",
-        "terassi",
-        "autokatos",
-        "autotalli",
-      ],
-    },
-    {
-      title: "Ulkopuoli",
-      fields: [
-        "talonMateriaali",
-        "talonMateriaaliMuu",
-        "vesikatto",
-        "vesikattoMuu",
-      ],
-    },
-    {
-      title: "Sisäpuoli",
-      fields: [
-        "lattia",
-        "lattiaDetails",
-        "valiseinat",
-        "valiseinatDetails",
-        "sisakatto",
-        "sisakattoDetails",
-      ],
-    },
-    {
-      title: "Lämmitys",
-      fields: [
-        "lämmitysmuoto",
-        "muuLämmitysmuoto",
-        "takka",
-        "varaavuus",
-        "leivinuuni",
-        "muuTieto",
-      ],
-    },
-    {
-      title: "Talotekniikka",
-      fields: [
-        "minuaKiinnostaa",
-        "muuMinuaKiinnostaa",
-        "haluanTarjous",
-        "muuHaluanTarjous",
-      ],
-    },
-    { title: "Omat Tiedot", fields: ["olen", "vapaamuotoisiaLisatietoja"] },
-  ];
+  const sortedApplications = [...applications].sort((a, b) => {
+    const aFormData = a.formData || {};
+    const bFormData = b.formData || {};
 
-  const renderFormDataRows = (formData) => {
-    const entries = Object.entries(formData);
-    return entries.map(([key, value]) => {
-      const label = key
-        .split(/(?=[A-Z])/)
-        .join(" ")
-        .replace(/^\w/, (c) => c.toUpperCase());
+    const aCity = parseValue(aFormData.kaupunki) || "";
+    const bCity = parseValue(bFormData.kaupunki) || "";
+    const aProvince = parseValue(aFormData.maakunta) || "";
+    const bProvince = parseValue(bFormData.maakunta) || "";
 
-      return (
-        <div
-          key={key}
-          className="flex justify-between items-center py-2 border-b"
-        >
-          <span className="font-medium">{label}:</span>
-          <span className="text-gray-700">{value}</span>
-        </div>
-      );
-    });
-  };
+    // Convert both values and inputs to lowercase to make substring matching case-insensitive
+    const aCityLower = aCity.toLowerCase();
+    const bCityLower = bCity.toLowerCase();
+    const aProvinceLower = aProvince.toLowerCase();
+    const bProvinceLower = bProvince.toLowerCase();
+
+    const citySearch = citySort.toLowerCase();
+    const provinceSearch = provinceSort.toLowerCase();
+
+    // Helper function to check if a string contains the substring (city or province)
+    const matchSubstring = (value, search) => {
+      return value.includes(search);
+    };
+
+    // Sorting logic for both city and province, if both are provided
+    if (citySort && provinceSort) {
+      const cityMatchA = matchSubstring(aCityLower, citySearch);
+      const cityMatchB = matchSubstring(bCityLower, citySearch);
+      if (cityMatchA !== cityMatchB) {
+        return cityMatchA ? -1 : 1; // Give priority to matched city
+      }
+
+      const provinceMatchA = matchSubstring(aProvinceLower, provinceSearch);
+      const provinceMatchB = matchSubstring(bProvinceLower, provinceSearch);
+      return provinceMatchA === provinceMatchB ? 0 : provinceMatchA ? -1 : 1; // Then match province if city match is the same
+    }
+
+    // Sorting by city alone if province sort is not specified
+    else if (citySort) {
+      const cityMatchA = matchSubstring(aCityLower, citySearch);
+      const cityMatchB = matchSubstring(bCityLower, citySearch);
+      return cityMatchA === cityMatchB ? 0 : cityMatchA ? -1 : 1; // Give priority to matched city
+    }
+
+    // Sorting by province alone if city sort is not specified
+    else if (provinceSort) {
+      const provinceMatchA = matchSubstring(aProvinceLower, provinceSearch);
+      const provinceMatchB = matchSubstring(bProvinceLower, provinceSearch);
+      return provinceMatchA === provinceMatchB ? 0 : provinceMatchA ? -1 : 1; // Give priority to matched province
+    }
+
+    // Default: no sorting
+    return 0;
+  });
 
   const handleToggle = (index) => {
-    if (openedAppIndex === index) {
-      setOpenedAppIndex(null);
-    } else {
-      setOpenedAppIndex(index);
-    }
+    setOpenedAppIndex(index === openedAppIndex ? null : index);
   };
 
   const handleOffer = (userId, entryId, formData) => {
-    // Update the context with the selected offer data
+    updateOfferData(userId, entryId, formData);
+    navigate("/offer");
+  };
 
-    console.log("Passing form data: ", formData);
-    updateOfferData({
-      userId,
-      entryId,
-      price: "",
-      firmName: "",
-      description: "",
-      providerEmail: "",
-      formData, // Store the form data for the current application
-    });
+  // Handle changes to the city sort input
+  const handleCitySortChange = (e) => {
+    setCitySort(e.target.value); // Update citySort based on text input
+    setProvinceSort(""); // Reset province sort
+  };
 
-    // Navigate to the MakeOffer page
-    navigate("/makeoffer");
+  // Handle changes to the province sort input
+  const handleProvinceSortChange = (e) => {
+    setProvinceSort(e.target.value); // Update provinceSort based on text input
+    setCitySort(""); // Reset city sort
   };
 
   return (
@@ -149,11 +121,47 @@ export const ViewCustomerApplications = () => {
           View Customer Applications
         </h1>
 
-        {applications.length === 0 ? (
+        {/* Sort controls */}
+        <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label
+              htmlFor="citySort"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Sort by City (Kaupunki)
+            </label>
+            <input
+              id="citySort"
+              type="text"
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={citySort}
+              onChange={handleCitySortChange} // Use the updated handler
+              placeholder="Enter city"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="provinceSort"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Sort by Province (Maakunta)
+            </label>
+            <input
+              id="provinceSort"
+              type="text"
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={provinceSort}
+              onChange={handleProvinceSortChange} // Use the updated handler
+              placeholder="Enter province"
+            />
+          </div>
+        </div>
+
+        {sortedApplications.length === 0 ? (
           <p className="text-gray-600">No applications to display yet.</p>
         ) : (
           <div>
-            {applications.map((app, index) => {
+            {sortedApplications.map((app, index) => {
               const formData = filterEmptyValues(app.formData);
               const city = formData.kaupunki || `Application ${index + 1}`;
 
@@ -166,10 +174,15 @@ export const ViewCustomerApplications = () => {
                     <div className="text-left">
                       <h2 className="text-lg font-semibold">{city}</h2>
                       <p className="text-gray-600">Status: {app.status}</p>
+                      {formData.maakunta && (
+                        <p className="text-gray-600">
+                          Province: {formData.maakunta}
+                        </p>
+                      )}
                     </div>
                     <button
                       onClick={(e) => {
-                        e.stopPropagation(); // Prevent collapse toggle
+                        e.stopPropagation();
                         handleOffer(app.userId, app.entryId, formData);
                       }}
                       className="ml-4 px-4 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
@@ -178,41 +191,12 @@ export const ViewCustomerApplications = () => {
                     </button>
                   </div>
 
-                  <div
-                    id={`appData-${index}`}
-                    className={`bg-gray-100 p-4 rounded-lg mt-2 text-left transition-all ${
-                      openedAppIndex === index ? "block" : "hidden"
-                    }`}
-                  >
-                    <h3 className="font-medium mb-2">Form Data:</h3>
-                    <div className="space-y-4">
-                      {groupedSections.map((section) => {
-                        const sectionFields = section.fields.reduce(
-                          (acc, field) => {
-                            if (formData[field]) {
-                              acc[field] = formData[field];
-                            }
-                            return acc;
-                          },
-                          {}
-                        );
-
-                        if (Object.keys(sectionFields).length > 0) {
-                          return (
-                            <div key={section.title}>
-                              <h4 className="text-xl font-semibold">
-                                {section.title}
-                              </h4>
-                              <div className="space-y-2">
-                                {renderFormDataRows(sectionFields)}
-                              </div>
-                            </div>
-                          );
-                        }
-                        return null;
-                      })}
+                  {/* Application details */}
+                  {openedAppIndex === index && (
+                    <div className="mt-4 p-4 bg-gray-100 rounded-lg">
+                      {/* Here you can show the application details */}
                     </div>
-                  </div>
+                  )}
                 </div>
               );
             })}
