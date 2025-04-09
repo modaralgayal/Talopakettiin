@@ -24,7 +24,6 @@ export const CustomerSignIn = ({ setUserType }) => { // Accept setUserType as a 
     try {
       const response = await signIn(username, password, userType);
       showMessage(response.message, "success");
-      localStorage.setItem("userType", "customer"); // Store userType in localStorage
       setUserType("customer"); // Set userType in App state
     } catch (error) {
       const errorMessage =
@@ -43,7 +42,6 @@ export const CustomerSignIn = ({ setUserType }) => { // Accept setUserType as a 
     try {
       const response = await signup(username, password, email, userType);
       showMessage("User Registered Successfully!", "success");
-      localStorage.setItem("userType", "customer"); // Store userType in localStorage
       setUserType("customer"); // Set userType in App state
     } catch (error) {
       const errorMessage =

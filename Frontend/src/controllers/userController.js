@@ -49,7 +49,6 @@ export const signIn = async (username, password, userType) => {
       { username, password, userType },
       { withCredentials: true }
     );
-    localStorage.setItem("userType", userType);
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
@@ -99,19 +98,20 @@ export const changeUserPassword = async (newPassword, token) => {
   }
 };
 
-// Validate Token
-export const validateToken = async (token) => {
+// Validate token
+export const validateToken = async () => {
   try {
     const response = await axios.post(
       `${API_URL}/validate-token`,
       {},
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        withCredentials: true,
-      }
+      { withCredentials: true }
     );
-    return response.data;
+    return {
+      isValid: response.data.success,
+      userType: response.data.userType,
+    };
   } catch (error) {
-    return { success: false };
+    console.log("Token validation failed:", error.message);
+    return { isValid: false };
   }
 };

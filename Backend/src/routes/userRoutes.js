@@ -31,6 +31,7 @@ router.post(
 router.post("/validate-token", authenticateJWT, (req, res) => {
   res.status(200).json({
     success: true,
+    userType: req.user.usertype,
   });
 });
 
