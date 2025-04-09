@@ -18,6 +18,7 @@ const allowedOrigins = [
   "https://talopakettiin.fi",
   "talopakettiin.fi",
   "http://localhost:5173",
+  "https://localhost:8001",
 ];
 
 // Use CORS middleware
@@ -25,6 +26,7 @@ const allowedOrigins = [
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
+//app.use(express.static('dist'))
 
 app.set("trust proxy", true);
 app.use(

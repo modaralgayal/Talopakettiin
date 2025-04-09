@@ -42,9 +42,15 @@ const GetOffers = () => {
     console.log("Offer accepted:", entryId, id, emailAddress);
 
     try {
-      const result = await acceptOffer(id, entryId, emailAddress); // Call the backend API to accept the offer
-      alert(result.message); // Display the message or do further UI updates based on the response
-      // Optionally, update the UI to reflect the accepted offer, e.g., change the offer status in the UI.
+      const result = await acceptOffer(id, entryId, emailAddress);
+      alert(result.message);
+
+      // Update the offer status locally in the UI
+      setOffers((prevOffers) =>
+        prevOffers.map((offer) =>
+          offer.id === id ? { ...offer, status: "Accepted" } : offer
+        )
+      );
     } catch (error) {
       alert("Failed to accept the offer. Please try again.");
       console.error("Error accepting offer:", error);
@@ -118,32 +124,53 @@ const GetOffers = () => {
                     View Proposal
                   </button>
                 )}
-                <button
-                  onClick={() =>
-                    handleAcceptOffer(
-                      offer.entryId,
-                      offer.id,
-                      offer.offerData?.providerEmail
-                    )
-                  } // Pass the offer object to accept the offer
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center"
-                >
-                  <svg
-                    className="w-4 h-4 mr-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+
+                {offer.status === "Accepted" ? (
+                  <span className="px-4 py-2 bg-yellow-100 text-yellow-800 rounded-lg font-medium flex items-center">
+                    <svg
+                      className="w-4 h-4 mr-2 text-yellow-600"
+                      fill="none"
+                      stroke="currentColor"
                       strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                  Accept Offer
-                </button>
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Offer Accepted
+                  </span>
+                ) : (
+                  <button
+                    onClick={() =>
+                      handleAcceptOffer(
+                        offer.entryId,
+                        offer.id,
+                        offer.offerData?.providerEmail
+                      )
+                    }
+                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center"
+                  >
+                    <svg
+                      className="w-4 h-4 mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Accept Offer
+                  </button>
+                )}
               </div>
             </div>
           ))}

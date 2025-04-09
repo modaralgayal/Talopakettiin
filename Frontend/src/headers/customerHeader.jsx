@@ -1,5 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
+import blackLogo from "./talopakettiinlogovariants-black.png";
 
 export const CustomerHeader = ({ handleLogout }) => {
   console.log("This is the Customer Header");
@@ -8,9 +9,13 @@ export const CustomerHeader = ({ handleLogout }) => {
     <header className="bg-gray-600 py-4 shadow-md">
       <nav className="max-w-7xl mx-auto px-6 flex justify-between items-center">
         {/* 🚀 Logo Placeholder */}
-        <div className="w-32 h-12 bg-gray-400 flex items-center justify-center rounded-md text-white font-bold">
-          LOGO
-        </div>
+        <NavLink to="/Home">
+          <img
+            src={blackLogo}
+            alt="Logo"
+            className="w-32 h-auto object-contain hover:opacity-80 transition-opacity"
+          />
+        </NavLink>
 
         {/* Navigation Links */}
         <ul className="flex space-x-8">

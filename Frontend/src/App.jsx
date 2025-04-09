@@ -17,19 +17,25 @@ import { CustomerHeader } from "./headers/customerHeader";
 import MakeOffer from "./pages/makeOffer";
 import GetOffers from "./pages/getOffers";
 // Auth utils
-import { validateToken } from "./controllers/userController";
+import { validateToken, logOut } from "./controllers/userController";
 
 function App() {
   const [userType, setUserType] = useState(null);
   const [formData, setFormData] = useState();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    console.log("User logged out");
-    setUserType(null);
-    navigate("/");
+  const handleLogout = async () => {
+    try {
+      await logOut(); // Clears the cookie on the backend
+      console.log("User logged out");
+      setUserType(null); // Clears state
+      navigate("/"); // Redirects to homepage
+    } catch (error) {
+      navigate("/"); // Redirects to homepage
+      setUserType(null); // Clears state
+      console.error("Logout failed:", error);
+    }
   };
-
   useEffect(() => {
     const checkSession = async () => {
       const { isValid, userType } = await validateToken();
@@ -73,10 +79,7 @@ function App() {
           <Route
             path="/formpage"
             element={
-              <ApplicationForm
-                formData={formData}
-                setFormData={setFormData}
-              />
+              <ApplicationForm formData={formData} setFormData={setFormData} />
             }
           />
           <Route path="/confirmuser" element={<ConfirmUser />} />

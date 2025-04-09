@@ -309,26 +309,28 @@ export const signIn = async (req, res) => {
 
 export const logOut = (req, res) => {
   console.log("Logging out");
+
   try {
-    res.cookie("token", "", {
+    const isLocalhost = req.headers.origin?.includes("localhost");
+
+    const cookieOptions = {
       expires: new Date(0),
       httpOnly: true,
       secure: true,
-      sameSite: "None",
-      domain: "talopakettiin.fi",
-    });
+      sameSite: "None", // Required when using cross-site cookies with Secure
+    };
 
-    res.cookie("usertype", "", {
-      expires: new Date(0),
-      httpOnly: true,
-      secure: true,
-      sameSite: "None",
-      domain: "talopakettiin.fi",
-    });
+    if (!isLocalhost) {
+      // Only set the domain if it's not localhost
+      cookieOptions.domain = "talopakettiin.fi";
+    }
 
-    res.redirect("https://talopakettiin.fi");
+    res.cookie("token", "", cookieOptions);
+    res.cookie("usertype", "", cookieOptions);
+
+    // ✅ Return a proper response with CORS compatibility
+    res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
-    console.log("There was an error in logging out: ", error.message);
     console.error("Error in logOut:", error);
     res.status(400).json({ error: error.message });
   }
