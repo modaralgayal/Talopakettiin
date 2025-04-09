@@ -9,7 +9,7 @@ export const CustomerHeader = ({ handleLogout }) => {
     <header className="bg-gray-600 py-4 shadow-md">
       <nav className="max-w-7xl mx-auto px-6 flex justify-between items-center">
         {/* 🚀 Logo Placeholder */}
-        <NavLink to="/Home">
+        <NavLink to="/">
           <img
             src={blackLogo}
             alt="Logo"

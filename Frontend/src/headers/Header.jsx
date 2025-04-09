@@ -10,7 +10,7 @@ export const Header = () => {
       <nav className="max-w-7xl mx-auto px-6 flex justify-center items-center">
         <div className="flex items-center space-x-12">
           {/* 🖼 Logo Image - click to go Home */}
-          <NavLink to="/Home">
+          <NavLink to="/">
             <img
               src={blackLogo}
               alt="Logo"
