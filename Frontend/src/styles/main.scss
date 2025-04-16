@@ -1,0 +1,45 @@
+::-webkit-scrollbar {
+  display: none;
+}
+body {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+::selection {
+  background-color: unset !important;
+}
+html {
+  scroll-behavior: smooth;
+}
+
+.heading-container {
+  text-align: center;
+  padding: 60px 20px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 1200px;
+  margin: 40px auto;
+  &__content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  &__title {
+    text-align: center;
+    background-image: url(https://raw.githubusercontent.com/hudsonmarinho/header-and-footer-parallax-effect/master/assets/images/bg-header.jpg);
+    background-size: cover;
+    background-position: top 20%;
+    color: transparent;
+    font-size: 3rem;
+    margin-bottom: 2rem;
+    -webkit-background-clip: text;
+    background-clip: text;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+  }
+  &__text {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    color: #4a5568;
+  }
+}

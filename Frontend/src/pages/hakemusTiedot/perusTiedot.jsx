@@ -31,18 +31,18 @@ export const PerustiedotForm = ({ formData, setFormData }) => {
     autokatos: false,
     autotalli: false,
   };
-  
+
   const [showDetails, setShowDetails] = useState(initialDetailsState);
 
   // Handle radio button changes
   const handleRadioChange = (field, value) => {
-    setFormData({ 
-      ...formData, 
+    setFormData({
+      ...formData,
       [field]: value,
       // Clear details if "Ei" is selected
-      ...(value === "Ei" && { [`${field}Details`]: "" })
+      ...(value === "Ei" && { [`${field}Details`]: "" }),
     });
-    setShowDetails(prev => ({ ...prev, [field]: value === "Kyllä" }));
+    setShowDetails((prev) => ({ ...prev, [field]: value === "Kyllä" }));
   };
 
   // Handle number inputs with validation
@@ -122,7 +122,9 @@ export const PerustiedotForm = ({ formData, setFormData }) => {
 
       {/* Budget Range */}
       <div>
-        <label className="block text-lg font-medium text-gray-700">Budjetti (€)</label>
+        <label className="block text-lg font-medium text-gray-700">
+          Budjetti (€)
+        </label>
         <div className="flex gap-2">
           <input
             type="number"
@@ -131,6 +133,7 @@ export const PerustiedotForm = ({ formData, setFormData }) => {
             value={formData.minBudget ?? ""}
             onChange={(e) => handleNumberInput("minBudget", e.target.value)}
             min="0"
+            step={"1000"}
           />
           <input
             type="number"
@@ -139,13 +142,16 @@ export const PerustiedotForm = ({ formData, setFormData }) => {
             value={formData.maxBudget ?? ""}
             onChange={(e) => handleNumberInput("maxBudget", e.target.value)}
             min={formData.minBudget || "0"}
+            step={"1000"}
           />
         </div>
       </div>
 
       {/* House Size Range */}
       <div>
-        <label className="block text-lg font-medium text-gray-700">Talon Koko (m²)</label>
+        <label className="block text-lg font-medium text-gray-700">
+          Talon Koko (m²)
+        </label>
         <div className="flex gap-2">
           <input
             type="number"
@@ -154,6 +160,8 @@ export const PerustiedotForm = ({ formData, setFormData }) => {
             value={formData.minSize ?? ""}
             onChange={(e) => handleNumberInput("minSize", e.target.value)}
             min="0"
+            max={formData.maxSize || ""}
+            step={"5"}
           />
           <input
             type="number"
@@ -162,6 +170,7 @@ export const PerustiedotForm = ({ formData, setFormData }) => {
             value={formData.maxSize ?? ""}
             onChange={(e) => handleNumberInput("maxSize", e.target.value)}
             min={formData.minSize || "0"}
+            step={"5"}
           />
         </div>
       </div>
@@ -195,7 +204,9 @@ export const PerustiedotForm = ({ formData, setFormData }) => {
           <label className="block text-lg font-medium text-gray-700">
             {label}
             {!formData[field] && (
-              <span className="text-red-500 text-sm ml-2">Pakollinen kenttä</span>
+              <span className="text-red-500 text-sm ml-2">
+                Pakollinen kenttä
+              </span>
             )}
           </label>
           <div className="flex gap-4 mt-2">
@@ -220,7 +231,7 @@ export const PerustiedotForm = ({ formData, setFormData }) => {
               className="w-full mt-2 p-3 border rounded-lg"
               placeholder={`${label} - Lisätietoja`}
               value={formData[`${field}Details`] || ""}
-              onChange={(e) => 
+              onChange={(e) =>
                 handleTextInput(`${field}Details`, e.target.value)
               }
             />
@@ -234,7 +245,9 @@ export const PerustiedotForm = ({ formData, setFormData }) => {
           <label className="block text-lg font-medium text-gray-700">
             {label}
             {!formData[field] && (
-              <span className="text-red-500 text-sm ml-2">Pakollinen kenttä</span>
+              <span className="text-red-500 text-sm ml-2">
+                Pakollinen kenttä
+              </span>
             )}
           </label>
           <div className="flex gap-4 mt-2">
@@ -261,7 +274,7 @@ export const PerustiedotForm = ({ formData, setFormData }) => {
                   placeholder="Min koko (m²)"
                   className="w-1/2 p-3 border rounded-lg"
                   value={formData[`${field}Min`] ?? ""}
-                  onChange={(e) => 
+                  onChange={(e) =>
                     handleNumberInput(`${field}Min`, e.target.value)
                   }
                   min="0"
@@ -271,7 +284,7 @@ export const PerustiedotForm = ({ formData, setFormData }) => {
                   placeholder="Max koko (m²)"
                   className="w-1/2 p-3 border rounded-lg"
                   value={formData[`${field}Max`] ?? ""}
-                  onChange={(e) => 
+                  onChange={(e) =>
                     handleNumberInput(`${field}Max`, e.target.value)
                   }
                   min={formData[`${field}Min`] || "0"}
@@ -282,7 +295,7 @@ export const PerustiedotForm = ({ formData, setFormData }) => {
                 className="w-full mt-2 p-3 border rounded-lg"
                 placeholder={`${label} - Lisätietoja`}
                 value={formData[`${field}Details`] || ""}
-                onChange={(e) => 
+                onChange={(e) =>
                   handleTextInput(`${field}Details`, e.target.value)
                 }
               />

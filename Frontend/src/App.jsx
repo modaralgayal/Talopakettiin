@@ -11,71 +11,89 @@ import { ConfirmUser } from "./pages/confirmUserPage";
 import { MyApplications } from "./pages/viewMyApplications";
 import { ViewCustomerApplications } from "./pages/viewCustomerApplications";
 // Headers
-import { Header } from "./headers/Header";
-import { ProviderHeader } from "./headers/providerHeader";
-import { CustomerHeader } from "./headers/customerHeader";
+import Header from "./components/Header";
+// import { ProviderHeader } from "./components/Header/providerHeader";
+// import { CustomerHeader } from "./components/Header/customerHeader";
+// import MainMenu from "./components/MainMenu/MainMenu";
+
 import MakeOffer from "./pages/makeOffer";
 import GetOffers from "./pages/getOffers";
 // Auth utils
 import { validateToken, logOut } from "./controllers/userController";
+import { useDispatch } from "react-redux";
+import { setUserType } from "./redux/slices/userSlice";
+import { useAuth } from "./hooks/useAuth";
+
+import "./styles/main.scss";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 function App() {
-  const [userType, setUserType] = useState(null);
+  const dispatch = useDispatch();
+  const { handleLogout } = useAuth();
+
+  // const [userType, setUserType] = useState(null);
   const [formData, setFormData] = useState();
   const navigate = useNavigate();
 
-  const handleLogout = async () => {
-    try {
-      await logOut(); // Clears the cookie on the backend
-      console.log("User logged out");
-      setUserType(null); // Clears state
-      navigate("/"); // Redirects to homepage
-    } catch (error) {
-      navigate("/"); // Redirects to homepage
-      setUserType(null); // Clears state
-      console.error("Logout failed:", error);
-    }
-  };
+  //Fixed an issue where checkSession was triggered for unregistered users, causing errors.
   useEffect(() => {
     const checkSession = async () => {
+      const authStatus = JSON.parse(localStorage.getItem("authStatus"));
+      if (!authStatus) return;
       const { isValid, userType } = await validateToken();
 
       if (isValid) {
-        setUserType(userType);
+        dispatch(setUserType(userType));
       } else {
         handleLogout();
       }
     };
-
     checkSession();
+
     const interval = setInterval(checkSession, 60000);
 
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    AOS.init({
+      duration: 800,
+      easing: "ease-in-out",
+      once: true,
+    });
+  }, []);
+
   return (
     <div>
-      {userType === "customer" ? (
+      {/* {userType === "customer" ? (
         <CustomerHeader handleLogout={handleLogout} />
       ) : userType === "provider" ? (
         <ProviderHeader handleLogout={handleLogout} />
       ) : (
         <Header handleLogout={handleLogout} />
-      )}
+      )} */}
+      <Header />
 
-      <main>
+      <main data-aos="fade-up">
         <Routes>
           <Route path="/" element={<HomePage />} />
+
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactUsPage />} />
+          <Route path="/customersignin" element={<CustomerSignIn />} />
           <Route
+            path="/providersignin"
+            element={<ProviderSignIn setUserType={setUserType} />}
+          />
+          {/* <Route
             path="/customersignin"
             element={<CustomerSignIn setUserType={setUserType} />}
           />
           <Route
             path="/providersignin"
             element={<ProviderSignIn setUserType={setUserType} />}
-          />
+          /> */}
           <Route
             path="/formpage"
             element={

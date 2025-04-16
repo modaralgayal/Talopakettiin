@@ -1,0 +1,132 @@
+.menu {
+  display: none;
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background: rgba(0, 0, 0, 0.95);
+  z-index: 8;
+
+  &.open {
+    display: flex;
+  }
+  &__list {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    // gap: 20px;
+  }
+  &__item {
+    cursor: pointer;
+  }
+  &__link {
+    display: block;
+    color: #fafafa;
+    font-size: 24px;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+    filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.8));
+    // padding: 6px;
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+      // color: #222;
+    }
+
+    &.active {
+      background-color: rgba(255, 255, 255, 0.3);
+      // color: #000;
+    }
+  }
+}
+
+@media (min-width: 768px) {
+  .menu {
+    display: flex;
+    position: unset;
+    width: unset;
+    height: unset;
+    backdrop-filter: unset;
+    -webkit-backdrop-filter: unset;
+    background: unset;
+    z-index: unset;
+    &__list {
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+    }
+    &__item {
+      padding: 3px 12px;
+      margin: 3px;
+      &.auth-btn {
+        background-color: #ffe18f;
+        border-radius: 16px;
+        margin-left: 80px;
+        a {
+          color: #444 !important;
+          filter: unset;
+          font-weight: 600;
+        }
+        &:hover {
+          margin-left: 80px;
+        }
+      }
+      &:hover {
+        padding: 3px 12px;
+        margin: 3px;
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+      }
+    }
+    &__link {
+      font-size: 16px;
+      padding: 0;
+      border-radius: 0;
+      transition: unset;
+      &:hover {
+        background-color: unset;
+        color: #ffeec0;
+      }
+      &.active {
+        background-color: unset;
+        color: #ffe18f;
+      }
+    }
+  }
+}
+
+@media (min-width: 920px) {
+  .menu {
+    &__link {
+      font-size: 20px;
+    }
+  }
+}
+
+@media (min-width: 1150px) {
+  .menu {
+    &__link {
+      font-size: 24px;
+    }
+    &__item {
+      padding: 6px 12px;
+      margin: 6px;
+
+      &:hover {
+        padding: 6px 12px;
+        margin: 6px;
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+      }
+    }
+  }
+}

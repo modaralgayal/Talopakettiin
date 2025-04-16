@@ -1,8 +1,12 @@
 import React, { useState } from "react";
 import { signIn, signup } from "../controllers/userController";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
+import { useDispatch } from "react-redux";
+import { setUserType } from "../redux/slices/userSlice";
+export const CustomerSignIn = () => {
+  const dispatch = useDispatch();
 
-export const CustomerSignIn = ({ setUserType }) => { // Accept setUserType as a prop
+  // Accept setUserType as a prop
   const [isRegister, setIsRegister] = useState(false);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -23,8 +27,10 @@ export const CustomerSignIn = ({ setUserType }) => { // Accept setUserType as a 
     event.preventDefault();
     try {
       const response = await signIn(username, password, userType);
+      localStorage.setItem("authStatus", true);
       showMessage(response.message, "success");
-      setUserType("customer"); // Set userType in App state
+      dispatch(setUserType("customer"));
+      navigate("/");
     } catch (error) {
       const errorMessage =
         typeof error === "string" ? error : error.error || "Sign-in failed.";
@@ -41,8 +47,9 @@ export const CustomerSignIn = ({ setUserType }) => { // Accept setUserType as a 
 
     try {
       const response = await signup(username, password, email, userType);
+      localStorage.setItem("authStatus", true);
       showMessage("User Registered Successfully!", "success");
-      setUserType("customer"); // Set userType in App state
+      dispatch(setUserType("customer"));
     } catch (error) {
       const errorMessage =
         typeof error === "string"

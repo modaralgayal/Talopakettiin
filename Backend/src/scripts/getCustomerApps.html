@@ -3,251 +3,250 @@
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-  const applicationsList = document.getElementById("applicationsList");
+  document.addEventListener("DOMContentLoaded", function () {
+    const applicationsList = document.getElementById("applicationsList");
 
-  let applicationsData = [];
-  let criteria = {
-    city: "",
-    minBudget: 0,
-    maxBudget: 0,
-    minSize: 0,
-    maxSize: 0,
-  };
+    let applicationsData = [];
+    let criteria = {
+      city: "",
+      minBudget: 10000,
+      maxBudget: 5000000,
+      minSize: 0,
+      maxSize: 200,
+    };
 
-  // Fetch applications from the server
-  fetchApplications();
+    // Fetch applications from the server
+    fetchApplications();
 
-  function fetchApplications() {
-    const url = ajax_object.ajax_url + "?action=get_applications";
+    function fetchApplications() {
+      const url = ajax_object.ajax_url + "?action=get_applications";
 
-    fetch(url, {
-      method: "GET",
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success) {
-          applicationsData = data.data;
-          console.log("Applications fetched:", applicationsData);
-          renderApplications(applicationsData);
-        } else {
-          console.error("Error:", data.data.message);
-        }
+      fetch(url, {
+        method: "GET",
       })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  }
-
-  // Attach onChange listeners to inputs
-  function attachOnChangeListeners() {
-    const cityInput = document.querySelector(".wpf-kaupunki-sort");
-    const minBudgetInput = document.querySelector(
-      ".wpf-num-min-limit-budjetti-sort input"
-    );
-    const maxBudgetInput = document.querySelector(
-      ".wpf-num-max-limit-budjetti-sort input"
-    );
-    const minSizeInput = document.querySelector(
-      ".wpf-num-min-limit-talo-sort input"
-    );
-    const maxSizeInput = document.querySelector(
-      ".wpf-num-max-limit-talo-sort input"
-    );
-
-    if (cityInput) {
-      cityInput.addEventListener("input", handleInputChange);
-    }
-    if (minBudgetInput) {
-      minBudgetInput.addEventListener("input", handleInputChange);
-    }
-    if (maxBudgetInput) {
-      maxBudgetInput.addEventListener("input", handleInputChange);
-    }
-    if (minSizeInput) {
-      minSizeInput.addEventListener("input", handleInputChange);
-    }
-    if (maxSizeInput) {
-      maxSizeInput.addEventListener("input", handleInputChange);
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            applicationsData = data.data;
+            console.log("Applications fetched:", applicationsData);
+            renderApplications(applicationsData);
+          } else {
+            console.error("Error:", data.data.message);
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
     }
 
-    // Select the form by ID
-    const form = document.querySelector("#wpforms-2529");
+    // Attach onChange listeners to inputs
+    function attachOnChangeListeners() {
+      const cityInput = document.querySelector(".wpf-kaupunki-sort");
+      const minBudgetInput = document.querySelector(
+        ".wpf-num-min-limit-budjetti-sort input"
+      );
+      const maxBudgetInput = document.querySelector(
+        ".wpf-num-max-limit-budjetti-sort input"
+      );
+      const minSizeInput = document.querySelector(
+        ".wpf-num-min-limit-talo-sort input"
+      );
+      const maxSizeInput = document.querySelector(
+        ".wpf-num-max-limit-talo-sort input"
+      );
 
-    // Prevent form submission when pressing Enter
-    form.addEventListener("submit", function (e) {
-      e.preventDefault(); // Prevent form submission
-    });
-
-    // Prevent form submission when Enter key is pressed in input fields
-    form.addEventListener("keydown", function (e) {
-      if (e.key === "Enter") {
-        e.preventDefault(); // Prevent the form from being submitted
+      if (cityInput) {
+        cityInput.addEventListener("input", handleInputChange);
       }
-    });
-  }
+      if (minBudgetInput) {
+        minBudgetInput.addEventListener("input", handleInputChange);
+      }
+      if (maxBudgetInput) {
+        maxBudgetInput.addEventListener("input", handleInputChange);
+      }
+      if (minSizeInput) {
+        minSizeInput.addEventListener("input", handleInputChange);
+      }
+      if (maxSizeInput) {
+        maxSizeInput.addEventListener("input", handleInputChange);
+      }
 
-  // Handle input changes
-  function handleInputChange() {
-    console.log("Input changed");
+      // Select the form by ID
+      const form = document.querySelector("#wpforms-2529");
 
-    // Correctly select the input field within the city container
-    const cityInput = document.querySelector(".wpf-kaupunki-sort input");
-    console.log("City input:", cityInput); // Check if we're selecting the correct input
-    criteria.city = cityInput?.value || ""; // Capture the city input value
-
-    // Get values from other fields
-    criteria.minBudget =
-      parseInt(
-        document.querySelector(".wpf-num-min-limit-budjetti-sort input")
-          ?.value,
-        10
-      ) || 0;
-    criteria.maxBudget =
-      parseInt(
-        document.querySelector(".wpf-num-max-limit-budjetti-sort input")
-          ?.value,
-        10
-      ) || 0;
-    criteria.minSize =
-      parseInt(
-        document.querySelector(".wpf-num-min-limit-talo-sort input")?.value,
-        10
-      ) || 0;
-    criteria.maxSize =
-      parseInt(
-        document.querySelector(".wpf-num-max-limit-talo-sort input")?.value,
-        10
-      ) || 0;
-
-    console.log("Updated criteria:", criteria); // Log to check if criteria are updated correctly
-
-    handleSort();
-  }
-
-  // Render applications
-  function renderApplications(applications) {
-    console.log("Rendering applications:", applications);
-
-    applicationsList.innerHTML = "";
-
-    applications.forEach((application) => {
-      const listItem = document.createElement("li");
-      listItem.classList.add("application-item");
-
-      // Get the city name from the application
-      const cityName = application.fields.Sijainti || "Unknown City";
-
-      const title = document.createElement("button");
-      title.classList.add("application-title");
-      title.textContent = `${cityName}`; // Use the city name as the title
-      listItem.appendChild(title);
-
-      const makeOfferButton = document.createElement("button");
-      makeOfferButton.classList.add("make-offer-button");
-      makeOfferButton.textContent = "Make Offer";
-      makeOfferButton.addEventListener("click", () => {
-        redirectToOfferForm(application.entryId);
+      // Prevent form submission when pressing Enter
+      form.addEventListener("submit", function (e) {
+        e.preventDefault(); // Prevent form submission
       });
-      listItem.appendChild(makeOfferButton);
 
-      const detailsContainer = document.createElement("div");
-      detailsContainer.classList.add("application-details");
-      detailsContainer.style.display = "none";
+      // Prevent form submission when Enter key is pressed in input fields
+      form.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          e.preventDefault(); // Prevent the form from being submitted
+        }
+      });
+    }
 
-      // Iterate through the application data and display details
-      for (const [key, value] of Object.entries(application)) {
-        if (key === "entryId") continue;
+    // Handle input changes
+    function handleInputChange() {
+      console.log("Input changed");
 
-        if (key === "fields" && typeof value === "object") {
-          for (const [fieldName, fieldValue] of Object.entries(value)) {
+      // Correctly select the input field within the city container
+      const cityInput = document.querySelector(".wpf-kaupunki-sort input");
+      console.log("City input:", cityInput); // Check if we're selecting the correct input
+      criteria.city = cityInput?.value || ""; // Capture the city input value
+
+      // Get values from other fields
+      criteria.minBudget =
+        parseInt(
+          document.querySelector(".wpf-num-min-limit-budjetti-sort input")
+            ?.value,
+          10
+        ) || 0;
+      criteria.maxBudget =
+        parseInt(
+          document.querySelector(".wpf-num-max-limit-budjetti-sort input")
+            ?.value,
+          10
+        ) || 0;
+      criteria.minSize =
+        parseInt(
+          document.querySelector(".wpf-num-min-limit-talo-sort input")?.value,
+          10
+        ) || 0;
+      criteria.maxSize =
+        parseInt(
+          document.querySelector(".wpf-num-max-limit-talo-sort input")?.value,
+          10
+        ) || 0;
+
+      console.log("Updated criteria:", criteria); // Log to check if criteria are updated correctly
+
+      handleSort();
+    }
+
+    // Render applications
+    function renderApplications(applications) {
+      console.log("Rendering applications:", applications);
+
+      applicationsList.innerHTML = "";
+
+      applications.forEach((application) => {
+        const listItem = document.createElement("li");
+        listItem.classList.add("application-item");
+
+        // Get the city name from the application
+        const cityName = application.fields.Sijainti || "Unknown City";
+
+        const title = document.createElement("button");
+        title.classList.add("application-title");
+        title.textContent = `${cityName}`; // Use the city name as the title
+        listItem.appendChild(title);
+
+        const makeOfferButton = document.createElement("button");
+        makeOfferButton.classList.add("make-offer-button");
+        makeOfferButton.textContent = "Make Offer";
+        makeOfferButton.addEventListener("click", () => {
+          redirectToOfferForm(application.entryId);
+        });
+        listItem.appendChild(makeOfferButton);
+
+        const detailsContainer = document.createElement("div");
+        detailsContainer.classList.add("application-details");
+        detailsContainer.style.display = "none";
+
+        // Iterate through the application data and display details
+        for (const [key, value] of Object.entries(application)) {
+          if (key === "entryId") continue;
+
+          if (key === "fields" && typeof value === "object") {
+            for (const [fieldName, fieldValue] of Object.entries(value)) {
+              const detail = document.createElement("p");
+              detail.classList.add("application-detail");
+              detail.innerHTML = `<strong>${fieldName}:</strong> ${fieldValue}`;
+              detailsContainer.appendChild(detail);
+            }
+          } else {
             const detail = document.createElement("p");
             detail.classList.add("application-detail");
-            detail.innerHTML = `<strong>${fieldName}:</strong> ${fieldValue}`;
+            detail.innerHTML = `<strong>${key}:</strong> ${value}`;
             detailsContainer.appendChild(detail);
           }
-        } else {
-          const detail = document.createElement("p");
-          detail.classList.add("application-detail");
-          detail.innerHTML = `<strong>${key}:</strong> ${value}`;
-          detailsContainer.appendChild(detail);
         }
-      }
 
-      title.addEventListener("click", () => {
-        detailsContainer.style.display =
-          detailsContainer.style.display === "none" ? "block" : "none";
+        title.addEventListener("click", () => {
+          detailsContainer.style.display =
+            detailsContainer.style.display === "none" ? "block" : "none";
+        });
+
+        listItem.appendChild(detailsContainer);
+        applicationsList.appendChild(listItem);
       });
+    }
 
-      listItem.appendChild(detailsContainer);
-      applicationsList.appendChild(listItem);
-    });
-  }
+    // Calculate match score
+    function calculateMatchScore(application, criteria) {
+      let score = 0;
 
-  // Calculate match score
-  function calculateMatchScore(application, criteria) {
-    let score = 0;
+      if (application.fields.Sijainti === criteria.city) score += 10;
+      console.log(
+        "City match score:",
+        application.fields.Sijainti === criteria.city ? 10 : 0
+      );
 
-    if (application.fields.Sijainti === criteria.city) score += 10;
-    console.log(
-      "City match score:",
-      application.fields.Sijainti === criteria.city ? 10 : 0
-    );
+      const appMinBudget = parseInt(
+        application.fields["Budjetti Min Price (€)"],
+        10
+      );
+      const appMaxBudget = parseInt(
+        application.fields["Budjetti Max Price (€)"],
+        10
+      );
+      if (
+        criteria.minBudget >= appMinBudget &&
+        criteria.maxBudget <= appMaxBudget
+      )
+        score += 5;
+      console.log(
+        "Budget match score:",
+        criteria.minBudget >= appMinBudget && criteria.maxBudget <= appMaxBudget
+          ? 5
+          : 0
+      );
 
-    const appMinBudget = parseInt(
-      application.fields["Budjetti Min Price (€)"],
-      10
-    );
-    const appMaxBudget = parseInt(
-      application.fields["Budjetti Max Price (€)"],
-      10
-    );
-    if (
-      criteria.minBudget >= appMinBudget &&
-      criteria.maxBudget <= appMaxBudget
-    )
-      score += 5;
-    console.log(
-      "Budget match score:",
-      criteria.minBudget >= appMinBudget && criteria.maxBudget <= appMaxBudget
-        ? 5
-        : 0
-    );
+      const appMinSize = parseInt(application.fields["Talo Min Size (m²)"], 10);
+      const appMaxSize = parseInt(application.fields["Talo Max Size (m²)"], 10);
+      if (criteria.minSize >= appMinSize && criteria.maxSize <= appMaxSize)
+        score += 5;
+      console.log(
+        "Size match score:",
+        criteria.minSize >= appMinSize && criteria.maxSize <= appMaxSize ? 5 : 0
+      );
 
-    const appMinSize = parseInt(application.fields["Talo Min Size (m²)"], 10);
-    const appMaxSize = parseInt(application.fields["Talo Max Size (m²)"], 10);
-    if (criteria.minSize >= appMinSize && criteria.maxSize <= appMaxSize)
-      score += 5;
-    console.log(
-      "Size match score:",
-      criteria.minSize >= appMinSize && criteria.maxSize <= appMaxSize ? 5 : 0
-    );
+      return score;
+    }
 
-    return score;
-  }
+    // Sort applications
+    function sortApplications(applications, criteria) {
+      console.log("Sorting applications...");
+      return applications.sort((a, b) => {
+        const scoreA = calculateMatchScore(a, criteria);
+        const scoreB = calculateMatchScore(b, criteria);
+        console.log("Scores:", scoreA, scoreB);
+        return scoreB - scoreA;
+      });
+    }
 
-  // Sort applications
-  function sortApplications(applications, criteria) {
-    console.log("Sorting applications...");
-    return applications.sort((a, b) => {
-      const scoreA = calculateMatchScore(a, criteria);
-      const scoreB = calculateMatchScore(b, criteria);
-      console.log("Scores:", scoreA, scoreB);
-      return scoreB - scoreA;
-    });
-  }
+    // Handle sorting and rendering
+    function handleSort() {
+      console.log("Sorting applications with criteria:", criteria);
+      const sortedApplications = sortApplications(applicationsData, criteria);
+      renderApplications(sortedApplications);
+    }
 
-  // Handle sorting and rendering
-  function handleSort() {
-    console.log("Sorting applications with criteria:", criteria);
-    const sortedApplications = sortApplications(applicationsData, criteria);
-    renderApplications(sortedApplications);
-  }
-
-  // Initialize onChange listeners
-  attachOnChangeListeners();
-});
-
+    // Initialize onChange listeners
+    attachOnChangeListeners();
+  });
 </script>
 
 <style>

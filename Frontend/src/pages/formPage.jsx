@@ -7,9 +7,11 @@ import { TalotekniikkaForm } from "./hakemusTiedot/talotekniikkaForm";
 import { OmatTiedotForm } from "./hakemusTiedot/omatTiedotForm";
 import { useFormContext } from "../context/formContext";
 import { sendFormData } from "../controllers/formController";
+import "../styles/createApplication.scss";
 
 export const ApplicationForm = () => {
-  const { formData, setFormData, resetForm } = useFormContext();
+  const { formData, setFormData, resetForm, isDisabled, setIsDisabled } =
+    useFormContext();
   const [step, setStep] = useState(1);
 
   const steps = [
@@ -68,7 +70,7 @@ export const ApplicationForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-12 pb-16 px-4 sm:px-6 lg:px-8">
+    <div className="create-application min-h-screen bg-gray-50 pt-12 pb-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -135,17 +137,19 @@ export const ApplicationForm = () => {
           </div>
 
           <div className="px-8 py-6 bg-gray-50 border-t border-gray-200 flex justify-between">
-            <button
-              onClick={prevStep}
-              disabled={step === 1}
-              className={`px-6 py-3 rounded-lg font-medium transition-colors ${
-                step === 1
-                  ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                  : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-300 shadow-sm"
-              }`}
-            >
-              Edellinen
-            </button>
+            {step > 1 && (
+              <button
+                onClick={prevStep}
+                disabled={step === 1}
+                className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+                  step === 1
+                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                    : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-300 shadow-sm"
+                }`}
+              >
+                Edellinen
+              </button>
+            )}
 
             {step === steps.length ? (
               <button
