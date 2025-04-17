@@ -1,0 +1,29 @@
+.my-application {
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-bottom: 8px;
+    button {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 16px;
+      cursor: pointer;
+      svg {
+        width: 22px;
+        height: 22px;
+        fill: #fff;
+      }
+    }
+  }
+  &__remove-button {
+    background-color: #f44336;
+  }
+  &__edit-button {
+    background-color: #2196f3;
+  }
+}

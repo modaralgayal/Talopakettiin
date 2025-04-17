@@ -1,17 +1,17 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext } from "react";
 
 // Define the shape of your form data
 const defaultFormData = {
   // Perustiedot fields
-  kaupunki: "",  // City
-  maakunta: "",  // Province/region
-  budjetti: "",  // Budget (€)
-  talonKoko: "",  // House size (m²)
-  makuuhuoneidenMaara: "",  // Number of bedrooms
-  kodinhoitohuone: "",  // Utility room (Yes/No)
-  arkieteinen: "",  // Arki entrance (Yes/No)
-  terassi: "",  // Terrace (Yes/No)
-  autokatos: "",  // Carport (Yes/No)
+  kaupunki: "", // City
+  maakunta: "", // Province/region
+  budjetti: "", // Budget (€)
+  talonKoko: "", // House size (m²)
+  makuuhuoneidenMaara: "", // Number of bedrooms
+  kodinhoitohuone: "", // Utility room (Yes/No)
+  arkieteinen: "", // Arki entrance (Yes/No)
+  terassi: "", // Terrace (Yes/No)
+  autokatos: "", // Carport (Yes/No)
   autotalli: "",
 
   // Ulkopuoli fields
@@ -52,9 +52,11 @@ const FormContext = createContext({
   formData: defaultFormData,
   setFormData: () => {},
   resetForm: () => {},
+  setIsDisabled: () => {},
 });
 
 export const FormProvider = ({ children }) => {
+  const [isDisabled, setIsDisabled] = useState(false);
   const [formData, setFormData] = useState(defaultFormData);
 
   // Function to completely reset the form
@@ -63,7 +65,9 @@ export const FormProvider = ({ children }) => {
   };
 
   return (
-    <FormContext.Provider value={{ formData, setFormData, resetForm }}>
+    <FormContext.Provider
+      value={{ formData, setFormData, resetForm, isDisabled, setIsDisabled }}
+    >
       {children}
     </FormContext.Provider>
   );
@@ -73,7 +77,7 @@ export const FormProvider = ({ children }) => {
 export const useFormContext = () => {
   const context = useContext(FormContext);
   if (!context) {
-    throw new Error('useFormContext must be used within a FormProvider');
+    throw new Error("useFormContext must be used within a FormProvider");
   }
   return context;
 };

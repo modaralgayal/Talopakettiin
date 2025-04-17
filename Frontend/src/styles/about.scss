@@ -1,0 +1,222 @@
+.about {
+  max-width: 1200px;
+  padding: 0 20px;
+  margin: 0 auto;
+  color: #2d3748;
+
+  // Card Container
+  .card-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 30px;
+  }
+
+  // Card Styles
+  .card {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    height: 500px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+      0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+        0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    &-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      z-index: 1;
+      &::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+      }
+    }
+
+    &-content {
+      position: relative;
+      z-index: 2;
+      height: 100%;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      color: white;
+      background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.1),
+        rgba(0, 0, 0, 0.7)
+      );
+      &::after {
+        content: "";
+        position: absolute;
+        top: 2%;
+        left: 2%;
+        right: 2%;
+        bottom: 2%;
+        width: 96%;
+        height: 96%;
+        border: 1px solid #adadad;
+        border-radius: 10px;
+      }
+    }
+
+    &-icon {
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    &-desc {
+      font-size: 1.05rem;
+      line-height: 1.6;
+      margin-bottom: 24px;
+      opacity: 0.9;
+    }
+
+    &-features {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 30px;
+      flex-grow: 1;
+
+      li {
+        padding: 8px 0;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+
+        span {
+          margin-right: 10px;
+          color: #10b981;
+          font-weight: bold;
+        }
+      }
+    }
+
+    &-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: space-between;
+      background: white;
+      color: #4f46e5;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.645, 0.045, 0.355, 1);
+      align-self: flex-start;
+      font-size: 0.95rem;
+      position: relative;
+      overflow: hidden;
+      text-decoration: none;
+
+      span {
+        position: relative;
+        z-index: 2;
+        transition: transform 0.4s cubic-bezier(0.645, 0.045, 0.355, 1);
+      }
+
+      svg {
+        position: relative;
+        z-index: 2;
+        margin-left: 10px;
+        stroke: #4f46e5;
+        transition: transform 0.4s cubic-bezier(0.645, 0.045, 0.355, 1);
+      }
+
+      &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          135deg,
+          rgba(79, 70, 229, 0.1) 0%,
+          rgba(79, 70, 229, 0.2) 100%
+        );
+        transform: scaleX(0);
+        transform-origin: right;
+        transition: transform 0.4s cubic-bezier(0.645, 0.045, 0.355, 1);
+        z-index: 1;
+      }
+
+      &:hover {
+        box-shadow: 0 5px 15px rgba(79, 70, 229, 0.3);
+
+        span {
+          transform: translateX(-5px);
+        }
+
+        svg {
+          transform: translateX(5px);
+        }
+
+        &::before {
+          transform: scaleX(1);
+          transform-origin: left;
+        }
+      }
+
+      &:active {
+        transform: scale(0.95) translateY(-2px);
+      }
+    }
+  }
+
+  // Card Specific Backgrounds
+  .home-seekers .card-bg {
+    background-image: url("https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80");
+  }
+
+  .property-professionals .card-bg {
+    background-image: url("https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80");
+  }
+}
+
+// Responsive Adjustments
+@media (max-width: 768px) {
+  .about {
+    .mission {
+      padding: 60px 20px;
+
+      &-title {
+        font-size: 2rem;
+      }
+
+      &-text {
+        font-size: 1.1rem;
+      }
+    }
+
+    .card-container {
+      grid-template-columns: 1fr;
+    }
+
+    .card {
+      height: auto;
+      min-height: 450px;
+    }
+  }
+}
