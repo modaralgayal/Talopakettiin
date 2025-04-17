@@ -1,4 +1,4 @@
-import React, { forwardRef } from "react";
+import React, { forwardRef, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import mainMenuConfig from "../../configs/mainMenuConfig";
 import "../../styles/mainMenu.scss";
@@ -23,9 +23,13 @@ const MainMenu = forwardRef(({ open, handleBurgerMenu }, ref) => {
       handleBurgerMenu();
     }
   };
-  console.log(mainMenuConfig);
+  // Debugging
+  useEffect(() => {
+    console.log("Menu updated - userType:", userType);
+  }, [userType]);
+
   return (
-    <nav ref={ref} className={`menu ${open ? "open" : ""} `}>
+    <nav ref={ref} className={`menu ${open ? "open" : ""} `} key={userType}>
       <ul className="menu__list">
         {mainMenuConfig.map(
           (item) =>

@@ -299,6 +299,7 @@ export const signIn = async (req, res) => {
       accessToken: data.AuthenticationResult.AccessToken,
       idToken,
       refreshToken: data.AuthenticationResult.RefreshToken,
+      userType: userTypeFromToken,
     });
   } catch (error) {
     console.error("Error in signIn:", error);

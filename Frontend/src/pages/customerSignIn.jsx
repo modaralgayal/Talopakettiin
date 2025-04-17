@@ -27,14 +27,14 @@ export const CustomerSignIn = () => {
     setMessageType(type);
     setTimeout(() => setMessage(null), 5000); // Hide after 5s
   };
-
   const handleSignIn = async (event) => {
     event.preventDefault();
     try {
       const response = await signIn(username, password);
       localStorage.setItem("authStatus", true);
-      showMessage(response.message, "success");
+      dispatch(setUserType(response.userType));
       navigate("/");
+      // showMessage(response.message, "success");
     } catch (error) {
       const errorMessage =
         typeof error === "string" ? error : error.error || "Sign-in failed.";
