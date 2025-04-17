@@ -3,6 +3,7 @@ import { signIn, signup } from "../controllers/userController";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 import { useDispatch } from "react-redux";
 import { setUserType } from "../redux/slices/userSlice";
+
 export const CustomerSignIn = () => {
   const dispatch = useDispatch();
 
@@ -14,7 +15,11 @@ export const CustomerSignIn = () => {
   const [confirm, setConfirm] = useState("");
   const [message, setMessage] = useState(null);
   const [messageType, setMessageType] = useState("error");
-  const userType = "customer"; // fixed to customer
+  const [role, setRole] = useState("customer");
+  const handleRole = (selectedRole) => {
+    setRole(selectedRole);
+  };
+
   const navigate = useNavigate(); // Initialize useNavigate
 
   const showMessage = (text, type) => {
@@ -26,10 +31,9 @@ export const CustomerSignIn = () => {
   const handleSignIn = async (event) => {
     event.preventDefault();
     try {
-      const response = await signIn(username, password, userType);
+      const response = await signIn(username, password);
       localStorage.setItem("authStatus", true);
       showMessage(response.message, "success");
-      dispatch(setUserType("customer"));
       navigate("/");
     } catch (error) {
       const errorMessage =
@@ -46,10 +50,10 @@ export const CustomerSignIn = () => {
     }
 
     try {
-      const response = await signup(username, password, email, userType);
+      const response = await signup(username, password, email, role);
       localStorage.setItem("authStatus", true);
       showMessage("User Registered Successfully!", "success");
-      dispatch(setUserType("customer"));
+      dispatch(setUserType(role));
     } catch (error) {
       const errorMessage =
         typeof error === "string"
@@ -124,6 +128,32 @@ export const CustomerSignIn = () => {
                 onChange={(e) => setConfirm(e.target.value)}
                 placeholder="Confirm your password"
               />
+            </div>
+          )}
+          {isRegister && (
+            <div className="flex w-full max-w-xs mx-auto rounded-full bg-gray-200 p-1">
+              <button
+                type="button"
+                className={`w-1/2 text-center py-2 rounded-full transition-all ${
+                  role === "customer"
+                    ? "bg-white shadow text-black"
+                    : "text-gray-500 hover:text-black"
+                }`}
+                onClick={() => handleRole("customer")}
+              >
+                I'm Looking
+              </button>
+              <button
+                type="button"
+                className={`w-1/2 text-center py-2 rounded-full transition-all ${
+                  role === "provider"
+                    ? "bg-white shadow text-black"
+                    : "text-gray-500 hover:text-black"
+                }`}
+                onClick={() => handleRole("provider")}
+              >
+                I'm Offering
+              </button>
             </div>
           )}
 

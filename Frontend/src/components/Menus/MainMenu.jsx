@@ -23,7 +23,7 @@ const MainMenu = forwardRef(({ open, handleBurgerMenu }, ref) => {
       handleBurgerMenu();
     }
   };
-
+  console.log(mainMenuConfig);
   return (
     <nav ref={ref} className={`menu ${open ? "open" : ""} `}>
       <ul className="menu__list">

@@ -20,7 +20,7 @@ import MakeOffer from "./pages/makeOffer";
 import GetOffers from "./pages/getOffers";
 // Auth utils
 import { validateToken, logOut } from "./controllers/userController";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setUserType } from "./redux/slices/userSlice";
 import { useAuth } from "./hooks/useAuth";
 
@@ -66,13 +66,6 @@ function App() {
 
   return (
     <div>
-      {/* {userType === "customer" ? (
-        <CustomerHeader handleLogout={handleLogout} />
-      ) : userType === "provider" ? (
-        <ProviderHeader handleLogout={handleLogout} />
-      ) : (
-        <Header handleLogout={handleLogout} />
-      )} */}
       <Header />
 
       <main data-aos="fade-up">
@@ -82,18 +75,6 @@ function App() {
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactUsPage />} />
           <Route path="/customersignin" element={<CustomerSignIn />} />
-          <Route
-            path="/providersignin"
-            element={<ProviderSignIn setUserType={setUserType} />}
-          />
-          {/* <Route
-            path="/customersignin"
-            element={<CustomerSignIn setUserType={setUserType} />}
-          />
-          <Route
-            path="/providersignin"
-            element={<ProviderSignIn setUserType={setUserType} />}
-          /> */}
           <Route
             path="/formpage"
             element={
