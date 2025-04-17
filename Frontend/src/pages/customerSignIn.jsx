@@ -34,7 +34,6 @@ export const CustomerSignIn = () => {
       localStorage.setItem("authStatus", true);
       dispatch(setUserType(response.userType));
       navigate("/");
-      // showMessage(response.message, "success");
     } catch (error) {
       const errorMessage =
         typeof error === "string" ? error : error.error || "Sign-in failed.";

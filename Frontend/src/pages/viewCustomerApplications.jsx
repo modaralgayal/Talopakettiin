@@ -97,7 +97,6 @@ export const ViewCustomerApplications = () => {
     setOpenedAppIndex(index === openedAppIndex ? null : index);
   };
 
-  console.log(openedAppIndex);
   const handleOffer = (userId, entryId, formData) => {
     updateOfferData(userId, entryId, formData);
     navigate("/offer");

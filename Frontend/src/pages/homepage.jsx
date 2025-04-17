@@ -17,7 +17,7 @@ export const HomePage = () => {
     if (location.state?.scrollTo) {
       scroller.scrollTo(location.state.scrollTo, {
         smooth: true,
-        offset: -50,
+        // offset: -50,
         duration: 100,
       });
     }

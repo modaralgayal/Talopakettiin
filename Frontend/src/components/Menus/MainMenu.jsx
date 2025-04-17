@@ -23,10 +23,6 @@ const MainMenu = forwardRef(({ open, handleBurgerMenu }, ref) => {
       handleBurgerMenu();
     }
   };
-  // Debugging
-  useEffect(() => {
-    console.log("Menu updated - userType:", userType);
-  }, [userType]);
 
   return (
     <nav ref={ref} className={`menu ${open ? "open" : ""} `} key={userType}>
