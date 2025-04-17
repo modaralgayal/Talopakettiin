@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { getUserForms } from "../controllers/formController";
+import { getUserForms, deleteUserEntry } from "../controllers/formController";
+import { RemoveIconSVG, EditIconSVG } from "../components/UIComponents/Icons";
+import "../styles/MyApplications.scss";
 
 export const MyApplications = () => {
   const [applications, setApplications] = useState([]);
@@ -13,6 +15,18 @@ export const MyApplications = () => {
       .catch((error) => console.log(error));
   }, []);
 
+  function handleDelete(entryId) {
+    console.log("Deleting entry with ID:", entryId);
+    deleteUserEntry(entryId)
+      .then((response) => {
+        console.log("Entry deleted successfully", response);
+        // Update the applications state to remove the deleted entry
+        setApplications((prevApps) =>
+          prevApps.filter((app) => app.entryId !== entryId)
+        );
+      })
+      .catch((error) => console.log(error));
+  }
   // Function to filter out empty or undefined values
   const filterEmptyValues = (obj) => {
     const result = {};
@@ -122,14 +136,30 @@ export const MyApplications = () => {
           <p className="text-gray-600">You don't have any applications yet.</p>
         ) : (
           // Render each application's formData
-          <div>
+          <div className="my-application__list">
             {applications.map((application, index) => {
               const formData = filterEmptyValues(application.formData);
               const kaupunki = formData.kaupunki || "Unknown City"; // Default to 'Unknown City' if kaupunki is missing
 
               return (
-                <div key={application.entryId} className="mb-4">
+                <div
+                  key={application.entryId}
+                  className="my-application__item mb-4"
+                >
                   {/* Collapsible section title based on 'kaupunki' */}
+                  <div className="my-application__actions">
+                    <button className="my-application__edit-button">
+                      <EditIconSVG />
+                      <span>Edit</span>
+                    </button>
+                    <button
+                      onClick={(e) => handleDelete(application.entryId)}
+                      className="my-application__remove-button"
+                    >
+                      <RemoveIconSVG />
+                      <span>Remove</span>
+                    </button>
+                  </div>
                   <div
                     className="cursor-pointer bg-gray-200 p-4 rounded-lg"
                     onClick={() =>

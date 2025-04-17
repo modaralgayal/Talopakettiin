@@ -63,7 +63,7 @@ export const ApplicationForm = () => {
     };
 
     console.log("Form submitted with data:", updatedFormData);
-    alert("Form submitted! Check console for data.");
+    // alert("Form submitted! Check console for data.");
 
     sendFormData(updatedFormData); // Submit the updated form data
     resetForm(); // Reset the form after submission

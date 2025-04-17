@@ -217,8 +217,8 @@ export const deleteItemByEntryId = async (req, res) => {
       .status(403)
       .json({ error: "Access denied: User is not a customer" });
   }
-  const { entryIdToDelete } = req.body;
-  console.log("Attempting to delete item with entryId: ", entryIdToDelete);
+  const { entryId } = req.body;
+  console.log("Attempting to delete item with entryId: ", entryId);
 
   const client = await initDynamoDBClient();
 
@@ -227,7 +227,7 @@ export const deleteItemByEntryId = async (req, res) => {
     IndexName: "entryId-userId-index",
     KeyConditionExpression: "entryId = :entryId",
     ExpressionAttributeValues: {
-      ":entryId": { S: entryIdToDelete.toString() },
+      ":entryId": { S: entryId.toString() },
     },
   };
 
@@ -246,23 +246,20 @@ export const deleteItemByEntryId = async (req, res) => {
       };
 
       await client.send(new DeleteItemCommand(deleteParams));
-      console.log(`Successfully deleted item with entryId: ${entryIdToDelete}`);
+      console.log(`Successfully deleted item with entryId: ${entryId}`);
       res.status(200).json({
-        message: `Successfully deleted item with entryId: ${entryIdToDelete}`,
+        message: `Successfully deleted item with entryId: ${entryId}`,
       });
     } else {
-      console.log(`No item found with entryId: ${entryIdToDelete}`);
+      console.log(`No item found with entryId: ${entryId}`);
       res.status(404).json({
-        error: `No item found with entryId: ${entryIdToDelete}`,
+        error: `No item found with entryId: ${entryId}`,
       });
     }
   } catch (error) {
-    console.error(
-      `Error deleting item with entryId: ${entryIdToDelete}`,
-      error
-    );
+    console.error(`Error deleting item with entryId: ${entryId}`, error);
     res.status(500).json({
-      error: `Failed to delete item with entryId: ${entryIdToDelete}`,
+      error: `Failed to delete item with entryId: ${entryId}`,
     });
   }
 };
@@ -291,9 +288,8 @@ export const acceptOffer = async (req, res) => {
 
     // Step 1: Fetch Provider's Email using Cognito
     console.log("Fetching provider's email");
-    const emailAddress = req.body.emailAddress
-    console.log("Email fetched: ", emailAddress)
-
+    const emailAddress = req.body.emailAddress;
+    console.log("Email fetched: ", emailAddress);
 
     if (!emailAddress) {
       throw new Error("Provider email not found.");
