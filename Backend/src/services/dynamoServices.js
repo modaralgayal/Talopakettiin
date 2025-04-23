@@ -78,8 +78,10 @@ export const getApplicationsForUser = async (req, res) => {
       TableName: "Talopakettiin-API",
       IndexName: "userId-index",
       KeyConditionExpression: "userId = :userId",
+      FilterExpression: "entryType = :entryType",
       ExpressionAttributeValues: {
         ":userId": { S: userId },
+        ":entryType": { S: "application" }
       },
     };
 
@@ -219,52 +221,36 @@ export const deleteItemByEntryId = async (req, res) => {
       .status(403)
       .json({ error: "Access denied: User is not a customer" });
   }
-  const { entryIdToDelete } = req.body;
-  console.log("Attempting to delete item with entryId: ", entryIdToDelete);
+  console.log("req.body: ", req.body);
+  const idToDelete = req.body.entryId;
+  console.log("Attempting to delete item with id: ", idToDelete);
+
+  if (!idToDelete) {
+    return res.status(400).json({ error: "No id provided" });
+  }
 
   const client = await initDynamoDBClient();
 
-  const queryParams = {
+  const deleteParams = {
     TableName: "Talopakettiin-API",
-    IndexName: "entryId-userId-index",
-    KeyConditionExpression: "entryId = :entryId",
-    ExpressionAttributeValues: {
-      ":entryId": { S: entryIdToDelete.toString() },
+    Key: {
+      id: { S: idToDelete },
     },
   };
 
   try {
-    const data = await client.send(new QueryCommand(queryParams));
-
-    if (data.Items && data.Items.length > 0) {
-      const item = unmarshall(data.Items[0]);
-      const idToDelete = item.id;
-
-      const deleteParams = {
-        TableName: "Talopakettiin-API",
-        Key: {
-          id: { S: idToDelete },
-        },
-      };
-
-      await client.send(new DeleteItemCommand(deleteParams));
-      console.log(`Successfully deleted item with entryId: ${entryIdToDelete}`);
-      res.status(200).json({
-        message: `Successfully deleted item with entryId: ${entryIdToDelete}`,
-      });
-    } else {
-      console.log(`No item found with entryId: ${entryIdToDelete}`);
-      res.status(404).json({
-        error: `No item found with entryId: ${entryIdToDelete}`,
-      });
-    }
+    await client.send(new DeleteItemCommand(deleteParams));
+    console.log(`Successfully deleted item with id: ${idToDelete}`);
+    res.status(200).json({
+      message: `Successfully deleted item with id: ${idToDelete}`,
+    });
   } catch (error) {
     console.error(
-      `Error deleting item with entryId: ${entryIdToDelete}`,
+      `Error deleting item with id: ${idToDelete}`,
       error
     );
     res.status(500).json({
-      error: `Failed to delete item with entryId: ${entryIdToDelete}`,
+      error: `Failed to delete item with id: ${idToDelete}`,
     });
   }
 };
