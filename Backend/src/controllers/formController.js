@@ -29,9 +29,16 @@ export const receiveFormData = async (req, res) => {
     const user = req.user;
     console.log("Request body:", req.body);
 
+    // Initialize limitCheck with default values
+    let limitCheck = {
+      canSubmit: true,
+      currentCount: 0,
+      limit: 10
+    };
+
     // Check application limit for new applications
     if (req.body.entryType !== "offer") {
-      const limitCheck = await checkApplicationLimit(user.userId);
+      limitCheck = await checkApplicationLimit(user.userId);
       if (!limitCheck.canSubmit) {
         return res.status(400).json({
           success: false,
@@ -72,8 +79,8 @@ export const receiveFormData = async (req, res) => {
       success: true,
       message: "Form data saved successfully!",
       entryId,
-      currentCount: limitCheck?.currentCount + 1 || 1,
-      limit: limitCheck?.limit || 10
+      currentCount: limitCheck.currentCount + 1,
+      limit: limitCheck.limit
     });
   } catch (error) {
     console.error("Error saving form data:", error);
