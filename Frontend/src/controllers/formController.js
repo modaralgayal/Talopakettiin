@@ -4,18 +4,31 @@ const API_URL = "http://localhost:8000/api/forms";
 
 // Send Form Data
 export const sendFormData = async (formData) => {
-  console.log("Received formData: ", formData);
   try {
-    const response = await axios.post(
-      `${API_URL}/receive-form-data`,
-      formData,
-      {
-        withCredentials: true, // Send cookies automatically
-      }
-    );
-    return response.data;
+    const response = await axios.post(`${API_URL}/receive-form-data`, formData, {
+      withCredentials: true,
+    });
+
+    if (response.data.success) {
+      return {
+        success: true,
+        message: response.data.message,
+        currentCount: response.data.currentCount,
+        limit: response.data.limit
+      };
+    } else {
+      throw new Error(response.data.message || "Failed to submit form");
+    }
   } catch (error) {
-    throw error.response?.data || error.message;
+    if (error.response?.data?.error === "Application limit reached") {
+      throw {
+        error: "Application limit reached",
+        message: error.response.data.message,
+        currentCount: error.response.data.currentCount,
+        limit: error.response.data.limit
+      };
+    }
+    throw error;
   }
 };
 
@@ -23,7 +36,7 @@ export const sendFormData = async (formData) => {
 export const getUserForms = async () => {
   try {
     const response = await axios.get(`${API_URL}/get-user-forms`, {
-      withCredentials: true, // Send cookies automatically
+      withCredentials: true,
     });
     return response.data;
   } catch (error) {
@@ -38,7 +51,7 @@ export const deleteUserEntry = async (entryId) => {
       `${API_URL}/delete-user-entry`,
       { entryId },
       {
-        withCredentials: true, // Send cookies automatically
+        withCredentials: true,
       }
     );
     return response.data;
@@ -51,7 +64,7 @@ export const deleteUserEntry = async (entryId) => {
 export const getAllEntries = async () => {
   try {
     const response = await axios.get(`${API_URL}/get-all-entries`, {
-      withCredentials: true, // Send cookies automatically
+      withCredentials: true,
     });
     return response.data;
   } catch (error) {
@@ -63,7 +76,7 @@ export const getAllEntries = async () => {
 export const getUserOffers = async () => {
   try {
     const response = await axios.get(`${API_URL}/get-user-offers`, {
-      withCredentials: true, // Send cookies automatically
+      withCredentials: true,
     });
     return response.data;
   } catch (error) {
@@ -78,14 +91,11 @@ export const acceptOffer = async (id, entryId, emailAddress) => {
       `${API_URL}/accept-given-offer`,
       { id, entryId, emailAddress },
       {
-        withCredentials: true, // Include session cookie if needed for user authentication
+        withCredentials: true,
       }
     );
-
-    console.log("Offer Accepted:", response.data);
-    return response.data; // You can handle success here, e.g., showing a success message.
+    return response.data;
   } catch (error) {
-    console.error("Error accepting offer:", error);
     throw error.response?.data || error.message;
   }
 };
@@ -94,11 +104,10 @@ export const acceptOffer = async (id, entryId, emailAddress) => {
 export const makeOfferToUser = async (offerData, userId, entryId, pdfFile) => {
   try {
     const formData = new FormData();
-
     formData.append("userId", userId);
     formData.append("entryId", entryId);
-    formData.append("pdfFile", pdfFile); // optional, can be null
-    formData.append("offerData", JSON.stringify(offerData)); // stringify nested object
+    formData.append("pdfFile", pdfFile);
+    formData.append("offerData", JSON.stringify(offerData));
 
     const response = await axios.post(`${API_URL}/make-offer`, formData, {
       withCredentials: true,
@@ -106,7 +115,6 @@ export const makeOfferToUser = async (offerData, userId, entryId, pdfFile) => {
         "Content-Type": "multipart/form-data",
       },
     });
-
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
@@ -116,7 +124,7 @@ export const makeOfferToUser = async (offerData, userId, entryId, pdfFile) => {
 export const getOffersForUser = async () => {
   try {
     const response = await axios.get(`${API_URL}/get-user-offers`, {
-      withCredentials: true, // Important to include session cookie
+      withCredentials: true,
     });
     return response.data;
   } catch (error) {

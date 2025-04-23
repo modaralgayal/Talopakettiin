@@ -1,18 +1,25 @@
 import React, { createContext, useState, useContext } from 'react';
 
-// Define the shape of your form data
+// Define the shape of your form data with exact field names matching the form
 const defaultFormData = {
   // Perustiedot fields
-  kaupunki: "",  // City
-  maakunta: "",  // Province/region
-  budjetti: "",  // Budget (€)
-  talonKoko: "",  // House size (m²)
-  makuuhuoneidenMaara: "",  // Number of bedrooms
-  kodinhoitohuone: "",  // Utility room (Yes/No)
-  arkieteinen: "",  // Arki entrance (Yes/No)
-  terassi: "",  // Terrace (Yes/No)
-  autokatos: "",  // Carport (Yes/No)
+  kaupunki: "",
+  maakunta: "",
+  minBudget: "",
+  maxBudget: "",
+  minSize: "",
+  maxSize: "",
+  bedrooms: "",
+  kodinhoitohuone: "",
+  kodinhoitohuoneDetails: "",
+  arkieteinen: "",
+  arkieteinenDetails: "",
+  terassi: "",
+  terassiDetails: "",
+  autokatos: "",
+  autokatosDetails: "",
   autotalli: "",
+  autotalliDetails: "",
 
   // Ulkopuoli fields
   talonMateriaali: "",

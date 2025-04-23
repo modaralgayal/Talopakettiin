@@ -3,46 +3,58 @@ import { NavLink } from "react-router-dom";
 import blackLogo from "./talopakettiinlogovariants-black.png";
 
 export const Header = () => {
-  console.log("This is the Normal Header");
-
   return (
-    <header className="bg-gray-600 py-4 shadow-md">
-      <nav className="max-w-7xl mx-auto px-6 flex justify-center items-center">
-        <div className="flex items-center space-x-12">
-          {/* 🖼 Logo Image - click to go Home */}
-          <NavLink to="/">
-            <img
-              src={blackLogo}
-              alt="Logo"
-              className="w-32 h-auto object-contain hover:opacity-80 transition-opacity"
-            />
-          </NavLink>
+    <header className="bg-white shadow-sm">
+      <nav className="max-w-7xl mx-auto px-6 py-4">
+        <div className="flex items-center justify-between">
+          {/* Left side - Logo and main navigation */}
+          <div className="flex items-center space-x-12">
+            {/* Logo */}
+            <NavLink to="/" className="flex-shrink-0">
+              <img
+                src={blackLogo}
+                alt="Talopakettiin Logo"
+                className="w-32 h-auto object-contain hover:opacity-80 transition-opacity"
+              />
+            </NavLink>
 
-          {/* Navigation Links */}
-          <ul className="flex space-x-8">
-            {[
-              { name: "Home", path: "/" },
-              { name: "About", path: "/about" },
-              { name: "Contact Us", path: "/contact" },
-              { name: "Sign In", path: "/customersignin" },
-              { name: "For Providers", path: "/providersignin" },
-              { name: "Form page", path: "/formpage" },
-            ].map((item) => (
-              <li key={item.name} className="group">
-                <NavLink
-                  to={item.path}
-                  className={({ isActive }) =>
-                    `text-white text-xl transition-colors py-2 px-2 block rounded-2xl 
-                    group-hover:underline underline-offset-8 ${
-                      isActive ? "underline underline-offset-8" : ""
-                    }`
-                  }
-                >
-                  {item.name}
-                </NavLink>
-              </li>
-            ))}
-          </ul>
+            {/* Main Navigation */}
+            <ul className="hidden md:flex space-x-8">
+              {[
+                { name: "Etusivu", path: "/" },
+                { name: "Tietoa meistä", path: "/about" },
+                { name: "Yhteystiedot", path: "/contact" },
+              ].map((item) => (
+                <li key={item.name}>
+                  <NavLink
+                    to={item.path}
+                    className={({ isActive }) =>
+                      `text-gray-700 hover:text-blue-600 text-lg font-medium transition-colors
+                      ${isActive ? "text-blue-600" : ""}`
+                    }
+                  >
+                    {item.name}
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Right side - Sign in and Provider options */}
+          <div className="flex items-center space-x-6">
+            <NavLink
+              to="/signin"
+              className="text-gray-700 hover:text-blue-600 text-lg font-medium transition-colors"
+            >
+              Kirjaudu
+            </NavLink>
+            <NavLink
+              to="/formpage"
+              className="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-full text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+            >
+              Täytä hakemus
+            </NavLink>
+          </div>
         </div>
       </nav>
     </header>

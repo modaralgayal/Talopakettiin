@@ -1,6 +1,7 @@
 import {
   addItemToTable,
   addApplicationToUser,
+  checkApplicationLimit
 } from "../services/dynamoServices.js";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { v4 as uuidv4 } from "uuid";
@@ -27,6 +28,20 @@ export const receiveFormData = async (req, res) => {
   try {
     const user = req.user;
     console.log("Request body:", req.body);
+
+    // Check application limit for new applications
+    if (req.body.entryType !== "offer") {
+      const limitCheck = await checkApplicationLimit(user.userId);
+      if (!limitCheck.canSubmit) {
+        return res.status(400).json({
+          success: false,
+          error: "Application limit reached",
+          message: `You have reached the maximum limit of ${limitCheck.limit} applications. Please delete some applications before submitting new ones.`,
+          currentCount: limitCheck.currentCount,
+          limit: limitCheck.limit
+        });
+      }
+    }
 
     const entryType = req.body.entryType || "application";
     const offerId = req.body.offerId || null;
@@ -56,7 +71,9 @@ export const receiveFormData = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Form data saved successfully!",
-      entryId, // send it back to the frontend if needed
+      entryId,
+      currentCount: limitCheck?.currentCount + 1 || 1,
+      limit: limitCheck?.limit || 10
     });
   } catch (error) {
     console.error("Error saving form data:", error);

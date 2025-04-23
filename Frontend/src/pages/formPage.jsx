@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { PerustiedotForm } from "./hakemusTiedot/perusTiedot";
 import { UlkopuoliForm } from "./hakemusTiedot/ulkoPuoliForm";
 import { SisapuoliForm } from "./hakemusTiedot/sisäPuoliForm";
@@ -7,10 +7,14 @@ import { TalotekniikkaForm } from "./hakemusTiedot/talotekniikkaForm";
 import { OmatTiedotForm } from "./hakemusTiedot/omatTiedotForm";
 import { useFormContext } from "../context/formContext";
 import { sendFormData } from "../controllers/formController";
+import { FaExclamationTriangle } from "react-icons/fa";
 
 export const ApplicationForm = () => {
   const { formData, setFormData, resetForm } = useFormContext();
   const [step, setStep] = useState(1);
+  const [error, setError] = useState(null);
+  const [applicationCount, setApplicationCount] = useState(null);
+  const [applicationLimit, setApplicationLimit] = useState(10);
 
   const steps = [
     { number: 1, title: "Perustiedot" },
@@ -33,38 +37,22 @@ export const ApplicationForm = () => {
     setStep(stepNumber);
   };
 
-  // Dynamically combine the values for 'budjetti' and 'talonKoko'
-  const getBudjetti = () => {
-    const minBudget = formData.minBudget;
-    const maxBudget = formData.maxBudget;
-    if (minBudget && maxBudget) {
-      return `${minBudget} € - ${maxBudget} €`;
+  const handleSubmit = async () => {
+    try {
+      const result = await sendFormData(formData);
+      setApplicationCount(result.currentCount);
+      setApplicationLimit(result.limit);
+      alert("Hakemus lähetetty onnistuneesti!");
+      resetForm();
+    } catch (error) {
+      if (error.error === "Application limit reached") {
+        setError(error.message);
+        setApplicationCount(error.currentCount);
+        setApplicationLimit(error.limit);
+      } else {
+        setError("Virhe hakemuksen lähetyksessä. Yritä uudelleen.");
+      }
     }
-    return ""; // Return empty string if not set
-  };
-
-  const getTalonKoko = () => {
-    const minSize = formData.minSize;
-    const maxSize = formData.maxSize;
-    if (minSize && maxSize) {
-      return `${minSize} m² - ${maxSize} m²`;
-    }
-    return ""; // Return empty string if not set
-  };
-
-  const handleSubmit = () => {
-    // Dynamically combine the values before submission
-    const updatedFormData = {
-      ...formData,
-      budjetti: getBudjetti(), // Add combined budjetti value
-      talonKoko: getTalonKoko(), // Add combined talonKoko value
-    };
-
-    console.log("Form submitted with data:", updatedFormData);
-    alert("Form submitted! Check console for data.");
-
-    sendFormData(updatedFormData); // Submit the updated form data
-    resetForm(); // Reset the form after submission
   };
 
   return (
@@ -77,7 +65,21 @@ export const ApplicationForm = () => {
           <p className="text-lg text-gray-600">
             Täytä kaikki vaaditut tiedot vaiheittain
           </p>
+          {applicationCount !== null && (
+            <div className="mt-4 text-sm text-gray-600">
+              Hakemuksia: {applicationCount} / {applicationLimit}
+            </div>
+          )}
         </div>
+
+        {error && (
+          <div className="mb-8 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="flex items-center">
+              <FaExclamationTriangle className="h-5 w-5 text-red-400 mr-2" />
+              <p className="text-red-700">{error}</p>
+            </div>
+          </div>
+        )}
 
         <div className="relative mb-12">
           <div className="absolute top-1/2 left-0 right-0 h-1 bg-gray-200 -z-10"></div>
@@ -124,10 +126,7 @@ export const ApplicationForm = () => {
               <LämmitysForm formData={formData} setFormData={setFormData} />
             )}
             {step === 5 && (
-              <TalotekniikkaForm
-                formData={formData}
-                setFormData={setFormData}
-              />
+              <TalotekniikkaForm formData={formData} setFormData={setFormData} />
             )}
             {step === 6 && (
               <OmatTiedotForm formData={formData} setFormData={setFormData} />
@@ -150,7 +149,12 @@ export const ApplicationForm = () => {
             {step === steps.length ? (
               <button
                 onClick={handleSubmit}
-                className="px-6 py-3 rounded-lg bg-green-600 text-white font-medium hover:bg-green-700 transition-colors shadow-md"
+                disabled={applicationCount === applicationLimit}
+                className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+                  applicationCount === applicationLimit
+                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                    : "bg-green-600 text-white hover:bg-green-700 shadow-md"
+                }`}
               >
                 Lähetä hakemus
               </button>

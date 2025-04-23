@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { Route, Routes, useNavigate, useLocation } from "react-router-dom";
 // Pages
-import { HomePage } from "./pages/homepage";
+import { Homepage } from "./pages/homepage";
 import { AboutPage } from "./pages/aboutPage";
 import { ContactUsPage } from "./pages/contactUsPage";
-import { CustomerSignIn } from "./pages/customerSignIn";
-import { ProviderSignIn } from "./pages/providerSignIn";
+import { UnifiedSignIn } from "./pages/unifiedSignIn";
 import { ApplicationForm } from "./pages/formPage";
 import { ConfirmUser } from "./pages/confirmUserPage";
 import { MyApplications } from "./pages/viewMyApplications";
@@ -19,39 +18,49 @@ import GetOffers from "./pages/getOffers";
 // Auth utils
 import { validateToken, logOut } from "./controllers/userController";
 
+// Define public routes that don't require authentication
+const publicRoutes = ['/', '/about', '/contact', '/signin', '/confirmuser'];
+
 function App() {
   const [userType, setUserType] = useState(null);
   const [formData, setFormData] = useState();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = async () => {
     try {
-      await logOut(); // Clears the cookie on the backend
+      await logOut();
       console.log("User logged out");
-      setUserType(null); // Clears state
-      navigate("/"); // Redirects to homepage
+      setUserType(null);
+      navigate("/");
     } catch (error) {
-      navigate("/"); // Redirects to homepage
-      setUserType(null); // Clears state
+      navigate("/");
+      setUserType(null);
       console.error("Logout failed:", error);
     }
   };
+
   useEffect(() => {
     const checkSession = async () => {
-      const { isValid, userType } = await validateToken();
+      // Only check session if we're not on a public route
+      if (!publicRoutes.includes(location.pathname)) {
+        const { isValid, userType } = await validateToken();
 
-      if (isValid) {
-        setUserType(userType);
-      } else {
-        handleLogout();
+        if (isValid) {
+          setUserType(userType);
+        } else {
+          handleLogout();
+        }
       }
     };
 
     checkSession();
-    const interval = setInterval(checkSession, 60000);
-
-    return () => clearInterval(interval);
-  }, []);
+    // Only set up interval if we're not on a public route
+    if (!publicRoutes.includes(location.pathname)) {
+      const interval = setInterval(checkSession, 60000);
+      return () => clearInterval(interval);
+    }
+  }, [location.pathname]); // Add location.pathname as a dependency
 
   return (
     <div>
@@ -65,16 +74,12 @@ function App() {
 
       <main>
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<Homepage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactUsPage />} />
           <Route
-            path="/customersignin"
-            element={<CustomerSignIn setUserType={setUserType} />}
-          />
-          <Route
-            path="/providersignin"
-            element={<ProviderSignIn setUserType={setUserType} />}
+            path="/signin"
+            element={<UnifiedSignIn setUserType={setUserType} />}
           />
           <Route
             path="/formpage"

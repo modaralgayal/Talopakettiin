@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAllEntries } from "../controllers/formController";
 import { useOfferContext } from "../context/offerContext";
+import { FaSearch, FaMapMarkerAlt, FaBuilding, FaEuroSign, FaRuler } from "react-icons/fa";
 
 export const ViewCustomerApplications = () => {
   const [applications, setApplications] = useState([]);
   const [openedAppIndex, setOpenedAppIndex] = useState(null);
-  const [citySort, setCitySort] = useState(""); // Text input for city sort
-  const [provinceSort, setProvinceSort] = useState(""); // Text input for province sort
+  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
 
   const { updateOfferData } = useOfferContext();
@@ -39,58 +39,14 @@ export const ViewCustomerApplications = () => {
     return result;
   };
 
-  const sortedApplications = [...applications].sort((a, b) => {
-    const aFormData = a.formData || {};
-    const bFormData = b.formData || {};
-
-    const aCity = parseValue(aFormData.kaupunki) || "";
-    const bCity = parseValue(bFormData.kaupunki) || "";
-    const aProvince = parseValue(aFormData.maakunta) || "";
-    const bProvince = parseValue(bFormData.maakunta) || "";
-
-    // Convert both values and inputs to lowercase to make substring matching case-insensitive
-    const aCityLower = aCity.toLowerCase();
-    const bCityLower = bCity.toLowerCase();
-    const aProvinceLower = aProvince.toLowerCase();
-    const bProvinceLower = bProvince.toLowerCase();
-
-    const citySearch = citySort.toLowerCase();
-    const provinceSearch = provinceSort.toLowerCase();
-
-    // Helper function to check if a string contains the substring (city or province)
-    const matchSubstring = (value, search) => {
-      return value.includes(search);
-    };
-
-    // Sorting logic for both city and province, if both are provided
-    if (citySort && provinceSort) {
-      const cityMatchA = matchSubstring(aCityLower, citySearch);
-      const cityMatchB = matchSubstring(bCityLower, citySearch);
-      if (cityMatchA !== cityMatchB) {
-        return cityMatchA ? -1 : 1; // Give priority to matched city
-      }
-
-      const provinceMatchA = matchSubstring(aProvinceLower, provinceSearch);
-      const provinceMatchB = matchSubstring(bProvinceLower, provinceSearch);
-      return provinceMatchA === provinceMatchB ? 0 : provinceMatchA ? -1 : 1; // Then match province if city match is the same
-    }
-
-    // Sorting by city alone if province sort is not specified
-    else if (citySort) {
-      const cityMatchA = matchSubstring(aCityLower, citySearch);
-      const cityMatchB = matchSubstring(bCityLower, citySearch);
-      return cityMatchA === cityMatchB ? 0 : cityMatchA ? -1 : 1; // Give priority to matched city
-    }
-
-    // Sorting by province alone if city sort is not specified
-    else if (provinceSort) {
-      const provinceMatchA = matchSubstring(aProvinceLower, provinceSearch);
-      const provinceMatchB = matchSubstring(bProvinceLower, provinceSearch);
-      return provinceMatchA === provinceMatchB ? 0 : provinceMatchA ? -1 : 1; // Give priority to matched province
-    }
-
-    // Default: no sorting
-    return 0;
+  const filteredApplications = applications.filter((app) => {
+    const formData = filterEmptyValues(app.formData);
+    const searchLower = searchTerm.toLowerCase();
+    
+    return (
+      (formData.kaupunki && formData.kaupunki.toLowerCase().includes(searchLower)) ||
+      (formData.maakunta && formData.maakunta.toLowerCase().includes(searchLower))
+    );
   });
 
   const handleToggle = (index) => {
@@ -99,107 +55,115 @@ export const ViewCustomerApplications = () => {
 
   const handleOffer = (userId, entryId, formData) => {
     updateOfferData(userId, entryId, formData);
-    navigate("/offer");
-  };
-
-  // Handle changes to the city sort input
-  const handleCitySortChange = (e) => {
-    setCitySort(e.target.value); // Update citySort based on text input
-    setProvinceSort(""); // Reset province sort
-  };
-
-  // Handle changes to the province sort input
-  const handleProvinceSortChange = (e) => {
-    setProvinceSort(e.target.value); // Update provinceSort based on text input
-    setCitySort(""); // Reset city sort
+    navigate("/makeoffer");
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="w-full max-w-4xl p-6 bg-white rounded-xl shadow-md text-center">
-        <h1 className="text-2xl font-semibold mb-6">
-          View Customer Applications
-        </h1>
+    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Kaikki hakemukset
+          </h1>
+          <p className="text-lg text-gray-600">
+            Selaa ja suodata hakemuksia sijainnin mukaan
+          </p>
+        </div>
 
-        {/* Sort controls */}
-        <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label
-              htmlFor="citySort"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Sort by City (Kaupunki)
-            </label>
+        {/* Search Bar */}
+        <div className="max-w-2xl mx-auto mb-8">
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <FaSearch className="h-5 w-5 text-gray-400" />
+            </div>
             <input
-              id="citySort"
               type="text"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={citySort}
-              onChange={handleCitySortChange} // Use the updated handler
-              placeholder="Enter city"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="provinceSort"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Sort by Province (Maakunta)
-            </label>
-            <input
-              id="provinceSort"
-              type="text"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={provinceSort}
-              onChange={handleProvinceSortChange} // Use the updated handler
-              placeholder="Enter province"
+              className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              placeholder="Hae kaupungin tai maakunnan mukaan..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
         </div>
 
-        {sortedApplications.length === 0 ? (
-          <p className="text-gray-600">No applications to display yet.</p>
-        ) : (
-          <div>
-            {sortedApplications.map((app, index) => {
-              const formData = filterEmptyValues(app.formData);
-              const city = formData.kaupunki || `Application ${index + 1}`;
+        {/* Applications Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredApplications.map((app, index) => {
+            const formData = filterEmptyValues(app.formData);
+            const city = formData.kaupunki || `Hakemus ${index + 1}`;
+            const province = formData.maakunta || "Ei määritelty";
+            const budget = formData.budjetti || "Ei määritelty";
+            const size = formData.talonKoko || "Ei määritelty";
 
-              return (
-                <div key={app.entryId} className="mb-4">
-                  <div
-                    className="cursor-pointer bg-gray-200 p-4 rounded-lg flex justify-between items-center"
-                    onClick={() => handleToggle(index)}
-                  >
-                    <div className="text-left">
-                      <h2 className="text-lg font-semibold">{city}</h2>
-                      <p className="text-gray-600">Status: {app.status}</p>
-                      {formData.maakunta && (
-                        <p className="text-gray-600">
-                          Province: {formData.maakunta}
-                        </p>
-                      )}
-                    </div>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleOffer(app.userId, app.entryId, formData);
-                      }}
-                      className="ml-4 px-4 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
-                    >
-                      Offer
-                    </button>
+            return (
+              <div
+                key={app.entryId}
+                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200"
+              >
+                <div className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-xl font-semibold text-gray-900">{city}</h2>
+                    <span className="px-3 py-1 text-sm font-medium rounded-full bg-blue-100 text-blue-800">
+                      {app.status}
+                    </span>
                   </div>
 
-                  {/* Application details */}
-                  {openedAppIndex === index && (
-                    <div className="mt-4 p-4 bg-gray-100 rounded-lg">
-                      {/* Here you can show the application details */}
+                  <div className="space-y-3">
+                    <div className="flex items-center text-gray-600">
+                      <FaMapMarkerAlt className="h-5 w-5 mr-2 text-blue-500" />
+                      <span>{province}</span>
                     </div>
-                  )}
+                    <div className="flex items-center text-gray-600">
+                      <FaEuroSign className="h-5 w-5 mr-2 text-blue-500" />
+                      <span>{budget}</span>
+                    </div>
+                    <div className="flex items-center text-gray-600">
+                      <FaRuler className="h-5 w-5 mr-2 text-blue-500" />
+                      <span>{size}</span>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 flex justify-between items-center">
+                    <button
+                      onClick={() => handleToggle(index)}
+                      className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                    >
+                      {openedAppIndex === index ? "Piilota tiedot" : "Näytä tiedot"}
+                    </button>
+                    <button
+                      onClick={() => handleOffer(app.userId, app.entryId, formData)}
+                      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    >
+                      <FaBuilding className="h-4 w-4 mr-2" />
+                      Tee tarjous
+                    </button>
+                  </div>
                 </div>
-              );
-            })}
+
+                {/* Application details */}
+                {openedAppIndex === index && (
+                  <div className="border-t border-gray-200 p-6 bg-gray-50">
+                    <h3 className="text-lg font-medium text-gray-900 mb-4">Hakemuksen tiedot</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      {Object.entries(formData).map(([key, value]) => (
+                        <div key={key} className="text-sm">
+                          <span className="font-medium text-gray-700">{key}: </span>
+                          <span className="text-gray-600">{value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {filteredApplications.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-gray-600 text-lg">
+              Ei hakemuksia näytettäväksi
+            </p>
           </div>
         )}
       </div>

@@ -16,6 +16,8 @@ import { v4 as uuidv4 } from "uuid";
 import { getSecrets, parseDynamoItem } from "../utils/secrets.js";
 import multer from "multer";
 
+const APPLICATION_LIMIT = 10;
+
 const initDynamoDBClient = async () => {
   const secrets = await getSecrets();
   return new DynamoDBClient({
@@ -448,5 +450,33 @@ export const makeOffer = async (req, res) => {
   } catch (error) {
     console.error("Error sending offer:", error);
     res.status(500).json({ error: "Failed to send offer" });
+  }
+};
+
+export const checkApplicationLimit = async (userId) => {
+  const client = await initDynamoDBClient();
+  
+  const params = {
+    TableName: "Talopakettiin-API",
+    IndexName: "userId-index",
+    KeyConditionExpression: "userId = :userId",
+    FilterExpression: "entryType = :entryType",
+    ExpressionAttributeValues: {
+      ":userId": { S: userId },
+      ":entryType": { S: "application" }
+    }
+  };
+
+  try {
+    const data = await client.send(new QueryCommand(params));
+    const applicationCount = data.Items.length;
+    return {
+      canSubmit: applicationCount < APPLICATION_LIMIT,
+      currentCount: applicationCount,
+      limit: APPLICATION_LIMIT
+    };
+  } catch (error) {
+    console.error("Error checking application limit:", error);
+    throw error;
   }
 };
