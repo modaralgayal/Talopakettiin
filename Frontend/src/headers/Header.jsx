@@ -29,8 +29,8 @@ export const Header = () => {
                   <NavLink
                     to={item.path}
                     className={({ isActive }) =>
-                      `text-gray-700 hover:text-blue-600 text-lg font-medium transition-colors
-                      ${isActive ? "text-blue-600" : ""}`
+                      `text-gray-700 hover:text-blue-600 text-lg font-medium transition-colors relative
+                      ${isActive ? "text-blue-600 after:content-[''] after:absolute after:bottom-[-8px] after:left-0 after:w-full after:h-0.5 after:bg-blue-600" : ""}`
                     }
                   >
                     {item.name}
@@ -44,7 +44,10 @@ export const Header = () => {
           <div className="flex items-center space-x-6">
             <NavLink
               to="/signin"
-              className="text-gray-700 hover:text-blue-600 text-lg font-medium transition-colors"
+              className={({ isActive }) =>
+                `text-gray-700 hover:text-blue-600 text-lg font-medium transition-colors relative
+                ${isActive ? "text-blue-600 after:content-[''] after:absolute after:bottom-[-8px] after:left-0 after:w-full after:h-1 after:bg-blue-600" : ""}`
+              }
             >
               Kirjaudu
             </NavLink>
