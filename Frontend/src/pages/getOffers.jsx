@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getOffersForUser, acceptOffer } from "../controllers/formController";
+import { FaBuilding, FaFilePdf, FaCheck, FaEuroSign } from "react-icons/fa";
 
 const GetOffers = () => {
   const [offers, setOffers] = useState([]);
@@ -67,8 +68,8 @@ const GetOffers = () => {
     return <p className="text-red-600 text-center p-4">Error: {error}</p>;
 
   return (
-    <div className="container mx-auto p-6 max-w-4xl">
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">Received Offers</h2>
+    <div className="container mx-auto p-4 sm:p-6 max-w-4xl">
+      <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-800">Received Offers</h2>
       {offers.length === 0 ? (
         <p className="text-gray-500 text-center py-8">
           No offers received yet.
@@ -78,69 +79,45 @@ const GetOffers = () => {
           {offers.map((offer, index) => (
             <div
               key={index}
-              className="border border-gray-200 rounded-lg p-5 hover:shadow-md transition-shadow bg-white"
+              className="border border-gray-200 rounded-lg p-4 sm:p-5 hover:shadow-md transition-shadow bg-white"
             >
-              <div className="flex justify-between items-start">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-1">
-                    {offer.offerData?.firmName}
-                  </h3>
-                  <p className="text-gray-600 mb-2">
-                    <span className="font-medium">Provider:</span>{" "}
-                    {offer.offerData?.providerEmail}
-                  </p>
-                  <p className="text-gray-700">
+                  <div className="flex items-center gap-2 mb-2">
+                    <FaBuilding className="text-blue-600" />
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-800">
+                      {offer.offerData?.firmName}
+                    </h3>
+                  </div>
+                  <p className="text-sm sm:text-base text-gray-700 mb-4">
                     {offer.offerData?.description}
                   </p>
                 </div>
-                <div className="text-right ml-4">
-                  <div className="text-3xl font-bold text-blue-600">
-                    {offer.offerData?.price} €
+                <div className="text-right">
+                  <div className="flex items-center justify-end gap-2">
+                    <FaEuroSign className="text-blue-600" />
+                    <div className="text-2xl sm:text-3xl font-bold text-blue-600">
+                      {offer.offerData?.price} €
+                    </div>
                   </div>
-                  <div className="text-sm text-gray-500 mt-1">Total price</div>
+                  <div className="text-xs sm:text-sm text-gray-500 mt-1">Total price</div>
                 </div>
               </div>
 
-              <div className="mt-4 flex justify-end space-x-3">
+              <div className="mt-4 flex flex-col sm:flex-row sm:justify-end gap-3">
                 {offer.offerData.pdfFile && (
                   <button
                     onClick={() => handleViewPdf(offer.offerData.pdfFile)}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center"
+                    className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
                   >
-                    <svg
-                      className="w-4 h-4 mr-2"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                      />
-                    </svg>
+                    <FaFilePdf />
                     View Proposal
                   </button>
                 )}
 
                 {offer.status === "Accepted" ? (
-                  <span className="px-4 py-2 bg-yellow-100 text-yellow-800 rounded-lg font-medium flex items-center">
-                    <svg
-                      className="w-4 h-4 mr-2 text-yellow-600"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
+                  <span className="w-full sm:w-auto px-4 py-2 bg-green-100 text-green-800 rounded-lg font-medium flex items-center justify-center gap-2">
+                    <FaCheck className="text-green-600" />
                     Offer Accepted
                   </span>
                 ) : (
@@ -152,22 +129,9 @@ const GetOffers = () => {
                         offer.offerData?.providerEmail
                       )
                     }
-                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center"
+                    className="w-full sm:w-auto px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
                   >
-                    <svg
-                      className="w-4 h-4 mr-2"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
+                    <FaCheck />
                     Accept Offer
                   </button>
                 )}

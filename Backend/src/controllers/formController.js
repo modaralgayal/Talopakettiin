@@ -26,11 +26,12 @@ const client = async () => {
 export const receiveFormData = async (req, res) => {
   console.log("Receiving...");
   try {
-    const user = req.user;
+    // Handle both authenticated and unauthenticated users
+    const user = req.user || { userId: `temp_${uuidv4()}`, username: 'guest' };
     console.log("Request body:", req.body);
 
-    // Check application limit for new applications
-    if (req.body.entryType !== "offer") {
+    // Check application limit for new applications (only for authenticated users)
+    if (req.body.entryType !== "offer" && req.user) {
       const limitCheck = await checkApplicationLimit(user.userId);
       if (!limitCheck.canSubmit) {
         return res.status(400).json({
@@ -58,6 +59,7 @@ export const receiveFormData = async (req, res) => {
       timestamp: new Date().toISOString(),
       status: entryType === "offer" ? "pending" : "applied - pending",
       entryType,
+      isTemporary: !req.user // Flag to identify temporary submissions
     };
 
     if (entryType === "offer" && offerId) {
@@ -73,7 +75,9 @@ export const receiveFormData = async (req, res) => {
       message: "Form data saved successfully!",
       entryId,
       currentCount: limitCheck?.currentCount + 1 || 1,
-      limit: limitCheck?.limit || 10
+      limit: limitCheck?.limit || 10,
+      isTemporary: !req.user,
+      tempUserId: user.userId
     });
   } catch (error) {
     console.error("Error saving form data:", error);

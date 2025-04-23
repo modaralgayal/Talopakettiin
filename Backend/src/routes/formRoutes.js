@@ -13,13 +13,13 @@ import {
 
 const router = express.Router();
 
-router.post("/receive-form-data", authenticateJWT, receiveFormData);
+// Allow unauthenticated form submissions
+router.post("/receive-form-data", receiveFormData);
 router.get("/get-user-forms", authenticateJWT, getApplicationsForUser);
-router.post("/delete-user-entry", authenticateJWT, deleteItemByEntryId);
-router.get("/get-all-entries", authenticateJWT, getAllEntryIds);
 router.get("/get-user-offers", authenticateJWT, getOffersForUser);
-router.put("/accept-given-offer", authenticateJWT, acceptOffer);
-router.get("/test-sub-content", authenticateJWT);
 router.post("/make-offer", authenticateJWT, makeOfferMiddleware, makeOffer);
+router.put("/accept-given-offer", authenticateJWT, acceptOffer);
+router.delete("/delete-item/:entryId", authenticateJWT, deleteItemByEntryId);
+router.get("/get-all-entries", authenticateJWT, getAllEntryIds);
 
 export default router;

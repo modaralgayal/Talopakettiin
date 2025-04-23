@@ -29,11 +29,16 @@ export const Header = () => {
                   <NavLink
                     to={item.path}
                     className={({ isActive }) =>
-                      `text-gray-700 hover:text-blue-600 text-lg font-medium transition-colors
+                      `text-gray-700 hover:text-blue-600 text-lg font-medium transition-colors relative pb-2
                       ${isActive ? "text-blue-600" : ""}`
                     }
                   >
-                    {item.name}
+                    {({ isActive }) => (
+                      <>
+                        {item.name}
+                        <div className={`absolute bottom-0 left-0 right-0 h-1 bg-blue-600 transform transition-opacity duration-200 ${isActive ? "opacity-100" : "opacity-0"}`}></div>
+                      </>
+                    )}
                   </NavLink>
                 </li>
               ))}
@@ -44,13 +49,24 @@ export const Header = () => {
           <div className="flex items-center space-x-6">
             <NavLink
               to="/signin"
-              className="text-gray-700 hover:text-blue-600 text-lg font-medium transition-colors"
+              className={({ isActive }) =>
+                `text-gray-700 hover:text-blue-600 text-lg font-medium transition-colors relative pb-2
+                ${isActive ? "text-blue-600" : ""}`
+              }
             >
-              Kirjaudu
+              {({ isActive }) => (
+                <>
+                  Kirjaudu
+                  <div className={`absolute bottom-0 left-0 right-0 h-1 bg-blue-600 transform transition-opacity duration-200 ${isActive ? "opacity-100" : "opacity-0"}`}></div>
+                </>
+              )}
             </NavLink>
             <NavLink
               to="/formpage"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-full text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+              className={({ isActive }) =>
+                `inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-full text-white transition-colors
+                ${isActive ? "bg-blue-700" : "bg-blue-600 hover:bg-blue-700"}`
+              }
             >
               Täytä hakemus
             </NavLink>
