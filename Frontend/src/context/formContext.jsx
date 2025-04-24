@@ -5,10 +5,8 @@ const defaultFormData = {
   // Perustiedot fields
   kaupunki: "",
   maakunta: "",
-  minBudget: "",
-  maxBudget: "",
-  minSize: "",
-  maxSize: "",
+  budjetti: "",
+  talonKoko: "",
   bedrooms: "",
   kodinhoitohuone: "",
   kodinhoitohuoneDetails: "",

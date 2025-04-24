@@ -48,7 +48,24 @@ export const PerustiedotForm = ({ formData, setFormData }) => {
   // Handle number inputs with validation
   const handleNumberInput = (field, value) => {
     const numValue = value === "" ? "" : Number(value);
+    
+    // Update the individual min/max values
     setFormData({ ...formData, [field]: numValue });
+    
+    // Update the formatted range fields
+    if (field === "minBudget" || field === "maxBudget") {
+      const min = field === "minBudget" ? numValue : formData.minBudget;
+      const max = field === "maxBudget" ? numValue : formData.maxBudget;
+      const formattedRange = min && max ? `${min} € - ${max} €` : "";
+      setFormData(prev => ({ ...prev, budjetti: formattedRange }));
+    }
+    
+    if (field === "minSize" || field === "maxSize") {
+      const min = field === "minSize" ? numValue : formData.minSize;
+      const max = field === "maxSize" ? numValue : formData.maxSize;
+      const formattedRange = min && max ? `${min} m² - ${max} m²` : "";
+      setFormData(prev => ({ ...prev, talonKoko: formattedRange }));
+    }
   };
 
   // Handle text input changes
@@ -131,6 +148,7 @@ export const PerustiedotForm = ({ formData, setFormData }) => {
             value={formData.minBudget ?? ""}
             onChange={(e) => handleNumberInput("minBudget", e.target.value)}
             min="0"
+            step="10000"
           />
           <input
             type="number"
@@ -139,6 +157,7 @@ export const PerustiedotForm = ({ formData, setFormData }) => {
             value={formData.maxBudget ?? ""}
             onChange={(e) => handleNumberInput("maxBudget", e.target.value)}
             min={formData.minBudget || "0"}
+            step="10000"
           />
         </div>
       </div>
@@ -154,6 +173,7 @@ export const PerustiedotForm = ({ formData, setFormData }) => {
             value={formData.minSize ?? ""}
             onChange={(e) => handleNumberInput("minSize", e.target.value)}
             min="0"
+            step="5"
           />
           <input
             type="number"
@@ -162,6 +182,7 @@ export const PerustiedotForm = ({ formData, setFormData }) => {
             value={formData.maxSize ?? ""}
             onChange={(e) => handleNumberInput("maxSize", e.target.value)}
             min={formData.minSize || "0"}
+            step="5"
           />
         </div>
       </div>

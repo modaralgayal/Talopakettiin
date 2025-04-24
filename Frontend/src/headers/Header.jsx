@@ -8,36 +8,36 @@ export const Header = () => {
       <nav className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Left side - Logo and main navigation */}
-          <div className="flex items-center space-x-12">
+        <div className="flex items-center space-x-12">
             {/* Logo */}
             <NavLink to="/" className="flex-shrink-0">
-              <img
-                src={blackLogo}
+            <img
+              src={blackLogo}
                 alt="Talopakettiin Logo"
-                className="w-32 h-auto object-contain hover:opacity-80 transition-opacity"
-              />
-            </NavLink>
+              className="w-32 h-auto object-contain hover:opacity-80 transition-opacity"
+            />
+          </NavLink>
 
             {/* Main Navigation */}
             <ul className="hidden md:flex space-x-8">
-              {[
+            {[
                 { name: "Etusivu", path: "/" },
                 { name: "Tietoa meistä", path: "/about" },
                 { name: "Yhteystiedot", path: "/contact" },
-              ].map((item) => (
+            ].map((item) => (
                 <li key={item.name}>
-                  <NavLink
-                    to={item.path}
-                    className={({ isActive }) =>
+                <NavLink
+                  to={item.path}
+                  className={({ isActive }) =>
                       `text-gray-700 hover:text-blue-600 text-lg font-medium transition-colors relative
                       ${isActive ? "text-blue-600 after:content-[''] after:absolute after:bottom-[-8px] after:left-0 after:w-full after:h-0.5 after:bg-blue-600" : ""}`
-                    }
-                  >
-                    {item.name}
-                  </NavLink>
-                </li>
-              ))}
-            </ul>
+                  }
+                >
+                  {item.name}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
           </div>
 
           {/* Right side - Sign in and Provider options */}
@@ -46,7 +46,7 @@ export const Header = () => {
               to="/signin"
               className={({ isActive }) =>
                 `text-gray-700 hover:text-blue-600 text-lg font-medium transition-colors relative
-                ${isActive ? "text-blue-600 after:content-[''] after:absolute after:bottom-[-8px] after:left-0 after:w-full after:h-1 after:bg-blue-600" : ""}`
+                ${isActive ? "text-blue-600 after:content-[''] after:absolute after:bottom-[-8px] after:left-0 after:w-full after:h-0.5 after:bg-blue-600" : ""}`
               }
             >
               Kirjaudu

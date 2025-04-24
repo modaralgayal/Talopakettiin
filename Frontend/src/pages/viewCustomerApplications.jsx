@@ -64,7 +64,7 @@ export const ViewCustomerApplications = () => {
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Kaikki hakemukset
-          </h1>
+        </h1>
           <p className="text-lg text-gray-600">
             Selaa ja suodata hakemuksia sijainnin mukaan
           </p>
@@ -75,7 +75,7 @@ export const ViewCustomerApplications = () => {
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <FaSearch className="h-5 w-5 text-gray-400" />
-            </div>
+          </div>
             <input
               type="text"
               className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
@@ -87,15 +87,15 @@ export const ViewCustomerApplications = () => {
         </div>
 
         {/* Applications Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="space-y-6">
           {filteredApplications.map((app, index) => {
-            const formData = filterEmptyValues(app.formData);
+              const formData = filterEmptyValues(app.formData);
             const city = formData.kaupunki || `Hakemus ${index + 1}`;
             const province = formData.maakunta || "Ei määritelty";
             const budget = formData.budjetti || "Ei määritelty";
             const size = formData.talonKoko || "Ei määritelty";
 
-            return (
+              return (
               <div
                 key={app.entryId}
                 className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200"
@@ -138,10 +138,10 @@ export const ViewCustomerApplications = () => {
                       Tee tarjous
                     </button>
                   </div>
-                </div>
+                  </div>
 
-                {/* Application details */}
-                {openedAppIndex === index && (
+                  {/* Application details */}
+                  {openedAppIndex === index && (
                   <div className="border-t border-gray-200 p-6 bg-gray-50">
                     <h3 className="text-lg font-medium text-gray-900 mb-4">Hakemuksen tiedot</h3>
                     <div className="grid grid-cols-2 gap-4">
@@ -152,11 +152,11 @@ export const ViewCustomerApplications = () => {
                         </div>
                       ))}
                     </div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
         </div>
 
         {filteredApplications.length === 0 && (
