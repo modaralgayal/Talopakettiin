@@ -19,7 +19,7 @@ import GetOffers from "./pages/getOffers";
 import { validateToken, logOut } from "./controllers/userController";
 
 // Define public routes that don't require authentication
-const publicRoutes = ['/', '/about', '/contact', '/signin', '/confirmuser'];
+const publicRoutes = ['/', '/about', '/contact', '/signin', '/confirmuser', '/formpage'];
 
 function App() {
   const [userType, setUserType] = useState(null);

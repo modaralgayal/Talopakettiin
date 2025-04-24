@@ -20,6 +20,12 @@ export const sendFormData = async (formData) => {
       throw new Error(response.data.message || "Failed to submit form");
     }
   } catch (error) {
+    if (error.response?.status === 401) {
+      throw {
+        error: "Authentication Error",
+        message: "Sinun täytyy kirjautua sisään lähettääksesi hakemuksen. Kirjaudu sisään ja yritä uudelleen."
+      };
+    }
     if (error.response?.data?.error === "Application limit reached") {
       throw {
         error: "Application limit reached",

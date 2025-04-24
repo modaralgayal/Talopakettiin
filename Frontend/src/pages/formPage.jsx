@@ -45,7 +45,12 @@ export const ApplicationForm = () => {
       alert("Hakemus lähetetty onnistuneesti!");
       resetForm();
     } catch (error) {
-      if (error.error === "Application limit reached") {
+      if (error.error === "Authentication Error") {
+        setError(error.message);
+        setTimeout(() => {
+          window.location.href = "/signin";
+        }, 3000);
+      } else if (error.error === "Application limit reached") {
         setError(error.message);
         setApplicationCount(error.currentCount);
         setApplicationLimit(error.limit);
