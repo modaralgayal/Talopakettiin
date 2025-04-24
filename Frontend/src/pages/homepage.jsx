@@ -38,8 +38,9 @@ export const Homepage = () => {
             Helpoin tapa vertailla talopaketteja ja saada tarjouksia luotettavilta toimittajilta. 
             Täytä yksi hakemus ja anna meidän hoitaa loput.
           </p>
+          {/* Do not change the route to /form!!*/}
           <Link
-            to="/form"
+            to="/formpage"
             className="inline-flex items-center px-8 py-4 border border-transparent text-lg font-medium rounded-full shadow-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200 tracking-wide"
           >
             Aloita hakuprosessi

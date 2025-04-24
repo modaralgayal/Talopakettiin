@@ -44,12 +44,12 @@ function App() {
     const checkSession = async () => {
       // Only check session if we're not on a public route
       if (!publicRoutes.includes(location.pathname)) {
-        const { isValid, userType } = await validateToken();
+      const { isValid, userType } = await validateToken();
 
-        if (isValid) {
-          setUserType(userType);
-        } else {
-          handleLogout();
+      if (isValid) {
+        setUserType(userType);
+      } else {
+        handleLogout();
         }
       }
     };
@@ -57,8 +57,8 @@ function App() {
     checkSession();
     // Only set up interval if we're not on a public route
     if (!publicRoutes.includes(location.pathname)) {
-      const interval = setInterval(checkSession, 60000);
-      return () => clearInterval(interval);
+    const interval = setInterval(checkSession, 60000);
+    return () => clearInterval(interval);
     }
   }, [location.pathname]); // Add location.pathname as a dependency
 

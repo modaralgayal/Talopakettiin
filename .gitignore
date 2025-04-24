@@ -1,2 +1,4 @@
 commands.txt
 vhost.conf
+.gitignore
+.env
