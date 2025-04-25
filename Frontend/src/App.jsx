@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Route, Routes, useNavigate, useLocation } from "react-router-dom";
+import {
+  Route,
+  Routes,
+  useNavigate,
+  useLocation,
+  Navigate,
+} from "react-router-dom";
 // Pages
 import { Homepage } from "./pages/homepage";
 import { AboutPage } from "./pages/aboutPage";
@@ -19,11 +25,20 @@ import GetOffers from "./pages/getOffers";
 import { validateToken, logOut } from "./controllers/userController";
 
 // Define public routes that don't require authentication
-const publicRoutes = ['/', '/about', '/contact', '/signin', '/confirmuser', '/formpage'];
+const publicRoutes = [
+  "/",
+  "/about",
+  "/contact",
+  "/signin",
+  "/confirmuser",
+  "/formpage",
+];
 
 function App() {
   const [userType, setUserType] = useState(null);
   const [formData, setFormData] = useState();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -32,35 +47,67 @@ function App() {
       await logOut();
       console.log("User logged out");
       setUserType(null);
+      setIsAuthenticated(false);
       navigate("/");
     } catch (error) {
       navigate("/");
       setUserType(null);
+      setIsAuthenticated(false);
       console.error("Logout failed:", error);
     }
   };
 
   useEffect(() => {
     const checkSession = async () => {
-      // Only check session if we're not on a public route
-      if (!publicRoutes.includes(location.pathname)) {
-      const { isValid, userType } = await validateToken();
-
-      if (isValid) {
-        setUserType(userType);
-      } else {
-        handleLogout();
+      console.log("Checking session...");
+      try {
+        const { isValid, userType } = await validateToken();
+    
+        if (isValid) {
+          setUserType(userType);
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+          setUserType(null);
+          // Only redirect if not on a public route
+          if (!publicRoutes.includes(location.pathname)) {
+            navigate('/signin');
+          }
         }
+      } catch (error) {
+        console.error("Session check error:", error);
+        setIsAuthenticated(false);
+        setUserType(null);
+      } finally {
+        setIsLoading(false);
       }
     };
-
+  
     checkSession();
-    // Only set up interval if we're not on a public route
-    if (!publicRoutes.includes(location.pathname)) {
+  
+    // Set up interval for session check
     const interval = setInterval(checkSession, 60000);
     return () => clearInterval(interval);
+  }, []); // Only run on mount, remove location.pathname dependency
+
+  // Protected route wrapper component
+  const ProtectedRoute = ({ children }) => {
+    // If still loading, don't redirect yet
+    if (isLoading) {
+      return null; // or a loading spinner component
     }
-  }, [location.pathname]); // Add location.pathname as a dependency
+
+    // Only redirect if not authenticated and not on a public route
+    if (!isAuthenticated && !publicRoutes.includes(location.pathname)) {
+      return <Navigate to="/signin" />;
+    }
+    return children;
+  };
+
+  // If initial loading, show nothing or a loading spinner
+  if (isLoading) {
+    return null; // or a loading spinner component
+  }
 
   return (
     <div>
@@ -74,12 +121,19 @@ function App() {
 
       <main>
         <Routes>
+          {/* Public Routes */}
           <Route path="/" element={<Homepage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactUsPage />} />
+          <Route path="/confirmuser" element={<ConfirmUser />} />
           <Route
             path="/signin"
-            element={<UnifiedSignIn setUserType={setUserType} />}
+            element={
+              <UnifiedSignIn
+                setUserType={setUserType}
+                setIsAuthenticated={setIsAuthenticated}
+              />
+            }
           />
           <Route
             path="/formpage"
@@ -87,14 +141,40 @@ function App() {
               <ApplicationForm formData={formData} setFormData={setFormData} />
             }
           />
-          <Route path="/confirmuser" element={<ConfirmUser />} />
-          <Route path="/viewmyapplications" element={<MyApplications />} />
+
+          {/* Protected Routes */}
+          <Route
+            path="/viewmyapplications"
+            element={
+              <ProtectedRoute>
+                <MyApplications />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/allapplications"
-            element={<ViewCustomerApplications />}
+            element={
+              <ProtectedRoute>
+                <ViewCustomerApplications />
+              </ProtectedRoute>
+            }
           />
-          <Route path="/makeoffer/" element={<MakeOffer />} />
-          <Route path="/viewmyoffers/" element={<GetOffers />} />
+          <Route
+            path="/makeoffer"
+            element={
+              <ProtectedRoute>
+                <MakeOffer />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/viewmyoffers"
+            element={
+              <ProtectedRoute>
+                <GetOffers />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </main>
     </div>

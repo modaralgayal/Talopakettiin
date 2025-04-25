@@ -53,8 +53,24 @@ export const ViewCustomerApplications = () => {
     setOpenedAppIndex(index === openedAppIndex ? null : index);
   };
 
-  const handleOffer = (userId, entryId, formData) => {
-    updateOfferData(userId, entryId, formData);
+  const handleOffer = (application) => {
+    // Make sure we have the customer's email
+    const customerEmail = application.customerEmail || application.email;
+    if (!customerEmail) {
+      alert("Customer email not found for this application");
+      return;
+    }
+
+    const formData = filterEmptyValues(application.formData);
+    const offerData = {
+      customerEmail,
+      entryId: application.entryId,
+      formData,
+      price: "",
+      firmName: "",
+      description: ""
+    };
+    updateOfferData(offerData);
     navigate("/makeoffer");
   };
 
@@ -131,7 +147,7 @@ export const ViewCustomerApplications = () => {
                       {openedAppIndex === index ? "Piilota tiedot" : "Näytä tiedot"}
                     </button>
                     <button
-                      onClick={() => handleOffer(app.userId, app.entryId, formData)}
+                      onClick={() => handleOffer(app)}
                       className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                     >
                       <FaBuilding className="h-4 w-4 mr-2" />

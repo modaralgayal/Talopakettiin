@@ -9,6 +9,7 @@ import {
   changeUserPassword,
 } from "../controllers/userController.js";
 import { authenticateJWT } from "../middleware/authenticate.js";
+import { verifyGoogleToken } from "../controllers/googleAuthController.js";
 
 const router = express.Router();
 
@@ -34,5 +35,6 @@ router.post("/validate-token", authenticateJWT, (req, res) => {
     userType: req.user.usertype,
   });
 });
+router.post("/google-auth", verifyGoogleToken);
 
 export default router;

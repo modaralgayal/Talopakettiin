@@ -65,41 +65,41 @@ export const addApplicationToUser = async (item) => {
 };
 
 export const getApplicationsForUser = async (req, res) => {
-  if (req.user.usertype !== "customer") {
+  if (req.user.userType !== "customer") {
     return res
       .status(403)
       .json({ error: "Access denied: User is not a customer" });
   }
+
   try {
-    const userId = req.user.userId;
     const client = await initDynamoDBClient();
+    const email = req.user.email;
 
     const params = {
       TableName: "Talopakettiin-API",
-      IndexName: "userId-index",
-      KeyConditionExpression: "userId = :userId",
-      FilterExpression: "entryType = :entryType",
-      ExpressionAttributeValues: {
-        ":userId": { S: userId },
-        ":entryType": { S: "application" }
-      },
+      FilterExpression: "email = :email",
+      ExpressionAttributeValues: marshall({
+        ":email": email
+      })
     };
 
-    const command = new QueryCommand(params);
-    const data = await client.send(command);
+    const command = new ScanCommand(params);
+    const response = await client.send(command);
+    
+    const applications = response.Items
+      ? response.Items.map(item => unmarshall(item))
+      : [];
 
-    const applications = data.Items.map(parseDynamoItem);
-    console.log("Parsed Applications:", applications);
-    res.status(200).json({ applications });
+    res.json(applications);
   } catch (error) {
-    console.error("Error fetching applications for user:", error);
+    console.error("Error fetching applications:", error);
     res.status(500).json({ error: "Failed to fetch applications" });
   }
 };
 
 export const getAllEntryIds = async (req, res) => {
   try {
-    if (req.user.usertype !== "provider") {
+    if (req.user.userType !== "provider") {
       return res
         .status(403)
         .json({ error: "Access denied: User is not a provider" });
@@ -141,73 +141,40 @@ export const getAllEntryIds = async (req, res) => {
 };
 
 export const getOffersForUser = async (req, res) => {
-  if (req.user.usertype !== "customer") {
+  if (req.user.userType !== "customer") {
     return res
       .status(403)
       .json({ error: "Access denied: User is not a customer" });
   }
 
   try {
-    const userId = req.user.userId;
+    const userEmail = req.user.email;
     const client = await initDynamoDBClient();
 
-    // Fetch application data for the logged-in user
-    const applicationParams = {
+    // Query offers directly using customerEmail and entryType
+    const params = {
       TableName: "Talopakettiin-API",
-      IndexName: "userId-index",
-      KeyConditionExpression: "userId = :userId",
+      FilterExpression: "entryType = :entryType AND customerEmail = :customerEmail",
       ExpressionAttributeValues: {
-        ":userId": { S: userId },
-      },
+        ":entryType": { S: "offer" },
+        ":customerEmail": { S: userEmail }
+      }
     };
 
-    const applicationData = await client.send(
-      new QueryCommand(applicationParams)
-    );
+    const command = new ScanCommand(params);
+    const data = await client.send(command);
 
-    // Extract entryIds from application data
-    const applicationIds = applicationData.Items.map(
-      (item) => item.entryId?.S
-    ).filter((entryId) => entryId !== undefined);
+    // Map and unmarshall the offers
+    const offers = data.Items ? data.Items.map(item => unmarshall(item)) : [];
 
-    // Deduplicate entryIds (in case multiple applications have the same entryId)
-    const uniqueEntryIds = [...new Set(applicationIds)];
-
-    if (uniqueEntryIds.length === 0) {
-      return res.status(200).json({ offers: [] });
-    }
-
-    let offers = [];
-
-    // Loop over the unique entryIds and fetch offers
-    for (const entryId of uniqueEntryIds) {
-      const offerParams = {
-        TableName: "Talopakettiin-API",
-        IndexName: "entryType-entryId-index",
-        KeyConditionExpression: "entryType = :entryType AND entryId = :entryId",
-        ExpressionAttributeValues: {
-          ":entryType": { S: "offer" },
-          ":entryId": { S: entryId },
-        },
-      };
-
-      const offerData = await client.send(new QueryCommand(offerParams));
-
-      // If offers are found, map and add them to the offers array
-      if (offerData.Items?.length > 0) {
-        const mappedOffers = offerData.Items.map((item) => unmarshall(item));
-        offers.push(...mappedOffers);
-      }
-    }
-
-    // Optional: Deduplicate offers based on offer ID
-    const dedupedOffers = Array.from(
-      new Map(offers.map((offer) => [offer.id, offer])).values()
+    // Optional: Sort offers by timestamp in descending order (newest first)
+    const sortedOffers = offers.sort((a, b) => 
+      new Date(b.timestamp) - new Date(a.timestamp)
     );
 
     res.status(200).json({
       success: true,
-      data: { offers: dedupedOffers },
+      data: { offers: sortedOffers }
     });
   } catch (error) {
     console.error("Error fetching offers for user:", error);
@@ -216,7 +183,7 @@ export const getOffersForUser = async (req, res) => {
 };
 
 export const deleteItemByEntryId = async (req, res) => {
-  if (req.user.usertype !== "customer") {
+  if (req.user.userType !== "customer") {
     return res
       .status(403)
       .json({ error: "Access denied: User is not a customer" });
@@ -256,7 +223,7 @@ export const deleteItemByEntryId = async (req, res) => {
 };
 
 export const acceptOffer = async (req, res) => {
-  if (req.user.usertype !== "customer") {
+  if (req.user.userType !== "customer") {
     return res
       .status(403)
       .json({ error: "Access denied: User is not a customer" });
@@ -380,16 +347,17 @@ export const makeOfferMiddleware = upload.single("pdfFile"); // handles multipar
 
 export const makeOffer = async (req, res) => {
   try {
-    if (req.user.usertype !== "provider") {
+    if (req.user.userType !== "provider") {
       return res
         .status(403)
         .json({ error: "Access denied: User is not a provider" });
     }
 
-    const { offerData, userId, entryId } = req.body;
-    const providerId = req.user.userId;
+    const { offerData, customerEmail, entryId } = req.body;
+    const providerEmail = req.user.email;
+    const providerName = req.user.name;
 
-    if (!offerData || !userId || !entryId) {
+    if (!offerData || !customerEmail || !entryId) {
       return res.status(400).json({ error: "Missing required parameters." });
     }
 
@@ -414,10 +382,10 @@ export const makeOffer = async (req, res) => {
     const offerItem = {
       id: offerId,
       offerData: parsedOfferData,
-      userId,
-      providerId,
+      customerEmail,
+      providerEmail,
+      providerName,
       entryId,
-      username: req.user.username,
       entryType: "offer",
       status: "pending",
       timestamp: new Date().toISOString(),
@@ -439,26 +407,25 @@ export const makeOffer = async (req, res) => {
   }
 };
 
-export const checkApplicationLimit = async (userId) => {
+export const checkApplicationLimit = async (email) => {
   const client = await initDynamoDBClient();
-  
   const params = {
     TableName: "Talopakettiin-API",
-    IndexName: "userId-index",
-    KeyConditionExpression: "userId = :userId",
-    FilterExpression: "entryType = :entryType",
-    ExpressionAttributeValues: {
-      ":userId": { S: userId },
-      ":entryType": { S: "application" }
-    }
+    FilterExpression: "email = :email AND entryType = :type",
+    ExpressionAttributeValues: marshall({
+      ":email": email,
+      ":type": "application"
+    })
   };
 
   try {
-    const data = await client.send(new QueryCommand(params));
-    const applicationCount = data.Items.length;
+    const command = new ScanCommand(params);
+    const response = await client.send(command);
+    const currentCount = response.Items ? response.Items.length : 0;
+
     return {
-      canSubmit: applicationCount < APPLICATION_LIMIT,
-      currentCount: applicationCount,
+      canSubmit: currentCount < APPLICATION_LIMIT,
+      currentCount,
       limit: APPLICATION_LIMIT
     };
   } catch (error) {

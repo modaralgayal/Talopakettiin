@@ -5,7 +5,13 @@ const API_URL = "http://localhost:8000/api/forms";
 // Send Form Data
 export const sendFormData = async (formData) => {
   try {
+    // Get the token from wherever you store it after Google sign-in
+    const token = localStorage.getItem('token');
+    
     const response = await axios.post(`${API_URL}/receive-form-data`, formData, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
       withCredentials: true,
     });
 
@@ -41,7 +47,12 @@ export const sendFormData = async (formData) => {
 // Get User Forms
 export const getUserForms = async () => {
   try {
+    const token = localStorage.getItem('token');
+    
     const response = await axios.get(`${API_URL}/get-user-forms`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
       withCredentials: true,
     });
     return response.data;
@@ -107,18 +118,21 @@ export const acceptOffer = async (id, entryId, emailAddress) => {
 };
 
 // Make Offer to User with PDF support
-export const makeOfferToUser = async (offerData, userId, entryId, pdfFile) => {
+export const makeOfferToUser = async (offerData, customerEmail, entryId, pdfFile) => {
   try {
     const formData = new FormData();
-    formData.append("userId", userId);
+    formData.append("customerEmail", customerEmail);
     formData.append("entryId", entryId);
     formData.append("pdfFile", pdfFile);
     formData.append("offerData", JSON.stringify(offerData));
 
+    const token = localStorage.getItem('token');
+    
     const response = await axios.post(`${API_URL}/make-offer`, formData, {
       withCredentials: true,
       headers: {
         "Content-Type": "multipart/form-data",
+        "Authorization": `Bearer ${token}`
       },
     });
     return response.data;

@@ -27,6 +27,16 @@ export const receiveFormData = async (req, res) => {
   console.log("Receiving...");
   try {
     const user = req.user;
+    
+    // Check if user is a customer
+    if (user.userType !== "customer") {
+      return res.status(403).json({
+        success: false,
+        error: "Access denied",
+        message: "Only customers can submit applications"
+      });
+    }
+
     console.log("Request body:", req.body);
 
     // Initialize limitCheck with default values
@@ -36,9 +46,9 @@ export const receiveFormData = async (req, res) => {
       limit: 10
     };
 
-    // Check application limit for new applications
+    // Check application limit for new applications using email instead of userId
     if (req.body.entryType !== "offer") {
-      limitCheck = await checkApplicationLimit(user.userId);
+      limitCheck = await checkApplicationLimit(user.email);
       if (!limitCheck.canSubmit) {
         return res.status(400).json({
           success: false,
@@ -58,8 +68,10 @@ export const receiveFormData = async (req, res) => {
     console.log("Generated entryId:", entryId);
 
     let applicationData = {
-      userId: user.userId,
-      username: user.username,
+      email: user.email,
+      customerEmail: user.email,
+      name: user.name || user.email.split('@')[0],
+      userType: user.userType,
       formData: req.body,
       entryId: String(entryId),
       timestamp: new Date().toISOString(),

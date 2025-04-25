@@ -10,14 +10,12 @@ const MakeOffer = () => {
   const [price, setPrice] = useState(offerData.price || "");
   const [firmName, setFirmName] = useState(offerData.firmName || "");
   const [description, setDescription] = useState(offerData.description || "");
-  const [providerEmail, setProviderEmail] = useState(offerData.providerEmail || "");
-  const [pdfFile, setPdfFile] = useState(null); // PDF file state
+  const [pdfFile, setPdfFile] = useState(null);
 
   useEffect(() => {
     setPrice(offerData.price || "");
     setFirmName(offerData.firmName || "");
     setDescription(offerData.description || "");
-    setProviderEmail(offerData.providerEmail || "");
     console.log("This is the application we are offering to:", offerData.formData);
   }, [offerData]);
 
@@ -29,18 +27,17 @@ const MakeOffer = () => {
       price,
       firmName,
       description,
-      providerEmail,
     };
 
     updateOfferData(updatedOffer);
 
     console.log("Sending PDF file:", pdfFile);
 
-    makeOfferToUser(updatedOffer, offerData.userId, offerData.entryId, pdfFile) // ✅ Pass file separately
+    makeOfferToUser(updatedOffer, offerData.customerEmail, offerData.entryId, pdfFile)
       .then((res) => {
         console.log("Offer successfully submitted:", res);
-        // Optionally reset form here
-        // navigate("/confirmation");
+        alert("Offer submitted successfully!");
+        navigate("/allapplications");
       })
       .catch((error) => {
         console.error("Failed to submit offer:", error);
@@ -108,22 +105,6 @@ const MakeOffer = () => {
               className="w-full p-2 border rounded"
               placeholder="Enter description"
               rows="4"
-              required
-            />
-          </div>
-
-          {/* Provider Email Input */}
-          <div>
-            <label htmlFor="providerEmail" className="block text-left font-medium mb-2">
-              Provider Email
-            </label>
-            <input
-              id="providerEmail"
-              type="email"
-              value={providerEmail}
-              onChange={(e) => setProviderEmail(e.target.value)}
-              className="w-full p-2 border rounded"
-              placeholder="Enter your email"
               required
             />
           </div>

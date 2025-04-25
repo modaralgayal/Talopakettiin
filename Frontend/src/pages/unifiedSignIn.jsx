@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { signIn, signup } from "../controllers/userController";
 import { useNavigate } from "react-router-dom";
 import { FaUser, FaBuilding } from "react-icons/fa";
 
-export const UnifiedSignIn = ({ setUserType }) => {
+export const UnifiedSignIn = ({ setUserType, setIsAuthenticated }) => {
   const [isRegister, setIsRegister] = useState(false);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -12,6 +12,8 @@ export const UnifiedSignIn = ({ setUserType }) => {
   const [message, setMessage] = useState(null);
   const [messageType, setMessageType] = useState("error");
   const [selectedUserType, setSelectedUserType] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleScriptLoaded, setIsGoogleScriptLoaded] = useState(false);
   const navigate = useNavigate();
 
   const showMessage = (text, type) => {
@@ -20,71 +22,150 @@ export const UnifiedSignIn = ({ setUserType }) => {
     setTimeout(() => setMessage(null), 5000);
   };
 
-  const handleSignIn = async (event) => {
-    event.preventDefault();
+  const handleGoogleResponse = async (response) => {
+    console.log("Selected user type at response:", selectedUserType);
+
     if (!selectedUserType) {
-      showMessage("Please select your user type", "error");
+      showMessage("Please select your user type first", "error");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const res = await fetch("http://localhost:8000/api/user/google-auth", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          token: response.credential,
+          userType: selectedUserType,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setUserType(selectedUserType);
+        setIsAuthenticated(true);
+        showMessage("Successfully signed in with Google!", "success");
+        if (selectedUserType === "customer") {
+          navigate("/formpage");
+        } else {
+          navigate("/allapplications");
+        }
+      } else {
+        showMessage(data.error || "Failed to sign in with Google", "error");
+      }
+    } catch (error) {
+      showMessage("Error signing in with Google", "error");
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const initializeGoogleSignIn = () => {
+    const buttonContainer = document.getElementById("google-signin");
+    if (!window.google || !buttonContainer) {
+      console.log("Google or button container not ready");
       return;
     }
 
     try {
-      const response = await signIn(username, password, selectedUserType);
-      showMessage(response.message, "success");
-      setUserType(selectedUserType);
+      // Clear existing button if any
+      buttonContainer.innerHTML = "";
+
+      // Initialize Google Sign-In with additional configuration
+      window.google.accounts.id.initialize({
+        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+        callback: handleGoogleResponse,
+        auto_select: false,
+        cancel_on_tap_outside: true,
+        context: "signin",
+        ux_mode: "popup",
+        prompt_parent_id: "google-signin",
+      });
+
+      // Render new button with updated configuration
+      window.google.accounts.id.renderButton(buttonContainer, {
+        theme: "outline",
+        size: "large",
+        width: 250,
+        text: "signin_with",
+        shape: "rectangular",
+        logo_alignment: "center",
+      });
+
+      console.log("Google Sign-In initialized successfully");
     } catch (error) {
-      const errorMessage =
-        typeof error === "string" ? error : error.error || "Sign-in failed.";
-      showMessage(errorMessage, "error");
+      console.error("Error initializing Google Sign-In:", error);
+      showMessage(
+        "Error initializing Google Sign-In. Please try again.",
+        "error"
+      );
     }
   };
 
-  const handleRegister = async (event) => {
-    event.preventDefault();
-    if (!selectedUserType) {
-      showMessage("Please select your user type", "error");
-      return;
-    }
+  // Load Google Script
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.defer = true;
 
-    if (password !== confirm) {
-      showMessage("The passwords do not match. Try again.", "error");
-      return;
-    }
+    script.onload = () => {
+      console.log("Google script loaded");
+      setIsGoogleScriptLoaded(true);
+    };
 
-    try {
-      const response = await signup(username, password, email, selectedUserType);
-      showMessage("User Registered Successfully!", "success");
-      setUserType(selectedUserType);
-    } catch (error) {
-      const errorMessage =
-        typeof error === "string"
-          ? error
-          : error.error || "Registration failed.";
-      showMessage(errorMessage, "error");
-    }
-  };
+    document.head.appendChild(script);
 
-  const handleGoToConfirmUser = () => {
-    navigate("/confirmuser");
+    return () => {
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+      if (window.google?.accounts?.id) {
+        window.google.accounts.id.cancel();
+      }
+    };
+  }, []);
+
+  // Initialize button when script is loaded and user type is selected
+  useEffect(() => {
+    if (isGoogleScriptLoaded && selectedUserType) {
+      console.log(
+        "Initializing Google Sign-In with user type:",
+        selectedUserType
+      );
+      // Small delay to ensure DOM is ready
+      const timeoutId = setTimeout(initializeGoogleSignIn, 100);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [isGoogleScriptLoaded, selectedUserType]);
+
+  const handleUserTypeSelection = (type) => {
+    console.log("Setting user type to:", type);
+    setSelectedUserType(type);
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-blue-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            {isRegister ? "Rekisteröidy" : "Kirjaudu sisään"}
+          <h2 className="text-center text-3xl font-extrabold text-gray-900">
+            Sign In
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            {isRegister
-              ? "Luo uusi tili jatkaaksesi"
-              : "Kirjaudu sisään jatkaaksesi"}
+            Please select your user type to continue
           </p>
         </div>
 
         {/* User Type Selection */}
         <div className="grid grid-cols-2 gap-4 mb-6">
           <button
-            onClick={() => setSelectedUserType("customer")}
+            type="button"
+            onClick={() => handleUserTypeSelection("customer")}
             className={`flex items-center justify-center p-4 rounded-lg border-2 transition-all ${
               selectedUserType === "customer"
                 ? "border-blue-500 bg-blue-50"
@@ -95,7 +176,8 @@ export const UnifiedSignIn = ({ setUserType }) => {
             <span className="font-medium">Hakija</span>
           </button>
           <button
-            onClick={() => setSelectedUserType("provider")}
+            type="button"
+            onClick={() => handleUserTypeSelection("provider")}
             className={`flex items-center justify-center p-4 rounded-lg border-2 transition-all ${
               selectedUserType === "provider"
                 ? "border-blue-500 bg-blue-50"
@@ -107,110 +189,36 @@ export const UnifiedSignIn = ({ setUserType }) => {
           </button>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={isRegister ? handleRegister : handleSignIn}>
-          <div className="rounded-md shadow-sm space-y-4">
-            <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-                Käyttäjänimi
-              </label>
-              <input
-                id="username"
-                type="text"
-                required
-                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Syötä käyttäjänimi"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-              />
-            </div>
+        {/* Google Sign-In Container - Always present but only populated when ready */}
+        <div
+          id="google-signin"
+          className="flex justify-center min-h-[40px]"
+        ></div>
 
-            {isRegister && (
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                  Sähköposti
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  required
-                  className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                  placeholder="Syötä sähköposti"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-            )}
+        {!selectedUserType && (
+          <p className="text-center text-sm text-gray-600">
+            Please select a user type above to enable sign-in
+          </p>
+        )}
 
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Salasana
-              </label>
-              <input
-                id="password"
-                type="password"
-                required
-                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Syötä salasana"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-
-            {isRegister && (
-              <div>
-                <label htmlFor="confirm" className="block text-sm font-medium text-gray-700">
-                  Vahvista salasana
-                </label>
-                <input
-                  id="confirm"
-                  type="password"
-                  required
-                  className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                  placeholder="Vahvista salasana"
-                  value={confirm}
-                  onChange={(e) => setConfirm(e.target.value)}
-                />
-              </div>
-            )}
-          </div>
-
-          {message && (
-            <div
-              className={`rounded-md p-4 ${
-                messageType === "error" ? "bg-red-50 text-red-700" : "bg-green-50 text-green-700"
-              }`}
-            >
-              <p className="text-sm font-medium">{message}</p>
-            </div>
-          )}
-
-          <div>
-            <button
-              type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              {isRegister ? "Rekisteröidy" : "Kirjaudu sisään"}
-            </button>
-          </div>
-        </form>
-
-        <div className="flex items-center justify-between">
-          <button
-            onClick={() => setIsRegister(!isRegister)}
-            className="text-sm text-blue-600 hover:text-blue-500"
+        {message && (
+          <div
+            className={`mt-4 p-3 rounded ${
+              messageType === "error"
+                ? "bg-red-100 text-red-700"
+                : "bg-green-100 text-green-700"
+            }`}
           >
-            {isRegister
-              ? "Onko sinulla jo tili? Kirjaudu sisään"
-              : "Ei tiliä? Rekisteröidy"}
-          </button>
-          <button
-            onClick={handleGoToConfirmUser}
-            className="text-sm text-green-600 hover:text-green-500"
-          >
-            Vahvista käyttäjä
-          </button>
-        </div>
+            {message}
+          </div>
+        )}
+
+        {isLoading && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+          </div>
+        )}
       </div>
     </div>
   );
-}; 
+};

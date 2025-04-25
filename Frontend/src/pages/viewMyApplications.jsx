@@ -15,10 +15,10 @@ export const MyApplications = () => {
   const fetchApplications = async () => {
     try {
       const response = await getUserForms();
-      console.log("Fetched applications:", response.applications);
+      console.log("Fetched applications:", response);
       
       // Ensure each application has a unique ID and valid entryId
-      const uniqueApplications = response.applications.map((app, index) => {
+      const uniqueApplications = response.map((app, index) => {
         console.log(`Processing application ${index}:`, app);
         return {
           ...app,
