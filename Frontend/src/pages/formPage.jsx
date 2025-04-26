@@ -9,13 +9,14 @@ import { useFormContext } from "../context/formContext";
 import { sendFormData } from "../controllers/formController";
 import { FaExclamationTriangle } from "react-icons/fa";
 
-export const ApplicationForm = () => {
-  const { formData, setFormData, resetForm, isAuthenticated, setIsAuthenticated } = useFormContext();
+export const ApplicationForm = (prop) => {
+  const { formData, setFormData, resetForm } = useFormContext();
   const [step, setStep] = useState(1);
   const [error, setError] = useState(null);
   const [applicationCount, setApplicationCount] = useState(null);
   const [applicationLimit, setApplicationLimit] = useState(10);
   const [isGoogleScriptLoaded, setIsGoogleScriptLoaded] = useState(false);
+  const [showGoogleSignInPrompt, setShowGoogleSignInPrompt] = useState(false);
 
   const steps = [
     { number: 1, title: "Perustiedot" },
@@ -25,6 +26,9 @@ export const ApplicationForm = () => {
     { number: 5, title: "Talotekniikka" },
     { number: 6, title: "Omat Tiedot" },
   ];
+
+  let isAuthenticated = prop.isAuthenticated
+  console.log(isAuthenticated)
 
   const nextStep = () => {
     if (step < steps.length) setStep(step + 1);
@@ -42,21 +46,18 @@ export const ApplicationForm = () => {
     try {
       const res = await fetch("http://localhost:8000/api/user/google-auth", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
           token: response.credential,
-          userType: "customer", // Set default user type for guest submissions
+          userType: "customer",
         }),
       });
 
       const data = await res.json();
       if (data.success) {
-        // Update authentication state in context
         setIsAuthenticated(true);
-        // Submit the form data
+        setShowGoogleSignInPrompt(false); // close popup after success
         await handleSubmit();
       } else {
         setError(data.error || "Failed to sign in with Google");
@@ -67,80 +68,8 @@ export const ApplicationForm = () => {
     }
   };
 
-  const initializeGoogleSignIn = () => {
-    const buttonContainer = document.getElementById("google-signin");
-    if (!window.google || !buttonContainer) {
-      console.log("Google or button container not ready");
-      return;
-    }
-
-    try {
-      buttonContainer.innerHTML = "";
-
-      window.google.accounts.id.initialize({
-        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-        callback: handleGoogleResponse,
-        auto_select: false,
-        cancel_on_tap_outside: true,
-        ux_mode: "popup",
-        prompt_parent_id: "google-signin",
-      });
-
-      window.google.accounts.id.renderButton(buttonContainer, {
-        theme: "outline",
-        size: "large",
-        width: 250,
-        text: "signin_with",
-        shape: "rectangular",
-        logo_alignment: "center",
-      });
-
-      console.log("Google Sign-In initialized successfully");
-    } catch (error) {
-      console.error("Error initializing Google Sign-In:", error);
-    }
-  };
-
   const handleGuestSubmit = () => {
-    if (!isGoogleScriptLoaded) {
-      setError("Google Sign-In is not ready yet. Please try again in a moment.");
-      return;
-    }
-    
-    // Initialize Google Sign-In for guest submission
-    const buttonContainer = document.getElementById("google-signin");
-    if (!buttonContainer) {
-      setError("Sign-in container not found. Please refresh the page.");
-      return;
-    }
-
-    try {
-      buttonContainer.innerHTML = "";
-      
-      window.google.accounts.id.initialize({
-        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-        callback: handleGoogleResponse,
-        auto_select: false,
-        cancel_on_tap_outside: true,
-        ux_mode: "popup",
-        prompt_parent_id: "google-signin",
-      });
-
-      window.google.accounts.id.renderButton(buttonContainer, {
-        theme: "outline",
-        size: "large",
-        width: 250,
-        text: "signin_with",
-        shape: "rectangular",
-        logo_alignment: "center",
-      });
-
-      // Prompt the user to sign in
-      window.google.accounts.id.prompt();
-    } catch (error) {
-      console.error("Error initializing Google Sign-In:", error);
-      setError("Error initializing Google Sign-In. Please try again.");
-    }
+    setShowGoogleSignInPrompt(true);
   };
 
   const handleSubmit = async () => {
@@ -166,7 +95,6 @@ export const ApplicationForm = () => {
     }
   };
 
-  // Load Google Script once
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://accounts.google.com/gsi/client";
@@ -186,6 +114,27 @@ export const ApplicationForm = () => {
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (isGoogleScriptLoaded && showGoogleSignInPrompt) {
+      const container = document.getElementById("google-signin-popup");
+      if (container) {
+        container.innerHTML = "";
+        window.google.accounts.id.initialize({
+          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+          callback: handleGoogleResponse,
+        });
+        window.google.accounts.id.renderButton(container, {
+          theme: "outline",
+          size: "large",
+          width: 250,
+          text: "signin_with",
+          shape: "rectangular",
+          logo_alignment: "center",
+        });
+      }
+    }
+  }, [isGoogleScriptLoaded, showGoogleSignInPrompt]);
 
   return (
     <div className="min-h-screen bg-gray-50 pt-12 pb-16 px-4 sm:px-6 lg:px-8">
@@ -245,17 +194,30 @@ export const ApplicationForm = () => {
 
         <div className="bg-white shadow-xl rounded-lg overflow-hidden">
           <div className="p-8">
-            {step === 1 && <PerustiedotForm formData={formData} setFormData={setFormData} />}
-            {step === 2 && <UlkopuoliForm formData={formData} setFormData={setFormData} />}
-            {step === 3 && <SisapuoliForm formData={formData} setFormData={setFormData} />}
-            {step === 4 && <LämmitysForm formData={formData} setFormData={setFormData} />}
-            {step === 5 && <TalotekniikkaForm formData={formData} setFormData={setFormData} />}
-            {step === 6 && <OmatTiedotForm formData={formData} setFormData={setFormData} />}
+            {step === 1 && (
+              <PerustiedotForm formData={formData} setFormData={setFormData} />
+            )}
+            {step === 2 && (
+              <UlkopuoliForm formData={formData} setFormData={setFormData} />
+            )}
+            {step === 3 && (
+              <SisapuoliForm formData={formData} setFormData={setFormData} />
+            )}
+            {step === 4 && (
+              <LämmitysForm formData={formData} setFormData={setFormData} />
+            )}
+            {step === 5 && (
+              <TalotekniikkaForm
+                formData={formData}
+                setFormData={setFormData}
+              />
+            )}
+            {step === 6 && (
+              <OmatTiedotForm formData={formData} setFormData={setFormData} />
+            )}
           </div>
 
           <div className="px-8 py-6 bg-gray-50 border-t border-gray-200 flex flex-col items-center gap-4">
-            <div id="google-signin" className="flex justify-center min-h-[40px]"></div>
-
             <div className="flex w-full justify-between">
               <button
                 onClick={prevStep}
@@ -271,7 +233,7 @@ export const ApplicationForm = () => {
 
               {step === steps.length ? (
                 <button
-                  onClick={handleGuestSubmit}
+                  onClick={isAuthenticated ? handleSubmit : handleGuestSubmit}
                   disabled={applicationCount === applicationLimit}
                   className={`px-6 py-3 rounded-lg font-medium transition-colors ${
                     applicationCount === applicationLimit
@@ -293,6 +255,24 @@ export const ApplicationForm = () => {
           </div>
         </div>
       </div>
+
+      {/* Google Sign-In Popup */}
+      {showGoogleSignInPrompt && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-8 max-w-sm w-full shadow-lg text-center">
+            <h2 className="text-2xl font-bold mb-4">Kirjaudu sisään</h2>
+            <p className="text-gray-600 mb-6">Jatka Google-tililläsi.</p>
+            <div id="google-signin-popup" className="flex justify-center"></div>
+
+            <button
+              onClick={() => setShowGoogleSignInPrompt(false)}
+              className="mt-6 px-6 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300"
+            >
+              Sulje
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

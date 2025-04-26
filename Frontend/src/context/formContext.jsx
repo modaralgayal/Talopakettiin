@@ -57,8 +57,6 @@ const FormContext = createContext({
   formData: defaultFormData,
   setFormData: () => {},
   resetForm: () => {},
-  isAuthenticated: false,
-  setIsAuthenticated: () => {},
 });
 
 export const FormProvider = ({ children }) => {
