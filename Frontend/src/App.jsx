@@ -62,7 +62,7 @@ function App() {
       console.log("Checking session...");
       try {
         const { isValid, userType } = await validateToken();
-    
+        console.log("Validation reponse: ", isValid, userType);
         if (isValid) {
           setUserType(userType);
           setIsAuthenticated(true);
@@ -71,7 +71,7 @@ function App() {
           setUserType(null);
           // Only redirect if not on a public route
           if (!publicRoutes.includes(location.pathname)) {
-            navigate('/signin');
+            navigate("/signin");
           }
         }
       } catch (error) {
@@ -82,9 +82,9 @@ function App() {
         setIsLoading(false);
       }
     };
-  
+
     checkSession();
-  
+
     // Set up interval for session check
     const interval = setInterval(checkSession, 60000);
     return () => clearInterval(interval);
@@ -138,7 +138,11 @@ function App() {
           <Route
             path="/formpage"
             element={
-              <ApplicationForm formData={formData} setFormData={setFormData} />
+              <ApplicationForm
+                formData={formData}
+                setFormData={setFormData}
+                isAuthenticated={isAuthenticated}
+              />
             }
           />
 

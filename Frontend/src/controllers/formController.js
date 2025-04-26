@@ -6,21 +6,19 @@ const API_URL = "http://localhost:8000/api/forms";
 export const sendFormData = async (formData) => {
   try {
     // Get the token from wherever you store it after Google sign-in
-    const token = localStorage.getItem('token');
-    
-    const response = await axios.post(`${API_URL}/receive-form-data`, formData, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      },
-      withCredentials: true,
-    });
+
+    const response = await axios.post(
+      `${API_URL}/receive-form-data`,
+      formData,
+      { withCredentials: true }
+    );
 
     if (response.data.success) {
       return {
         success: true,
         message: response.data.message,
         currentCount: response.data.currentCount,
-        limit: response.data.limit
+        limit: response.data.limit,
       };
     } else {
       throw new Error(response.data.message || "Failed to submit form");
@@ -29,7 +27,8 @@ export const sendFormData = async (formData) => {
     if (error.response?.status === 401) {
       throw {
         error: "Authentication Error",
-        message: "Sinun täytyy kirjautua sisään lähettääksesi hakemuksen. Kirjaudu sisään ja yritä uudelleen."
+        message:
+          "Sinun täytyy kirjautua sisään lähettääksesi hakemuksen. Kirjaudu sisään ja yritä uudelleen.",
       };
     }
     if (error.response?.data?.error === "Application limit reached") {
@@ -37,7 +36,7 @@ export const sendFormData = async (formData) => {
         error: "Application limit reached",
         message: error.response.data.message,
         currentCount: error.response.data.currentCount,
-        limit: error.response.data.limit
+        limit: error.response.data.limit,
       };
     }
     throw error;
@@ -47,12 +46,7 @@ export const sendFormData = async (formData) => {
 // Get User Forms
 export const getUserForms = async () => {
   try {
-    const token = localStorage.getItem('token');
-    
     const response = await axios.get(`${API_URL}/get-user-forms`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      },
       withCredentials: true,
     });
     return response.data;
@@ -118,7 +112,12 @@ export const acceptOffer = async (id, entryId, emailAddress) => {
 };
 
 // Make Offer to User with PDF support
-export const makeOfferToUser = async (offerData, customerEmail, entryId, pdfFile) => {
+export const makeOfferToUser = async (
+  offerData,
+  customerEmail,
+  entryId,
+  pdfFile
+) => {
   try {
     const formData = new FormData();
     formData.append("customerEmail", customerEmail);
@@ -126,13 +125,10 @@ export const makeOfferToUser = async (offerData, customerEmail, entryId, pdfFile
     formData.append("pdfFile", pdfFile);
     formData.append("offerData", JSON.stringify(offerData));
 
-    const token = localStorage.getItem('token');
-    
     const response = await axios.post(`${API_URL}/make-offer`, formData, {
       withCredentials: true,
       headers: {
         "Content-Type": "multipart/form-data",
-        "Authorization": `Bearer ${token}`
       },
     });
     return response.data;

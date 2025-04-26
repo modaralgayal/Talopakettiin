@@ -107,7 +107,7 @@ export const validateToken = async () => {
       { withCredentials: true }
     );
     return {
-      isValid: response.data.success,
+      isValid: response.status,
       userType: response.data.userType,
     };
   } catch (error) {

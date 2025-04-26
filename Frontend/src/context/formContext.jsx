@@ -57,10 +57,13 @@ const FormContext = createContext({
   formData: defaultFormData,
   setFormData: () => {},
   resetForm: () => {},
+  isAuthenticated: false,
+  setIsAuthenticated: () => {},
 });
 
 export const FormProvider = ({ children }) => {
   const [formData, setFormData] = useState(defaultFormData);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   // Function to completely reset the form
   const resetForm = () => {
@@ -68,7 +71,7 @@ export const FormProvider = ({ children }) => {
   };
 
   return (
-    <FormContext.Provider value={{ formData, setFormData, resetForm }}>
+    <FormContext.Provider value={{ formData, setFormData, resetForm, isAuthenticated, setIsAuthenticated }}>
       {children}
     </FormContext.Provider>
   );
