@@ -27,8 +27,8 @@ export const ApplicationForm = (prop) => {
     { number: 6, title: "Omat Tiedot" },
   ];
 
-  let isAuthenticated = prop.isAuthenticated
-  console.log(isAuthenticated)
+  let isAuthenticated = prop.isAuthenticated;
+  console.log(isAuthenticated);
 
   const nextStep = () => {
     if (step < steps.length) setStep(step + 1);
@@ -39,7 +39,9 @@ export const ApplicationForm = (prop) => {
   };
 
   const goToStep = (stepNumber) => {
-    setStep(stepNumber);
+    if (stepNumber < step) {
+      setStep(stepNumber);
+    }
   };
 
   const handleGoogleResponse = async (response) => {
@@ -56,7 +58,6 @@ export const ApplicationForm = (prop) => {
 
       const data = await res.json();
       if (data.success) {
-        setIsAuthenticated(true);
         setShowGoogleSignInPrompt(false); // close popup after success
         await handleSubmit();
       } else {
@@ -121,7 +122,9 @@ export const ApplicationForm = (prop) => {
       if (container) {
         container.innerHTML = "";
         window.google.accounts.id.initialize({
-          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+          // safe to expose.
+          client_id:
+            "885359390109-ngjhjtnqng79q9j7oh21q6kqcmfe235f.apps.googleusercontent.com",
           callback: handleGoogleResponse,
         });
         window.google.accounts.id.renderButton(container, {

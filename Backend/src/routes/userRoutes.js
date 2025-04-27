@@ -1,40 +1,22 @@
 import express from "express";
-import {
-  signup,
-  confirmSignup,
-  signIn,
-  logOut,
-  confirmPassword,
-  changeUserEmail,
-  changeUserPassword,
-} from "../controllers/userController.js";
-import { authenticateJWT } from "../middleware/authenticate.js";
+import { logOut } from "../controllers/userController.js";
 import { verifyGoogleToken } from "../controllers/googleAuthController.js";
+import { authenticateJWT } from "../middleware/authenticate.js";
 
 const router = express.Router();
 
-router.post("/signup", signup);
-router.post("/signin", signIn);
+// Google Auth routes
+router.post("/google-auth", verifyGoogleToken);
+
+// Logout route
 router.post("/logout", logOut);
-router.post("/confirm-signup", confirmSignup);
-router.post(
-  "/change-user-email",
-  authenticateJWT,
-  confirmPassword,
-  changeUserEmail
-);
-router.post(
-  "/change-user-password",
-  authenticateJWT,
-  confirmPassword,
-  changeUserPassword
-);
+
+// Validate token route
 router.post("/validate-token", authenticateJWT, (req, res) => {
   res.status(200).json({
     success: true,
-    userType: req.user.usertype,
+    userType: req.user.userType,
   });
 });
-router.post("/google-auth", verifyGoogleToken);
 
 export default router;

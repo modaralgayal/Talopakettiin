@@ -47,7 +47,9 @@ export const GoogleSignInPopup = ({ isOpen, onClose, onSuccess, userType }) => {
       buttonContainer.innerHTML = "";
 
       window.google.accounts.id.initialize({
-        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+        // safe to expose
+        client_id:
+          "885359390109-ngjhjtnqng79q9j7oh21q6kqcmfe235f.apps.googleusercontent.com",
         callback: handleGoogleResponse,
         ux_mode: "popup",
       });
@@ -98,10 +100,14 @@ export const GoogleSignInPopup = ({ isOpen, onClose, onSuccess, userType }) => {
         >
           ✕
         </button>
-        <h2 className="text-center text-2xl font-bold mb-4">Kirjaudu Googlella</h2>
+        <h2 className="text-center text-2xl font-bold mb-4">
+          Kirjaudu Googlella
+        </h2>
         <div id="google-signin-button" className="flex justify-center"></div>
         {message && (
-          <div className="mt-4 p-2 bg-red-100 text-red-700 text-center rounded">{message}</div>
+          <div className="mt-4 p-2 bg-red-100 text-red-700 text-center rounded">
+            {message}
+          </div>
         )}
         {isLoading && (
           <div className="mt-4 flex justify-center">

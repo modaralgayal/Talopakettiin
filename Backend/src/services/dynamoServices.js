@@ -5,6 +5,7 @@ import {
   QueryCommand,
   DeleteItemCommand,
   PutItemCommand,
+  GetItemCommand,
 } from "@aws-sdk/client-dynamodb";
 import {
   CognitoIdentityProviderClient,
@@ -244,14 +245,25 @@ export const acceptOffer = async (req, res) => {
       throw new Error("no current userId");
     }
 
-    // Step 1: Fetch Provider's Email using Cognito
-    console.log("Fetching provider's email");
-    const emailAddress = req.body.emailAddress
-    console.log("Email fetched: ", emailAddress)
-
+    // Step 1: Fetch the offer to get provider's email
+    console.log("Fetching offer details");
+    const getOfferParams = {
+      TableName: "Talopakettiin-API",
+      Key: { id: { S: id } }
+    };
+    
+    const offerResult = await dynamoDBClient.send(new GetItemCommand(getOfferParams));
+    if (!offerResult.Item) {
+      throw new Error("Offer not found");
+    }
+    
+    const offer = unmarshall(offerResult.Item);
+    const emailAddress = offer.providerEmail;
+    
+    console.log("Email fetched: ", emailAddress);
 
     if (!emailAddress) {
-      throw new Error("Provider email not found.");
+      throw new Error("Provider email not found in offer.");
     }
 
     // Step 2: Update Offer Status to "Accepted"
@@ -399,6 +411,35 @@ export const makeOffer = async (req, res) => {
     };
 
     await client.send(new PutItemCommand(params));
+
+    // Send email notification to customer
+    const secrets = await getSecrets();
+    const transporter = nodemailer.createTransport({
+      host: "mail.smtp2go.com",
+      port: 587,
+      secure: false,
+      auth: {
+        user: "talopakettiin.fi",
+        pass: secrets.EMAIL_PASS,
+      },
+    });
+
+    const mailOptions = {
+      from: "info@talopakettiin.fi",
+      to: customerEmail,
+      subject: "New Offer Received",
+      text: `Hello,
+
+      You have received a new offer from ${providerName}.
+
+      Please log in to your Talopakettiin account to view the offer details.
+
+      Thank you,
+      Talopakettiin Team`,
+    };
+
+    console.log("Sending offer notification email to customer");
+    await transporter.sendMail(mailOptions);
 
     res.status(200).json({ success: true, message: "Offer sent successfully" });
   } catch (error) {

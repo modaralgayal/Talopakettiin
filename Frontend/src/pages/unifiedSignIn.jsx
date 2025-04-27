@@ -78,7 +78,9 @@ export const UnifiedSignIn = ({ setUserType, setIsAuthenticated }) => {
 
       // Initialize Google Sign-In with additional configuration
       window.google.accounts.id.initialize({
-        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+        // safe to expose
+        client_id:
+          "885359390109-ngjhjtnqng79q9j7oh21q6kqcmfe235f.apps.googleusercontent.com",
         callback: handleGoogleResponse,
         auto_select: false,
         cancel_on_tap_outside: true,
