@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { FaHome, FaClipboardList, FaHandshake, FaClock } from "react-icons/fa";
+import { ImageSlideshow } from "../components/ImageSlideshow";
 
 export const Homepage = () => {
   const features = [
@@ -28,26 +29,28 @@ export const Homepage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-blue-50 font-['Avenir']">
-      {/* Hero Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
-        <div className="text-center">
-          <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6 tracking-tight">
-            Löydä unelmiesi talopaketti
-          </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed">
-            Helpoin tapa vertailla talopaketteja ja saada tarjouksia luotettavilta toimittajilta. 
-            Täytä yksi hakemus ja anna meidän hoitaa loput.
-          </p>
-          {/* Do not change the route to /form!!*/}
-          <Link
-            to="/formpage"
-            className="inline-flex items-center px-8 py-4 border border-transparent text-lg font-medium rounded-full shadow-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200 tracking-wide"
-          >
-            Aloita hakuprosessi
-            <svg className="ml-2 -mr-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
-            </svg>
-          </Link>
+      {/* Hero Section with Slideshow */}
+      <div className="relative">
+        <ImageSlideshow />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 className="text-4xl sm:text-5xl font-bold text-white mb-6 tracking-tight drop-shadow-lg">
+              Löydä unelmiesi talopaketti
+            </h1>
+            <p className="text-xl text-white max-w-2xl mx-auto mb-10 leading-relaxed drop-shadow-lg">
+              Helpoin tapa vertailla talopaketteja ja saada tarjouksia luotettavilta toimittajilta. 
+              Täytä yksi hakemus ja anna meidän hoitaa loput.
+            </p>
+            <Link
+              to="/formpage"
+              className="inline-flex items-center px-8 py-4 border border-transparent text-lg font-medium rounded-full shadow-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200 tracking-wide"
+            >
+              Aloita hakuprosessi
+              <svg className="ml-2 -mr-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </Link>
+          </div>
         </div>
       </div>
 
@@ -120,7 +123,7 @@ export const Homepage = () => {
             Täytä hakemus nyt ja ota ensimmäinen askel kohti uutta kotiasi.
           </p>
           <Link
-            to="/form"
+            to="/formpage"
             className="inline-flex items-center px-8 py-4 border-2 border-white text-lg font-medium rounded-full text-white hover:bg-white hover:text-blue-600 transition-colors duration-200 tracking-wide"
           >
             Täytä hakemus
