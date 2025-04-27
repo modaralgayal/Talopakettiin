@@ -164,30 +164,32 @@ export const UnifiedSignIn = ({ setUserType, setIsAuthenticated }) => {
         </div>
 
         {/* User Type Selection */}
-        <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="grid grid-cols-2 gap-6 mb-8">
           <button
             type="button"
             onClick={() => handleUserTypeSelection("customer")}
-            className={`flex items-center justify-center p-4 rounded-lg border-2 transition-all ${
+            className={`flex flex-col items-center justify-center p-8 rounded-xl border-2 transition-all ${
               selectedUserType === "customer"
-                ? "border-blue-500 bg-blue-50"
-                : "border-gray-200 hover:border-blue-300"
+                ? "border-blue-500 bg-blue-50 scale-105"
+                : "border-gray-200 hover:border-blue-300 hover:scale-105"
             }`}
           >
-            <FaUser className="w-6 h-6 mr-2 text-blue-500" />
-            <span className="font-medium">Hakija</span>
+            <FaUser className="w-12 h-12 mb-4 text-blue-500" />
+            <span className="text-xl font-semibold">Hakija</span>
+            <span className="text-sm text-gray-500 mt-2">Haen sopivaa talopakettia</span>
           </button>
           <button
             type="button"
             onClick={() => handleUserTypeSelection("provider")}
-            className={`flex items-center justify-center p-4 rounded-lg border-2 transition-all ${
+            className={`flex flex-col items-center justify-center p-8 rounded-xl border-2 transition-all ${
               selectedUserType === "provider"
-                ? "border-blue-500 bg-blue-50"
-                : "border-gray-200 hover:border-blue-300"
+                ? "border-blue-500 bg-blue-50 scale-105"
+                : "border-gray-200 hover:border-blue-300 hover:scale-105"
             }`}
           >
-            <FaBuilding className="w-6 h-6 mr-2 text-blue-500" />
-            <span className="font-medium">Toimittaja</span>
+            <FaBuilding className="w-12 h-12 mb-4 text-blue-500" />
+            <span className="text-xl font-semibold">Toimittaja</span>
+            <span className="text-sm text-gray-500 mt-2">Teen talopaketti tarjouksia</span>
           </button>
         </div>
 
