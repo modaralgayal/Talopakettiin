@@ -1,11 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 
-import img1 from '/src/assets/stock_images/pexels-frans-van-heerden-201846-1438832.jpg';
-import img2 from '/src/assets/stock_images/pexels-davidmcbee-1546166.jpg';
-import img3 from '/src/assets/stock_images/pexels-binyaminmellish-106399.jpg';
-import img4 from '/src/assets/stock_images/pexels-pixabay-259588.jpg';
-
-const images = [img1, img2, img3, img4];
+// Dynamically import all images from the stock_images folder
+const imageModules = import.meta.glob('/src/assets/stock_images/*.{jpg,png,jpeg}', { eager: true });
+const images = Object.values(imageModules).map((mod) => mod.default);
 
 export const ImageSlideshow = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -18,7 +15,7 @@ export const ImageSlideshow = () => {
         await Promise.all(
           images.map((src) => {
             return new Promise((resolve, reject) => {
-              const img = new Image();
+              const img = new window.Image();
               img.src = src;
               img.onload = resolve;
               img.onerror = reject;
@@ -30,17 +27,14 @@ export const ImageSlideshow = () => {
         console.error('Error loading images:', error);
       }
     };
-
     loadImages();
   }, []);
 
   useEffect(() => {
     if (!imagesLoaded) return;
-
     const timer = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
     }, 5000);
-
     return () => clearInterval(timer);
   }, [imagesLoaded]);
 
@@ -54,7 +48,15 @@ export const ImageSlideshow = () => {
 
   return (
     <div className="relative w-full h-full overflow-hidden">
-
+      <style>{`
+        @keyframes zoom {
+          from { transform: scale(1); }
+          to { transform: scale(1.08); }
+        }
+        .animate-zoom {
+          animation: zoom 5s linear forwards;
+        }
+      `}</style>
       {images.map((image, index) => (
         <div
           key={index}
@@ -65,7 +67,8 @@ export const ImageSlideshow = () => {
           <img
             src={image}
             alt={`Slideshow image ${index + 1}`}
-            className="w-full h-full object-cover"
+            className={`w-full h-full object-cover animate-zoom`}
+            style={{ animationName: index === currentIndex ? 'zoom' : 'none' }}
             onError={(e) => {
               console.error(`Error loading image ${index + 1}:`, e);
               e.target.src = 'https://via.placeholder.com/800x600?text=Image+Not+Found';

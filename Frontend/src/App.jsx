@@ -23,6 +23,7 @@ import MakeOffer from "./pages/makeOffer";
 import GetOffers from "./pages/getOffers";
 // Auth utils
 import { validateToken, logOut } from "./controllers/userController";
+import Footer from "./components/Footer";
 
 // Define public routes that don't require authentication
 const publicRoutes = [
@@ -181,6 +182,7 @@ function App() {
           />
         </Routes>
       </main>
+      <Footer />
     </div>
   );
 }
