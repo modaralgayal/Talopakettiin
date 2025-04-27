@@ -53,7 +53,8 @@ export const ImageSlideshow = () => {
   }
 
   return (
-    <div className="relative w-full h-[600px] overflow-hidden">
+    <div className="relative w-full h-full overflow-hidden">
+
       {images.map((image, index) => (
         <div
           key={index}

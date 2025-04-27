@@ -28,12 +28,16 @@ export const Homepage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-blue-50 font-['Avenir']">
-      {/* Hero Section with Slideshow */}
-      <div className="relative">
-        <ImageSlideshow />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <div className="min-h-screen font-['Avenir']">
+      {/* Hero + Cards with Slideshow background */}
+      <div className="relative w-full flex flex-col justify-center">
+        <div className="absolute inset-0 w-full h-full z-0">
+          <ImageSlideshow />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-black/10" />
+        </div>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
+          {/* Hero Content */}
+          <div className="text-center mb-75">
             <h1 className="text-4xl sm:text-5xl font-bold text-white mb-6 tracking-tight drop-shadow-lg">
               Löydä unelmiesi talopaketti
             </h1>
@@ -51,64 +55,64 @@ export const Homepage = () => {
               </svg>
             </Link>
           </div>
-        </div>
-      </div>
 
-      {/* Features Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {features.map((feature, index) => (
-            <div
-              key={index}
-              className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200"
-            >
-              <div className="mb-4">{feature.icon}</div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2 tracking-tight">
-                {feature.title}
-              </h3>
-              <p className="text-gray-600 leading-relaxed">{feature.description}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Process Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <h2 className="text-3xl font-bold text-center text-gray-900 mb-12 tracking-tight">
-          Näin prosessi toimii
-        </h2>
-        <div className="relative">
-          <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-blue-200 -translate-y-1/2 hidden lg:block" />
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {[
-              {
-                number: "1",
-                title: "Täytä hakemus",
-                description: "Kerro meille toiveistasi ja vaatimuksistasi uuden kotisi suhteen."
-              },
-              {
-                number: "2",
-                title: "Saat tarjouksia",
-                description: "Talotoimittajat tutustuvat hakemukseesi ja tekevät sinulle tarjouksia."
-              },
-              {
-                number: "3",
-                title: "Valitse paras",
-                description: "Vertaile tarjouksia ja valitse sinulle sopivin vaihtoehto."
-              }
-            ].map((step, index) => (
-              <div key={index} className="relative">
-                <div className="bg-white p-6 rounded-xl shadow-md">
-                  <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center text-xl font-bold mb-4">
-                    {step.number}
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2 tracking-tight">
-                    {step.title}
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed">{step.description}</p>
-                </div>
+          {/* Features Section */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {features.map((feature, index) => (
+              <div
+                key={index}
+                className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200"
+              >
+                <div className="mb-4">{feature.icon}</div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2 tracking-tight">
+                  {feature.title}
+                </h3>
+                <p className="text-gray-600 leading-relaxed">{feature.description}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Process Section with solid background */}
+      <div className="bg-blue-50 w-full">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12 tracking-tight">
+            Näin prosessi toimii
+          </h2>
+          <div className="relative">
+            <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-blue-200 -translate-y-1/2 hidden lg:block" />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {[
+                {
+                  number: "1",
+                  title: "Täytä hakemus",
+                  description: "Kerro meille toiveistasi ja vaatimuksistasi uuden kotisi suhteen."
+                },
+                {
+                  number: "2",
+                  title: "Saat tarjouksia",
+                  description: "Talotoimittajat tutustuvat hakemukseesi ja tekevät sinulle tarjouksia."
+                },
+                {
+                  number: "3",
+                  title: "Valitse paras",
+                  description: "Vertaile tarjouksia ja valitse sinulle sopivin vaihtoehto."
+                }
+              ].map((step, index) => (
+                <div key={index} className="relative">
+                  <div className="bg-white p-6 rounded-xl shadow-md">
+                    <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center text-xl font-bold mb-4">
+                      {step.number}
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2 tracking-tight">
+                      {step.title}
+                    </h3>
+                    <p className="text-gray-600 leading-relaxed">{step.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
