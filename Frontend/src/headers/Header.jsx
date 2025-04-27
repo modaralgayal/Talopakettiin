@@ -5,7 +5,7 @@ import blackLogo from "./talopakettiinlogovariants-black.png";
 export const Header = () => {
   return (
     <header className="bg-white shadow-sm">
-      <nav className="max-w-7xl mx-auto px-6 py-4">
+      <nav className="w-full pl-4 pr-6 py-4">
         <div className="flex items-center justify-between">
           {/* Left side - Logo and main navigation */}
         <div className="flex items-center space-x-12">

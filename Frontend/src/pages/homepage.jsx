@@ -41,7 +41,7 @@ export const Homepage = () => {
             <h1 className="text-4xl sm:text-5xl font-bold text-white mb-6 tracking-tight drop-shadow-lg">
               Löydä unelmiesi talopaketti
             </h1>
-            <p className="text-xl text-white max-w-2xl mx-auto mb-10 leading-relaxed drop-shadow-lg">
+            <p className="text-2xl text-white max-w-2xl mx-auto mb-10 leading-relaxed drop-shadow-lg">
               Helpoin tapa vertailla talopaketteja ja saada tarjouksia luotettavilta toimittajilta. 
               Täytä yksi hakemus ja anna meidän hoitaa loput.
             </p>
@@ -61,10 +61,12 @@ export const Homepage = () => {
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200"
+                className="bg-white p-6 rounded-xl shadow-md transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:border-blue-500 hover:border-2 cursor-pointer group"
               >
-                <div className="mb-4">{feature.icon}</div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2 tracking-tight">
+                <div className="mb-4 text-blue-500 group-hover:text-blue-700 transition-colors duration-300">
+                  {feature.icon}
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2 tracking-tight group-hover:text-blue-700 transition-colors duration-300">
                   {feature.title}
                 </h3>
                 <p className="text-gray-600 leading-relaxed">{feature.description}</p>
@@ -100,15 +102,15 @@ export const Homepage = () => {
                   description: "Vertaile tarjouksia ja valitse sinulle sopivin vaihtoehto."
                 }
               ].map((step, index) => (
-                <div key={index} className="relative">
-                  <div className="bg-white p-6 rounded-xl shadow-md">
-                    <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center text-xl font-bold mb-4">
+                <div key={index} className="relative flex justify-center items-start">
+                  <div className="bg-white aspect-square w-full rounded-xl shadow-md transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:border-blue-500 hover:border-2 cursor-pointer group flex flex-col items-center pt-10 pb-6 px-6">
+                    <div className="absolute -top-7 left-1/2 -translate-x-1/2 w-14 h-14 bg-blue-600 text-white rounded-full flex items-center justify-center text-2xl font-bold shadow-lg transition-all duration-300 group-hover:bg-blue-700 z-10">
                       {step.number}
                     </div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2 tracking-tight">
+                    <h3 className="text-4xl font-semibold text-gray-900 mb-2 mt-6 tracking-tight group-hover:text-blue-700 transition-colors duration-300 text-center">
                       {step.title}
                     </h3>
-                    <p className="text-gray-600 leading-relaxed">{step.description}</p>
+                    <p className="text-gray-600 leading-relaxed text-2xl text-center">{step.description}</p>
                   </div>
                 </div>
               ))}

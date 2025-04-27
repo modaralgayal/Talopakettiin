@@ -67,8 +67,12 @@ export const ImageSlideshow = () => {
           <img
             src={image}
             alt={`Slideshow image ${index + 1}`}
-            className={`w-full h-full object-cover animate-zoom`}
-            style={{ animationName: index === currentIndex ? 'zoom' : 'none' }}
+            className="w-full h-full object-cover transition-transform duration-1000"
+            style={{
+              transform: index === currentIndex ? 'scale(1)' : 'scale(1.08)',
+              animation: index === currentIndex ? 'zoom 5s linear forwards' : 'none',
+              willChange: 'transform',
+            }}
             onError={(e) => {
               console.error(`Error loading image ${index + 1}:`, e);
               e.target.src = 'https://via.placeholder.com/800x600?text=Image+Not+Found';
