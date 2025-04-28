@@ -1,10 +1,19 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import blackLogo from "./talopakettiinlogovariants-black.png";
 
 export const Header = () => {
+  const location = useLocation();
+  const isHome = location.pathname === "/";
+  console.log(isHome)
   return (
-    <header className="bg-white shadow-sm">
+    <header
+      className={
+        isHome
+          ? "bg-white/40 backdrop-blur-lg shadow-lg border border-white/30 transition-colors duration-300 w-full"
+          : "bg-white shadow-sm w-full"
+      }
+    >
       <nav className="w-full pl-4 pr-6 py-4">
         <div className="flex items-center justify-between">
           {/* Left side - Logo and main navigation */}

@@ -1,6 +1,6 @@
 import React from "react";
 
-export const OmatTiedotForm = ({ formData, setFormData }) => {
+export const OmatTiedotForm = ({ formData, setFormData, validationErrors }) => {
   const handleOlenChange = (e) => {
     const selectedOptions = e.target.checked
       ? [...(formData.olen || []), e.target.value]
@@ -22,6 +22,9 @@ export const OmatTiedotForm = ({ formData, setFormData }) => {
       <div>
         <label className="block text-lg font-medium text-gray-700">
           Olen *
+          {validationErrors.olen && (
+            <span className="text-red-500 text-sm ml-2">{validationErrors.olen}</span>
+          )}
         </label>
         <div className="space-y-3 mt-2">
           {[

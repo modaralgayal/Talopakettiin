@@ -20,6 +20,7 @@ const allowedOrigins = [
   "http://localhost:5173",
   "https://localhost:8001",
   "http://localhost:8000",
+  "https://2zw0m0hc-8000.euw.devtunnels.ms"
 ];
 
 // Use CORS middleware

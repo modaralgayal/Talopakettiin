@@ -22,7 +22,7 @@ const provinces = [
   "Satakunta",
 ];
 
-export const PerustiedotForm = ({ formData, setFormData }) => {
+export const PerustiedotForm = ({ formData, setFormData, validationErrors }) => {
   // Initialize all possible fields in formData
   const initialDetailsState = {
     kodinhoitohuone: false,
@@ -95,12 +95,14 @@ export const PerustiedotForm = ({ formData, setFormData }) => {
       <div>
         <label className="block text-lg font-medium text-gray-700">
           Kaupunki *
-          {!formData.kaupunki && (
-            <span className="text-red-500 text-sm ml-2">Pakollinen kenttä</span>
+          {validationErrors.kaupunki && (
+            <span className="text-red-500 text-sm ml-2">{validationErrors.kaupunki}</span>
           )}
         </label>
         <select
-          className="w-full p-3 border rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500"
+          className={`w-full p-3 border rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 ${
+            validationErrors.kaupunki ? 'border-red-500' : ''
+          }`}
           value={formData.kaupunki || ""}
           onChange={(e) => handleTextInput("kaupunki", e.target.value)}
           required
@@ -118,12 +120,14 @@ export const PerustiedotForm = ({ formData, setFormData }) => {
       <div>
         <label className="block text-lg font-medium text-gray-700">
           Maakunta *
-          {!formData.maakunta && (
-            <span className="text-red-500 text-sm ml-2">Pakollinen kenttä</span>
+          {validationErrors.maakunta && (
+            <span className="text-red-500 text-sm ml-2">{validationErrors.maakunta}</span>
           )}
         </label>
         <select
-          className="w-full p-3 border rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500"
+          className={`w-full p-3 border rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 ${
+            validationErrors.maakunta ? 'border-red-500' : ''
+          }`}
           value={formData.maakunta || ""}
           onChange={(e) => handleTextInput("maakunta", e.target.value)}
           required
@@ -191,12 +195,14 @@ export const PerustiedotForm = ({ formData, setFormData }) => {
       <div>
         <label className="block text-lg font-medium text-gray-700">
           Makuuhuoneiden määrä *
-          {!formData.bedrooms && (
-            <span className="text-red-500 text-sm ml-2">Pakollinen kenttä</span>
+          {validationErrors.bedrooms && (
+            <span className="text-red-500 text-sm ml-2">{validationErrors.bedrooms}</span>
           )}
         </label>
         <select
-          className="w-full p-3 border rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500"
+          className={`w-full p-3 border rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 ${
+            validationErrors.bedrooms ? 'border-red-500' : ''
+          }`}
           value={formData.bedrooms || ""}
           onChange={(e) => handleTextInput("bedrooms", e.target.value)}
           required
@@ -215,8 +221,8 @@ export const PerustiedotForm = ({ formData, setFormData }) => {
         <div key={field}>
           <label className="block text-lg font-medium text-gray-700">
             {label}
-            {!formData[field] && (
-              <span className="text-red-500 text-sm ml-2">Pakollinen kenttä</span>
+            {validationErrors[field] && (
+              <span className="text-red-500 text-sm ml-2">{validationErrors[field]}</span>
             )}
           </label>
           <div className="flex gap-4 mt-2">
@@ -254,8 +260,8 @@ export const PerustiedotForm = ({ formData, setFormData }) => {
         <div key={field}>
           <label className="block text-lg font-medium text-gray-700">
             {label}
-            {!formData[field] && (
-              <span className="text-red-500 text-sm ml-2">Pakollinen kenttä</span>
+            {validationErrors[field] && (
+              <span className="text-red-500 text-sm ml-2">{validationErrors[field]}</span>
             )}
           </label>
           <div className="flex gap-4 mt-2">

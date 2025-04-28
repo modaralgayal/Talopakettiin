@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-export const UlkopuoliForm = ({ formData, setFormData }) => {
+export const UlkopuoliForm = ({ formData, setFormData, validationErrors }) => {
   const [showCustomMaterial, setShowCustomMaterial] = useState(false);
   const [showCustomRoof, setShowCustomRoof] = useState(false);
 
@@ -39,9 +39,16 @@ export const UlkopuoliForm = ({ formData, setFormData }) => {
 
       {/* Talon Materiaali */}
       <div className="space-y-4">
-        <label className="block text-lg font-medium text-gray-700">Talon Materiaali *</label>
+        <label className="block text-lg font-medium text-gray-700">
+          Talon Materiaali *
+          {validationErrors.talonMateriaali && (
+            <span className="text-red-500 text-sm ml-2">{validationErrors.talonMateriaali}</span>
+          )}
+        </label>
         <select
-          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3 border bg-white"
+          className={`block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3 border bg-white ${
+            validationErrors.talonMateriaali ? 'border-red-500' : ''
+          }`}
           value={formData.talonMateriaali || ""}
           onChange={(e) => handleSelectChange("talonMateriaali", e.target.value)}
         >
@@ -63,9 +70,16 @@ export const UlkopuoliForm = ({ formData, setFormData }) => {
 
       {/* Vesikatto */}
       <div className="space-y-4">
-        <label className="block text-lg font-medium text-gray-700">Vesikatto *</label>
+        <label className="block text-lg font-medium text-gray-700">
+          Vesikatto *
+          {validationErrors.vesikatto && (
+            <span className="text-red-500 text-sm ml-2">{validationErrors.vesikatto}</span>
+          )}
+        </label>
         <select
-          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3 border bg-white"
+          className={`block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3 border bg-white ${
+            validationErrors.vesikatto ? 'border-red-500' : ''
+          }`}
           value={formData.vesikatto || ""}
           onChange={(e) => handleSelectChange("vesikatto", e.target.value)}
         >

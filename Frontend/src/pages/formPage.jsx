@@ -10,8 +10,15 @@ import { sendFormData } from "../controllers/formController";
 import { FaExclamationTriangle } from "react-icons/fa";
 
 export const ApplicationForm = (prop) => {
-  const { formData, setFormData, resetForm } = useFormContext();
-  const [step, setStep] = useState(1);
+  const { 
+    formData, 
+    setFormData, 
+    resetForm, 
+    currentStep, 
+    setCurrentStep,
+    validationErrors,
+    validateStep 
+  } = useFormContext();
   const [error, setError] = useState(null);
   const [applicationCount, setApplicationCount] = useState(null);
   const [applicationLimit, setApplicationLimit] = useState(10);
@@ -31,16 +38,20 @@ export const ApplicationForm = (prop) => {
   console.log(isAuthenticated);
 
   const nextStep = () => {
-    if (step < steps.length) setStep(step + 1);
+    if (currentStep < steps.length) {
+      if (validateStep(currentStep)) {
+        setCurrentStep(currentStep + 1);
+      }
+    }
   };
 
   const prevStep = () => {
-    if (step > 1) setStep(step - 1);
+    if (currentStep > 1) setCurrentStep(currentStep - 1);
   };
 
   const goToStep = (stepNumber) => {
-    if (stepNumber < step) {
-      setStep(stepNumber);
+    if (stepNumber < currentStep) {
+      setCurrentStep(stepNumber);
     }
   };
 
@@ -80,6 +91,9 @@ export const ApplicationForm = (prop) => {
       setApplicationLimit(result.limit);
       alert("Hakemus lähetetty onnistuneesti!");
       resetForm();
+      setCurrentStep(1);
+      localStorage.removeItem('formData');
+      localStorage.removeItem('formStep');
     } catch (error) {
       if (error.error === "Authentication Error") {
         setError(error.message);
@@ -176,7 +190,7 @@ export const ApplicationForm = (prop) => {
               >
                 <div
                   className={`w-12 h-12 flex items-center justify-center rounded-full border-2 transition-colors ${
-                    step >= number
+                    currentStep >= number
                       ? "border-blue-600 bg-blue-600 text-white"
                       : "border-gray-300 bg-white text-gray-400"
                   }`}
@@ -185,7 +199,7 @@ export const ApplicationForm = (prop) => {
                 </div>
                 <span
                   className={`mt-3 text-sm font-medium ${
-                    step >= number ? "text-blue-600" : "text-gray-500"
+                    currentStep >= number ? "text-blue-600" : "text-gray-500"
                   }`}
                 >
                   {title}
@@ -197,44 +211,73 @@ export const ApplicationForm = (prop) => {
 
         <div className="bg-white shadow-xl rounded-lg overflow-hidden">
           <div className="p-8">
-            {step === 1 && (
-              <PerustiedotForm formData={formData} setFormData={setFormData} />
+            {currentStep === 1 && (
+              <PerustiedotForm 
+                formData={formData} 
+                setFormData={setFormData} 
+                validationErrors={validationErrors}
+              />
             )}
-            {step === 2 && (
-              <UlkopuoliForm formData={formData} setFormData={setFormData} />
+            {currentStep === 2 && (
+              <UlkopuoliForm 
+                formData={formData} 
+                setFormData={setFormData} 
+                validationErrors={validationErrors}
+              />
             )}
-            {step === 3 && (
-              <SisapuoliForm formData={formData} setFormData={setFormData} />
+            {currentStep === 3 && (
+              <SisapuoliForm 
+                formData={formData} 
+                setFormData={setFormData} 
+                validationErrors={validationErrors}
+              />
             )}
-            {step === 4 && (
-              <LämmitysForm formData={formData} setFormData={setFormData} />
+            {currentStep === 4 && (
+              <LämmitysForm 
+                formData={formData} 
+                setFormData={setFormData} 
+                validationErrors={validationErrors}
+              />
             )}
-            {step === 5 && (
+            {currentStep === 5 && (
               <TalotekniikkaForm
                 formData={formData}
                 setFormData={setFormData}
+                validationErrors={validationErrors}
               />
             )}
-            {step === 6 && (
-              <OmatTiedotForm formData={formData} setFormData={setFormData} />
+            {currentStep === 6 && (
+              <OmatTiedotForm 
+                formData={formData} 
+                setFormData={setFormData} 
+                validationErrors={validationErrors}
+              />
             )}
           </div>
 
           <div className="px-8 py-6 bg-gray-50 border-t border-gray-200 flex flex-col items-center gap-4">
             <div className="flex w-full justify-between">
-              <button
-                onClick={prevStep}
-                disabled={step === 1}
-                className={`px-6 py-3 rounded-lg font-medium transition-colors ${
-                  step === 1
-                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                    : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-300 shadow-sm"
-                }`}
-              >
-                Edellinen
-              </button>
+              <div className="flex gap-4">
+                <button
+                  onClick={prevStep}
+                  disabled={currentStep === 1}
+                  className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+                    currentStep === 1
+                      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                      : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-300 shadow-sm"
+                  }`}
+                >
+                  Edellinen
+                </button>
+                <button
+                  onClick={resetForm}
+                  className="px-6 py-3 rounded-lg font-medium transition-colors bg-white text-red-600 hover:bg-red-50 border border-red-300 shadow-sm"
+                >
+                  Aloita uudestaan
+                </button>
+              </div>
 
-              {step === steps.length ? (
+              {currentStep === steps.length ? (
                 <button
                   onClick={isAuthenticated ? handleSubmit : handleGuestSubmit}
                   disabled={applicationCount === applicationLimit}

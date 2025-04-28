@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-export const SisapuoliForm = ({ formData, setFormData }) => {
+export const SisapuoliForm = ({ formData, setFormData, validationErrors }) => {
   const initialDetailsState = {
     lattia: false,
     valiseinat: false,
@@ -51,12 +51,14 @@ export const SisapuoliForm = ({ formData, setFormData }) => {
         <div key={field}>
           <label className="block text-lg font-medium text-gray-700">
             {label}
-            {!formData[field] && (
-              <span className="text-red-500 text-sm ml-2">Pakollinen kenttä</span>
+            {validationErrors[field] && (
+              <span className="text-red-500 text-sm ml-2">{validationErrors[field]}</span>
             )}
           </label>
           <select
-            className="w-full p-3 border rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500"
+            className={`w-full p-3 border rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 ${
+              validationErrors[field] ? 'border-red-500' : ''
+            }`}
             value={formData[field] || ""}
             onChange={(e) => handleDropdownChange(field, e.target.value)}
             required

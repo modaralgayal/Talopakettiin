@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-export const LämmitysForm = ({ formData, setFormData }) => {
+export const LämmitysForm = ({ formData, setFormData, validationErrors }) => {
   // Initialize all possible heating options
   const heatingOptions = [
     "Sähkö",
@@ -55,8 +55,8 @@ export const LämmitysForm = ({ formData, setFormData }) => {
       <div className="space-y-4">
         <label className="block text-lg font-medium text-gray-700">
           Lämmitysmuoto *
-          {(!formData.lämmitysmuoto || formData.lämmitysmuoto.length === 0) && (
-            <span className="text-red-500 text-sm ml-2">Valitse vähintään yksi</span>
+          {validationErrors.lämmitysmuoto && (
+            <span className="text-red-500 text-sm ml-2">{validationErrors.lämmitysmuoto}</span>
           )}
         </label>
         <div className="space-y-3">
