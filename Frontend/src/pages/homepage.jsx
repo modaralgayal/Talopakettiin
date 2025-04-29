@@ -27,6 +27,57 @@ export const Homepage = () => {
     }
   ];
 
+  // Blog posts data
+  const blogPosts = [
+    {
+      title: "Talopaketin valinta: Näin löydät parhaan vaihtoehdon",
+      excerpt: "Opi valitsemaan oikea talopaketti tarpeisiisi sopivaksi. Käymme läpi tärkeimmät huomioitavat asiat.",
+      date: "2024-03-15",
+      image: "https://placehold.co/600x400/e2e8f0/1e40af?text=Talopaketti"
+    },
+    {
+      title: "Energiatehokkuus uudessa kodissa",
+      excerpt: "Miten energiatehokkuus vaikuttaa talopaketin valintaan? Käymme läpi nykyaikaiset ratkaisut.",
+      date: "2024-03-10",
+      image: "https://placehold.co/600x400/e2e8f0/1e40af?text=Energia"
+    },
+    {
+      title: "Rahoitusvaihtoehdot talopaketille",
+      excerpt: "Tutustu erilaisiin rahoitusvaihtoehtoihin ja löydä sinulle sopivin ratkaisu.",
+      date: "2024-03-05",
+      image: "https://placehold.co/600x400/e2e8f0/1e40af?text=Rahoitus"
+    },
+    {
+      title: "Sisustussuunnittelu uuteen kotiin",
+      excerpt: "Vinkkejä sisustussuunnitteluun ja sisätilojen toteutukseen uudessa kodissa.",
+      date: "2024-03-01",
+      image: "https://placehold.co/600x400/e2e8f0/1e40af?text=Sisustus"
+    },
+    {
+      title: "Ympäristöystävällinen rakentaminen",
+      excerpt: "Miten rakentaa ympäristöystävällisesti? Käymme läpi kestävän kehityksen periaatteet.",
+      date: "2024-02-25",
+      image: "https://placehold.co/600x400/e2e8f0/1e40af?text=Ympäristö"
+    },
+    {
+      title: "Talopaketin hankintaprosessi",
+      excerpt: "Vaihe vaiheelta opas talopaketin hankintaprosessiin ja tärkeimmät huomioitavat asiat.",
+      date: "2024-02-20",
+      image: "https://placehold.co/600x400/e2e8f0/1e40af?text=Prosessi"
+    }
+  ];
+
+  // Function to format date to Finnish format
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('fi-FI');
+  };
+
+  // Sort posts by date (newest first) and limit to 6
+  const sortedAndLimitedPosts = [...blogPosts]
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .slice(0, 6);
+
   return (
     <div className="min-h-screen font-['Avenir']">
       {/* Hero + Cards with Slideshow background */}
@@ -47,13 +98,16 @@ export const Homepage = () => {
             </p>
             <Link
               to="/formpage"
-              className="inline-flex items-center px-8 py-4 border border-transparent text-lg font-medium rounded-full shadow-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200 tracking-wide"
+              className="inline-flex items-center px-12 py-6 border-2 border-transparent text-xl font-bold rounded-full shadow-xl text-white bg-blue-600 hover:bg-blue-700 transition-all duration-200 tracking-wide transform hover:scale-105"
             >
               Aloita hakuprosessi
-              <svg className="ml-2 -mr-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="ml-3 -mr-1 w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
               </svg>
             </Link>
+            <p className="mt-4 text-lg text-white/90">
+              Täytä hakemus ja saat tarjouksia luotettavilta talotoimittajilta
+            </p>
           </div>
 
           {/* Features Section */}
@@ -137,6 +191,36 @@ export const Homepage = () => {
               <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
             </svg>
           </Link>
+        </div>
+      </div>
+
+      {/* Blog Section */}
+      <div className="bg-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12 tracking-tight">
+            Ajankohtaisia artikkeleita
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {sortedAndLimitedPosts.map((post, index) => (
+              <div key={index} className="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-105">
+                <div className="aspect-w-16 aspect-h-9">
+                  <img
+                    src={post.image}
+                    alt={post.title}
+                    className="w-full h-48 object-cover"
+                  />
+                </div>
+                <div className="p-6">
+                  <div className="text-sm text-blue-600 mb-2">{formatDate(post.date)}</div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">{post.title}</h3>
+                  <p className="text-gray-600 mb-4">{post.excerpt}</p>
+                  <button className="text-blue-600 font-medium hover:text-blue-800 transition-colors">
+                    Lue lisää →
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

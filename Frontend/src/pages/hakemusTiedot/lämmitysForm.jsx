@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export const LämmitysForm = ({ formData, setFormData, validationErrors }) => {
   // Initialize all possible heating options
@@ -14,10 +14,21 @@ export const LämmitysForm = ({ formData, setFormData, validationErrors }) => {
     "Muu",
   ];
 
-  // Derived states for showing details
-  const showTakkaDetails = formData.takka === "Kyllä";
-  const showLeivinuuniDetails = formData.leivinuuni === "Kyllä";
-  const showMuuLämmitysDetails = formData.lämmitysmuoto?.includes("Muu");
+  // State for showing details
+  const [showDetails, setShowDetails] = useState({
+    takka: false,
+    leivinuuni: false,
+    muuLämmitys: false
+  });
+
+  // Initialize showDetails based on formData when component mounts or formData changes
+  useEffect(() => {
+    setShowDetails({
+      takka: formData.takka === "Kyllä",
+      leivinuuni: formData.leivinuuni === "Kyllä",
+      muuLämmitys: formData.lämmitysmuoto?.includes("Muu")
+    });
+  }, [formData.takka, formData.leivinuuni, formData.lämmitysmuoto]);
 
   // Handle checkbox changes for heating types
   const handleLämmitysmuotoChange = (e) => {
@@ -81,7 +92,7 @@ export const LämmitysForm = ({ formData, setFormData, validationErrors }) => {
             </div>
           ))}
         </div>
-        {showMuuLämmitysDetails && (
+        {showDetails.muuLämmitys && (
           <div className="mt-3">
             <input
               type="text"
@@ -117,7 +128,7 @@ export const LämmitysForm = ({ formData, setFormData, validationErrors }) => {
             </div>
           ))}
         </div>
-        {showTakkaDetails && (
+        {showDetails.takka && (
           <div className="mt-4 space-y-3 pl-5 border-l-2 border-gray-200">
             <label className="block text-base font-medium text-gray-700">Varaavuus</label>
             <div className="flex flex-wrap gap-4">
@@ -165,7 +176,7 @@ export const LämmitysForm = ({ formData, setFormData, validationErrors }) => {
             </div>
           ))}
         </div>
-        {showLeivinuuniDetails && (
+        {showDetails.leivinuuni && (
           <div className="mt-3">
             <input
               type="text"

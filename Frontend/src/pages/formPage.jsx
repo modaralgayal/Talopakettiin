@@ -258,17 +258,17 @@ export const ApplicationForm = (prop) => {
           <div className="px-8 py-6 bg-gray-50 border-t border-gray-200 flex flex-col items-center gap-4">
             <div className="flex w-full justify-between">
               <div className="flex gap-4">
-                <button
-                  onClick={prevStep}
-                  disabled={currentStep === 1}
-                  className={`px-6 py-3 rounded-lg font-medium transition-colors ${
-                    currentStep === 1
-                      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                      : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-300 shadow-sm"
-                  }`}
-                >
-                  Edellinen
-                </button>
+              <button
+                onClick={prevStep}
+                disabled={currentStep === 1}
+                className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+                  currentStep === 1
+                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                    : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-300 shadow-sm"
+                }`}
+              >
+                Edellinen
+              </button>
                 <button
                   onClick={resetForm}
                   className="px-6 py-3 rounded-lg font-medium transition-colors bg-white text-red-600 hover:bg-red-50 border border-red-300 shadow-sm"

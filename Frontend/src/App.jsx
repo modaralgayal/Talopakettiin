@@ -111,7 +111,7 @@ function App() {
   }
 
   return (
-    <div>
+    <div className="min-h-screen flex flex-col">
       {userType === "customer" ? (
         <CustomerHeader handleLogout={handleLogout} />
       ) : userType === "provider" ? (
@@ -120,7 +120,7 @@ function App() {
         <Header handleLogout={handleLogout} />
       )}
 
-      <main>
+      <main className="flex-grow">
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Homepage />} />

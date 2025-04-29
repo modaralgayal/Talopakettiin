@@ -1,26 +1,31 @@
 import React, { useState, useEffect } from "react";
 
 export const UlkopuoliForm = ({ formData, setFormData, validationErrors }) => {
-  const [showCustomMaterial, setShowCustomMaterial] = useState(false);
-  const [showCustomRoof, setShowCustomRoof] = useState(false);
+  const [showDetails, setShowDetails] = useState({
+    talonMateriaali: false,
+    vesikatto: false
+  });
 
+  // Initialize showDetails based on formData when component mounts or formData changes
   useEffect(() => {
-    setShowCustomMaterial(formData.talonMateriaali === "Muu, mikä?");
-    setShowCustomRoof(formData.vesikatto === "Muu, mikä?");
+    setShowDetails({
+      talonMateriaali: formData.talonMateriaali === "Muu, mikä?",
+      vesikatto: formData.vesikatto === "Muu, mikä?"
+    });
   }, [formData.talonMateriaali, formData.vesikatto]);
 
   const handleSelectChange = (field, value) => {
     const update = { ...formData, [field]: value };
 
     if (field === "talonMateriaali") {
-      setShowCustomMaterial(value === "Muu, mikä?");
+      setShowDetails(prev => ({ ...prev, talonMateriaali: value === "Muu, mikä?" }));
       if (value !== "Muu, mikä?") {
         update.talonMateriaaliMuu = "";
       }
     }
 
     if (field === "vesikatto") {
-      setShowCustomRoof(value === "Muu, mikä?");
+      setShowDetails(prev => ({ ...prev, vesikatto: value === "Muu, mikä?" }));
       if (value !== "Muu, mikä?") {
         update.vesikattoMuu = "";
       }
@@ -57,7 +62,7 @@ export const UlkopuoliForm = ({ formData, setFormData, validationErrors }) => {
             <option key={option} value={option}>{option}</option>
           ))}
         </select>
-        {showCustomMaterial && (
+        {showDetails.talonMateriaali && (
           <input
             type="text"
             placeholder="Syötä materiaali"
@@ -88,7 +93,7 @@ export const UlkopuoliForm = ({ formData, setFormData, validationErrors }) => {
             <option key={option} value={option}>{option}</option>
           ))}
         </select>
-        {showCustomRoof && (
+        {showDetails.vesikatto && (
           <input
             type="text"
             placeholder="Syötä vesikatto"

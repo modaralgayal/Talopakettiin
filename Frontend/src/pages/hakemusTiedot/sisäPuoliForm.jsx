@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export const SisapuoliForm = ({ formData, setFormData, validationErrors }) => {
   const initialDetailsState = {
@@ -8,6 +8,15 @@ export const SisapuoliForm = ({ formData, setFormData, validationErrors }) => {
   };
 
   const [showDetails, setShowDetails] = useState(initialDetailsState);
+
+  // Initialize showDetails based on formData when component mounts or formData changes
+  useEffect(() => {
+    setShowDetails({
+      lattia: formData.lattia === "Muu",
+      valiseinat: formData.valiseinat === "Muu",
+      sisakatto: formData.sisakatto === "Muu"
+    });
+  }, [formData.lattia, formData.valiseinat, formData.sisakatto]);
 
   const dropdownFields = [
     {
@@ -36,7 +45,7 @@ export const SisapuoliForm = ({ formData, setFormData, validationErrors }) => {
       [field]: value,
       ...(value !== "Muu" && { [`${field}Details`]: "" }),
     });
-    setShowDetails((prev) => ({ ...prev, [field]: value === "Muu" }));
+    setShowDetails(prev => ({ ...prev, [field]: value === "Muu" }));
   };
 
   const handleTextInput = (field, value) => {

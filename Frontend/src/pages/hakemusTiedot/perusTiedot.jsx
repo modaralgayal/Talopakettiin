@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const finnishCities = [
   "Helsinki",
@@ -33,6 +33,23 @@ export const PerustiedotForm = ({ formData, setFormData, validationErrors }) => 
   };
   
   const [showDetails, setShowDetails] = useState(initialDetailsState);
+
+  // Initialize showDetails based on formData when component mounts or formData changes
+  useEffect(() => {
+    setShowDetails({
+      kodinhoitohuone: formData.kodinhoitohuone === "Kyllä",
+      arkieteinen: formData.arkieteinen === "Kyllä",
+      terassi: formData.terassi === "Kyllä",
+      autokatos: formData.autokatos === "Kyllä",
+      autotalli: formData.autotalli === "Kyllä"
+    });
+  }, [
+    formData.kodinhoitohuone,
+    formData.arkieteinen,
+    formData.terassi,
+    formData.autokatos,
+    formData.autotalli
+  ]);
 
   // Handle radio button changes
   const handleRadioChange = (field, value) => {
@@ -141,7 +158,7 @@ export const PerustiedotForm = ({ formData, setFormData, validationErrors }) => 
         </select>
       </div>
 
-      {/* Budget Range */}
+      {/* Budget */}
       <div>
         <label className="block text-lg font-medium text-gray-700">Budjetti (€)</label>
         <div className="flex gap-2">
@@ -152,7 +169,7 @@ export const PerustiedotForm = ({ formData, setFormData, validationErrors }) => 
             value={formData.minBudget ?? ""}
             onChange={(e) => handleNumberInput("minBudget", e.target.value)}
             min="0"
-            step="10000"
+            step="1000"
           />
           <input
             type="number"
@@ -161,12 +178,12 @@ export const PerustiedotForm = ({ formData, setFormData, validationErrors }) => 
             value={formData.maxBudget ?? ""}
             onChange={(e) => handleNumberInput("maxBudget", e.target.value)}
             min={formData.minBudget || "0"}
-            step="10000"
+            step="1000"
           />
         </div>
       </div>
 
-      {/* House Size Range */}
+      {/* House Size */}
       <div>
         <label className="block text-lg font-medium text-gray-700">Talon Koko (m²)</label>
         <div className="flex gap-2">

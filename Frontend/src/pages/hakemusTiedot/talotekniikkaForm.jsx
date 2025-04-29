@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 
 export const TalotekniikkaForm = ({ formData, setFormData }) => {
-  const [showMinuaKiinnostaaDetails, setShowMinuaKiinnostaaDetails] = useState(false);
-  const [showHaluanTarjousDetails, setShowHaluanTarjousDetails] = useState(false);
+  const [showDetails, setShowDetails] = useState({
+    minuaKiinnostaa: false,
+    haluanTarjous: false
+  });
 
   const optionsMinuaKiinnostaa = [
     "Taloautomaatio",
@@ -18,9 +20,12 @@ export const TalotekniikkaForm = ({ formData, setFormData }) => {
     "Muu",
   ];
 
+  // Initialize showDetails based on formData when component mounts or formData changes
   useEffect(() => {
-    setShowMinuaKiinnostaaDetails((formData.minuaKiinnostaa || []).includes("Muu"));
-    setShowHaluanTarjousDetails((formData.haluanTarjous || []).includes("Muu"));
+    setShowDetails({
+      minuaKiinnostaa: (formData.minuaKiinnostaa || []).includes("Muu"),
+      haluanTarjous: (formData.haluanTarjous || []).includes("Muu")
+    });
   }, [formData.minuaKiinnostaa, formData.haluanTarjous]);
 
   const handleCheckboxChange = (field, value) => {
@@ -32,14 +37,14 @@ export const TalotekniikkaForm = ({ formData, setFormData }) => {
     setFormData({ ...formData, [field]: updatedValues });
 
     if (field === "minuaKiinnostaa") {
-      setShowMinuaKiinnostaaDetails(updatedValues.includes("Muu"));
+      setShowDetails(prev => ({ ...prev, minuaKiinnostaa: updatedValues.includes("Muu") }));
       if (!updatedValues.includes("Muu")) {
         setFormData(prev => ({ ...prev, muuMinuaKiinnostaa: "" }));
       }
     }
 
     if (field === "haluanTarjous") {
-      setShowHaluanTarjousDetails(updatedValues.includes("Muu"));
+      setShowDetails(prev => ({ ...prev, haluanTarjous: updatedValues.includes("Muu") }));
       if (!updatedValues.includes("Muu")) {
         setFormData(prev => ({ ...prev, muuHaluanTarjous: "" }));
       }
@@ -71,7 +76,7 @@ export const TalotekniikkaForm = ({ formData, setFormData }) => {
             </label>
           ))}
         </div>
-        {showMinuaKiinnostaaDetails && (
+        {showDetails.minuaKiinnostaa && (
           <input
             type="text"
             placeholder="Muu - mikä?"
@@ -99,7 +104,7 @@ export const TalotekniikkaForm = ({ formData, setFormData }) => {
             </label>
           ))}
         </div>
-        {showHaluanTarjousDetails && (
+        {showDetails.haluanTarjous && (
           <input
             type="text"
             placeholder="Muu - mikä?"

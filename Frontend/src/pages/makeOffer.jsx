@@ -1,48 +1,104 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useOfferContext } from "../context/offerContext";
-import { makeOfferToUser } from "../controllers/formController";
+import { FaChevronDown, FaChevronUp, FaBuilding, FaEuroSign, FaRuler } from "react-icons/fa";
+import { sendOffer } from "../controllers/offerController";
 
 const MakeOffer = () => {
   const { offerData, updateOfferData } = useOfferContext();
   const navigate = useNavigate();
-
-  const [price, setPrice] = useState(offerData.price || "");
-  const [firmName, setFirmName] = useState(offerData.firmName || "");
-  const [description, setDescription] = useState(offerData.description || "");
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
   const [pdfFile, setPdfFile] = useState(null);
 
-  useEffect(() => {
-    setPrice(offerData.price || "");
-    setFirmName(offerData.firmName || "");
-    setDescription(offerData.description || "");
-    console.log("This is the application we are offering to:", offerData.formData);
-  }, [offerData]);
+  // Define the order of sections
+  const sectionOrder = [
+    { title: "Perustiedot", fields: [
+      "kaupunki",
+      "maakunta",
+      "budjetti",
+      "talonKoko",
+      "makuuhuoneidenMaara",
+      "kodinhoitohuone",
+      "kodinhoitohuoneDetails",
+      "arkieteinen",
+      "arkieteinenDetails",
+      "terassi",
+      "terassiDetails",
+      "autokatos",
+      "autokatosDetails",
+      "autotalli",
+      "autotalliDetails"
+    ]},
+    { title: "Ulkopuoli", fields: [
+      "talonMateriaali",
+      "talonMateriaaliMuu",
+      "vesikatto",
+      "vesikattoMuu"
+    ]},
+    { title: "Sisäpuoli", fields: [
+      "lattia",
+      "lattiaDetails",
+      "valiseinat",
+      "valiseinatDetails",
+      "sisakatto",
+      "sisakattoDetails"
+    ]},
+    { title: "Lämmitys", fields: [
+      "lämmitysmuoto",
+      "muuLämmitysmuoto",
+      "takka",
+      "varaavuus",
+      "leivinuuni",
+      "leivinuuniDetails",
+      "muuTieto"
+    ]},
+    { title: "Talotekniikka", fields: [
+      "minuaKiinnostaa",
+      "muuMinuaKiinnostaa",
+      "haluanTarjous",
+      "muuHaluanTarjous"
+    ]},
+    { title: "Omat Tiedot", fields: [
+      "olen",
+      "vapaamuotoisiaLisatietoja"
+    ]}
+  ];
 
-  const handleSubmit = (e) => {
+  // Function to format field values
+  const formatFieldValue = (key, value) => {
+    if (Array.isArray(value)) {
+      return value.join(", ");
+    }
+    if (key === "budjetti" && value) {
+      return value;
+    }
+    if (key === "talonKoko" && value) {
+      return value;
+    }
+    return value;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
+    setSuccess(false);
 
-    const updatedOffer = {
-      ...offerData,
-      price,
-      firmName,
-      description,
-    };
+    try {
+      await sendOffer(offerData, pdfFile);
+      setSuccess(true);
+      setTimeout(() => {
+        navigate("/viewmyoffers");
+      }, 2000);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
 
-    updateOfferData(updatedOffer);
-
-    console.log("Sending PDF file:", pdfFile);
-
-    makeOfferToUser(updatedOffer, offerData.customerEmail, offerData.entryId, pdfFile)
-      .then((res) => {
-        console.log("Offer successfully submitted:", res);
-        alert("Offer submitted successfully!");
-        navigate("/allapplications");
-      })
-      .catch((error) => {
-        console.error("Failed to submit offer:", error);
-        alert("There was an error submitting your offer. Please try again.");
-      });
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    updateOfferData({ ...offerData, [name]: value });
   };
 
   const handleFileChange = (e) => {
@@ -50,101 +106,177 @@ const MakeOffer = () => {
     if (file && file.type === "application/pdf") {
       setPdfFile(file);
     } else {
-      alert("Please upload a valid PDF file.");
+      setError("Valitse kelvollinen PDF-tiedosto");
     }
   };
 
+  if (!offerData) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-3xl mx-auto text-center">
+          <h1 className="text-2xl font-semibold text-gray-900">Ei valittua hakemusta</h1>
+          <p className="mt-2 text-gray-600">Valitse ensin hakemus, jolle haluat tehdä tarjouksen.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="w-full max-w-4xl p-6 bg-white rounded-xl shadow-md text-center">
-        <h1 className="text-2xl font-semibold mb-6">
-          Make an Offer for Entry {offerData.entryId}
-        </h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Price Input */}
-          <div>
-            <label htmlFor="price" className="block text-left font-medium mb-2">
-              Price
-            </label>
-            <input
-              id="price"
-              type="number"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              className="w-full p-2 border rounded"
-              placeholder="Enter price"
-              required
-            />
-          </div>
+    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">Tee tarjous</h1>
+          <p className="text-xl text-gray-600">Täytä tarjouksen tiedot alla olevaan lomakkeeseen</p>
+        </div>
 
-          {/* Firm Name Input */}
-          <div>
-            <label htmlFor="firmName" className="block text-left font-medium mb-2">
-              Firm Name
-            </label>
-            <input
-              id="firmName"
-              type="text"
-              value={firmName}
-              onChange={(e) => setFirmName(e.target.value)}
-              className="w-full p-2 border rounded"
-              placeholder="Enter firm name"
-              required
-            />
-          </div>
+        {/* Application Preview Toggle */}
+        <div className="mb-8">
+          <button
+            onClick={() => setIsPreviewOpen(!isPreviewOpen)}
+            className="w-full flex items-center justify-between p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
+          >
+            <span className="text-lg font-medium text-gray-900">Näytä hakemuksen tiedot</span>
+            {isPreviewOpen ? (
+              <FaChevronUp className="h-5 w-5 text-gray-500" />
+            ) : (
+              <FaChevronDown className="h-5 w-5 text-gray-500" />
+            )}
+          </button>
 
-          {/* Description Input */}
-          <div>
-            <label htmlFor="description" className="block text-left font-medium mb-2">
-              Description
-            </label>
-            <textarea
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full p-2 border rounded"
-              placeholder="Enter description"
-              rows="4"
-              required
-            />
-          </div>
+          {/* Application Preview */}
+          {isPreviewOpen && (
+            <div className="mt-4 bg-white rounded-lg shadow-lg p-6">
+              {sectionOrder.map((section) => (
+                <div key={section.title} className="mb-8 last:mb-0">
+                  <h3 className="text-2xl font-semibold text-gray-900 mb-4">
+                    {section.title}
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {section.fields.map((field) => {
+                      const value = offerData.formData[field];
+                      if (value === undefined || value === "") return null;
+                      return (
+                        <div key={field} className="bg-gray-50 p-4 rounded-lg">
+                          <span className="block text-lg font-medium text-gray-700 mb-1">
+                            {field}
+                          </span>
+                          <span className="text-lg text-gray-600">
+                            {formatFieldValue(field, value)}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
 
-          {/* PDF Upload */}
-          <div>
-            <label className="block text-left font-medium mb-2">
-              Attach PDF (optional)
-            </label>
+        {/* Offer Form */}
+        <div className="bg-white rounded-xl shadow-lg p-8">
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-red-700">{error}</p>
+            </div>
+          )}
 
-            <div className="flex items-center space-x-4">
-              <label
-                htmlFor="pdfUpload"
-                className="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition"
-              >
-                Browse PDF
+          {success && (
+            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+              <p className="text-green-700">Tarjous lähetetty onnistuneesti!</p>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label className="block text-lg font-medium text-gray-700 mb-2">
+                Yrityksen nimi *
               </label>
-              {pdfFile && (
-                <span className="text-sm text-green-700">{pdfFile.name}</span>
-              )}
+              <input
+                type="text"
+                name="firmName"
+                value={offerData.firmName}
+                onChange={handleInputChange}
+                required
+                className="w-full p-4 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-lg"
+                placeholder="Syötä yrityksesi nimi"
+              />
             </div>
 
-            {/* Hidden file input */}
-            <input
-              id="pdfUpload"
-              type="file"
-              accept="application/pdf"
-              onChange={handleFileChange}
-              className="hidden"
-            />
-          </div>
+            <div>
+              <label className="block text-lg font-medium text-gray-700 mb-2">
+                Hinta (€) *
+              </label>
+              <input
+                type="number"
+                name="price"
+                value={offerData.price}
+                onChange={handleInputChange}
+                required
+                min="0"
+                step="1000"
+                className="w-full p-4 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-lg"
+                placeholder="Syötä tarjouksen hinta"
+              />
+            </div>
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
-          >
-            Submit Offer
-          </button>
-        </form>
+            <div>
+              <label className="block text-lg font-medium text-gray-700 mb-2">
+                Kuvaus *
+              </label>
+              <textarea
+                name="description"
+                value={offerData.description}
+                onChange={handleInputChange}
+                required
+                rows="6"
+                className="w-full p-4 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-lg"
+                placeholder="Kuvaile tarjouksesi sisältö ja erityispiirteet"
+              />
+            </div>
+
+            {/* PDF Upload */}
+            <div>
+              <label className="block text-lg font-medium text-gray-700 mb-2">
+                Liitä Tarjous PDF-tiedostona (valinnainen)
+              </label>
+              <div className="flex items-center space-x-4">
+                <label
+                  htmlFor="pdfUpload"
+                  className="inline-flex items-center px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer text-lg"
+                >
+                  Valitse tiedosto
+                </label>
+                {pdfFile && (
+                  <span className="text-lg text-green-600">{pdfFile.name}</span>
+                )}
+              </div>
+              <input
+                id="pdfUpload"
+                type="file"
+                accept="application/pdf"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+            </div>
+
+            <div className="flex justify-end space-x-4">
+              <button
+                type="button"
+                onClick={() => navigate("/allapplications")}
+                className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-lg"
+              >
+                Peruuta
+              </button>
+              <button
+                type="submit"
+                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-lg"
+              >
+                Lähetä tarjous
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );
