@@ -80,15 +80,15 @@ export const getApplicationsForUser = async (req, res) => {
       TableName: "Talopakettiin-API",
       FilterExpression: "email = :email",
       ExpressionAttributeValues: marshall({
-        ":email": email
-      })
+        ":email": email,
+      }),
     };
 
     const command = new ScanCommand(params);
     const response = await client.send(command);
-    
+
     const applications = response.Items
-      ? response.Items.map(item => unmarshall(item))
+      ? response.Items.map((item) => unmarshall(item))
       : [];
 
     res.json(applications);
@@ -155,27 +155,68 @@ export const getOffersForUser = async (req, res) => {
     // Query offers directly using customerEmail and entryType
     const params = {
       TableName: "Talopakettiin-API",
-      FilterExpression: "entryType = :entryType AND customerEmail = :customerEmail",
+      FilterExpression:
+        "entryType = :entryType AND customerEmail = :customerEmail",
       ExpressionAttributeValues: {
         ":entryType": { S: "offer" },
-        ":customerEmail": { S: userEmail }
-      }
+        ":customerEmail": { S: userEmail },
+      },
     };
 
     const command = new ScanCommand(params);
     const data = await client.send(command);
 
     // Map and unmarshall the offers
-    const offers = data.Items ? data.Items.map(item => unmarshall(item)) : [];
+    const offers = data.Items ? data.Items.map((item) => unmarshall(item)) : [];
 
     // Optional: Sort offers by timestamp in descending order (newest first)
-    const sortedOffers = offers.sort((a, b) => 
-      new Date(b.timestamp) - new Date(a.timestamp)
+    const sortedOffers = offers.sort(
+      (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
     );
 
     res.status(200).json({
       success: true,
-      data: { offers: sortedOffers }
+      data: { offers: sortedOffers },
+    });
+  } catch (error) {
+    console.error("Error fetching offers for user:", error);
+    res.status(500).json({ error: "Failed to fetch offers" });
+  }
+};
+
+export const getOfferForProvider = async (req, res) => {
+  if (req.user.userType !== "provider") {
+    return res
+      .status(403)
+      .json({ error: "Access denied: User is not a customer" });
+  }
+
+  try {
+    const providerEmail = req.user.email;
+    const client = await initDynamoDBClient();
+
+    const params = {
+      TableName: "Talopakettiin-API",
+      FilterExpression:
+        "entryType = :entryType AND providerEmail = :providerEmail",
+      ExpressionAttributeValues: {
+        ":entryType": { S: "offer" },
+        ":providerEmail": { S: providerEmail },
+      },
+    };
+
+    const command = new ScanCommand(params);
+    const data = await client.send(command);
+
+    const offers = data.Items ? data.Items.map((item) => unmarshall(item)) : [];
+
+    const sortedOffers = offers.sort(
+      (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+    );
+
+    res.status(200).json({
+      success: true,
+      data: { offers: sortedOffers },
     });
   } catch (error) {
     console.error("Error fetching offers for user:", error);
@@ -213,10 +254,7 @@ export const deleteItemByEntryId = async (req, res) => {
       message: `Successfully deleted item with id: ${idToDelete}`,
     });
   } catch (error) {
-    console.error(
-      `Error deleting item with id: ${idToDelete}`,
-      error
-    );
+    console.error(`Error deleting item with id: ${idToDelete}`, error);
     res.status(500).json({
       error: `Failed to delete item with id: ${idToDelete}`,
     });
@@ -249,17 +287,19 @@ export const acceptOffer = async (req, res) => {
     console.log("Fetching offer details");
     const getOfferParams = {
       TableName: "Talopakettiin-API",
-      Key: { id: { S: id } }
+      Key: { id: { S: id } },
     };
-    
-    const offerResult = await dynamoDBClient.send(new GetItemCommand(getOfferParams));
+
+    const offerResult = await dynamoDBClient.send(
+      new GetItemCommand(getOfferParams)
+    );
     if (!offerResult.Item) {
       throw new Error("Offer not found");
     }
-    
+
     const offer = unmarshall(offerResult.Item);
     const emailAddress = offer.providerEmail;
-    
+
     console.log("Email fetched: ", emailAddress);
 
     if (!emailAddress) {
@@ -455,8 +495,8 @@ export const checkApplicationLimit = async (email) => {
     FilterExpression: "email = :email AND entryType = :type",
     ExpressionAttributeValues: marshall({
       ":email": email,
-      ":type": "application"
-    })
+      ":type": "application",
+    }),
   };
 
   try {
@@ -467,7 +507,7 @@ export const checkApplicationLimit = async (email) => {
     return {
       canSubmit: currentCount < APPLICATION_LIMIT,
       currentCount,
-      limit: APPLICATION_LIMIT
+      limit: APPLICATION_LIMIT,
     };
   } catch (error) {
     console.error("Error checking application limit:", error);

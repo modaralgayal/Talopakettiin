@@ -148,3 +148,15 @@ export const getOffersForUser = async () => {
     throw error.response?.data || error.message;
   }
 };
+
+export const getOffersForProvider = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/get-provider-offers`, {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching offers:", error);
+    throw error.response?.data || error?.message;
+  }
+};

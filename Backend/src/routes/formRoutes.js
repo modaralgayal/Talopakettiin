@@ -6,6 +6,7 @@ import {
   deleteItemByEntryId,
   getAllEntryIds,
   getApplicationsForUser,
+  getOfferForProvider,
   getOffersForUser,
   makeOffer,
   makeOfferMiddleware,
@@ -21,5 +22,6 @@ router.get("/get-user-offers", authenticateJWT, getOffersForUser);
 router.put("/accept-given-offer", authenticateJWT, acceptOffer);
 router.get("/test-sub-content", authenticateJWT);
 router.post("/make-offer", authenticateJWT, makeOfferMiddleware, makeOffer);
+router.get("/get-provider-offers", authenticateJWT, getOfferForProvider)
 
 export default router;

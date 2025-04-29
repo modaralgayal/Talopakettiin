@@ -70,8 +70,7 @@ function App() {
         } else {
           setIsAuthenticated(false);
           setUserType(null);
-          // Only redirect if not on a public route
-          if (!publicRoutes.includes(location.pathname)) {
+          if (!publicRoutes.includes(location.pathname) && location.pathname !== '/signin') {
             navigate("/signin");
           }
         }
@@ -89,7 +88,7 @@ function App() {
     // Set up interval for session check
     const interval = setInterval(checkSession, 60000);
     return () => clearInterval(interval);
-  }, []); // Only run on mount, remove location.pathname dependency
+  }, [location.pathname]); // Add location.pathname as dependency
 
   // Protected route wrapper component
   const ProtectedRoute = ({ children }) => {
@@ -99,7 +98,7 @@ function App() {
     }
 
     // Only redirect if not authenticated and not on a public route
-    if (!isAuthenticated && !publicRoutes.includes(location.pathname)) {
+    if (!isAuthenticated && !publicRoutes.includes(location.pathname) && location.pathname !== '/signin') {
       return <Navigate to="/signin" />;
     }
     return children;

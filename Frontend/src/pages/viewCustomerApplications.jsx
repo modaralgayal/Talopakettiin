@@ -1,22 +1,47 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getAllEntries } from "../controllers/formController";
+import {
+  getAllEntries,
+  getOffersForProvider,
+} from "../controllers/formController";
 import { useOfferContext } from "../context/offerContext";
-import { FaSearch, FaChevronDown, FaChevronUp, FaBuilding } from "react-icons/fa";
+import {
+  FaSearch,
+  FaChevronDown,
+  FaChevronUp,
+  FaBuilding,
+  FaCheckCircle,
+  FaTimes,
+  FaEuroSign,
+  FaFileAlt,
+} from "react-icons/fa";
 
 export const ViewCustomerApplications = () => {
   const [applications, setApplications] = useState([]);
+  const [providerOffers, setProviderOffers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [openedAppIndex, setOpenedAppIndex] = useState(null);
+  const [selectedOffer, setSelectedOffer] = useState(null);
   const { updateOfferData } = useOfferContext();
   const navigate = useNavigate();
 
   useEffect(() => {
-    getAllEntries()
-      .then((response) => {
-        setApplications(response.entries || []);
-      })
-      .catch((error) => console.log(error));
+    const fetchData = async () => {
+      try {
+        const [offersResponse, entriesResponse] = await Promise.all([
+          getOffersForProvider(),
+          getAllEntries()
+        ]);
+        
+        console.log("These are the offers made by you: ", offersResponse.data.offers);
+        setProviderOffers(offersResponse.data.offers || []);
+        setApplications(entriesResponse.entries || []);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
   }, []);
 
   const parseValue = (val) => {
@@ -38,18 +63,16 @@ export const ViewCustomerApplications = () => {
     return result;
   };
 
-  const filteredApplications = applications.filter((app) => {
-    const formData = filterEmptyValues(app.formData);
-    const searchLower = searchTerm.toLowerCase();
-    
-    return (
-      (formData.kaupunki && formData.kaupunki.toLowerCase().includes(searchLower)) ||
-      (formData.maakunta && formData.maakunta.toLowerCase().includes(searchLower))
-    );
-  });
+  const getOfferForApplication = (entryId) => {
+    return providerOffers.find(offer => offer.entryId === entryId);
+  };
 
-  const handleToggle = (index) => {
-    setOpenedAppIndex(openedAppIndex === index ? null : index);
+  const handleViewOffer = (offer) => {
+    setSelectedOffer(offer);
+  };
+
+  const handleCloseOfferModal = () => {
+    setSelectedOffer(null);
   };
 
   const handleOffer = (application) => {
@@ -66,7 +89,7 @@ export const ViewCustomerApplications = () => {
       formData,
       price: "",
       firmName: "",
-      description: ""
+      description: "",
     };
     updateOfferData(offerData);
     navigate("/makeoffer");
@@ -74,56 +97,68 @@ export const ViewCustomerApplications = () => {
 
   // Define the order of sections
   const sectionOrder = [
-    { title: "Perustiedot", fields: [
-      "kaupunki",
-      "maakunta",
-      "budjetti",
-      "talonKoko",
-      "makuuhuoneidenMaara",
-      "kodinhoitohuone",
-      "kodinhoitohuoneDetails",
-      "arkieteinen",
-      "arkieteinenDetails",
-      "terassi",
-      "terassiDetails",
-      "autokatos",
-      "autokatosDetails",
-      "autotalli",
-      "autotalliDetails"
-    ]},
-    { title: "Ulkopuoli", fields: [
-      "talonMateriaali",
-      "talonMateriaaliMuu",
-      "vesikatto",
-      "vesikattoMuu"
-    ]},
-    { title: "Sisäpuoli", fields: [
-      "lattia",
-      "lattiaDetails",
-      "valiseinat",
-      "valiseinatDetails",
-      "sisakatto",
-      "sisakattoDetails"
-    ]},
-    { title: "Lämmitys", fields: [
-      "lämmitysmuoto",
-      "muuLämmitysmuoto",
-      "takka",
-      "varaavuus",
-      "leivinuuni",
-      "leivinuuniDetails",
-      "muuTieto"
-    ]},
-    { title: "Talotekniikka", fields: [
-      "minuaKiinnostaa",
-      "muuMinuaKiinnostaa",
-      "haluanTarjous",
-      "muuHaluanTarjous"
-    ]},
-    { title: "Omat Tiedot", fields: [
-      "olen",
-      "vapaamuotoisiaLisatietoja"
-    ]}
+    {
+      title: "Perustiedot",
+      fields: [
+        "kaupunki",
+        "maakunta",
+        "budjetti",
+        "talonKoko",
+        "makuuhuoneidenMaara",
+        "kodinhoitohuone",
+        "kodinhoitohuoneDetails",
+        "arkieteinen",
+        "arkieteinenDetails",
+        "terassi",
+        "terassiDetails",
+        "autokatos",
+        "autokatosDetails",
+        "autotalli",
+        "autotalliDetails",
+      ],
+    },
+    {
+      title: "Ulkopuoli",
+      fields: [
+        "talonMateriaali",
+        "talonMateriaaliMuu",
+        "vesikatto",
+        "vesikattoMuu",
+      ],
+    },
+    {
+      title: "Sisäpuoli",
+      fields: [
+        "lattia",
+        "lattiaDetails",
+        "valiseinat",
+        "valiseinatDetails",
+        "sisakatto",
+        "sisakattoDetails",
+      ],
+    },
+    {
+      title: "Lämmitys",
+      fields: [
+        "lämmitysmuoto",
+        "muuLämmitysmuoto",
+        "takka",
+        "varaavuus",
+        "leivinuuni",
+        "leivinuuniDetails",
+        "muuTieto",
+      ],
+    },
+    {
+      title: "Talotekniikka",
+      fields: [
+        "minuaKiinnostaa",
+        "muuMinuaKiinnostaa",
+        "haluanTarjous",
+        "muuHaluanTarjous",
+      ],
+    },
+    { title: "Omat Tiedot", fields: ["olen", "vapaamuotoisiaLisatietoja"] },
   ];
 
   // Function to format field values
@@ -138,6 +173,22 @@ export const ViewCustomerApplications = () => {
       return value;
     }
     return value;
+  };
+
+  const filteredApplications = applications.filter((app) => {
+    const formData = filterEmptyValues(app.formData);
+    const searchLower = searchTerm.toLowerCase();
+
+    return (
+      (formData.kaupunki &&
+        formData.kaupunki.toLowerCase().includes(searchLower)) ||
+      (formData.maakunta &&
+        formData.maakunta.toLowerCase().includes(searchLower))
+    );
+  });
+
+  const handleToggle = (index) => {
+    setOpenedAppIndex(openedAppIndex === index ? null : index);
   };
 
   return (
@@ -174,6 +225,7 @@ export const ViewCustomerApplications = () => {
             const formData = filterEmptyValues(app.formData);
             const kaupunki = formData.kaupunki || "Tuntematon kaupunki";
             const isExpanded = openedAppIndex === index;
+            const existingOffer = getOfferForApplication(app.entryId);
 
             return (
               <div
@@ -191,6 +243,28 @@ export const ViewCustomerApplications = () => {
                       </p>
                     </div>
                     <div className="flex items-center space-x-4">
+                      {existingOffer ? (
+                        <div className="flex items-center space-x-2">
+                          <span className="text-green-600 font-medium flex items-center">
+                            <FaCheckCircle className="mr-1" />
+                            Tarjous tehty
+                          </span>
+                          <button
+                            onClick={() => handleViewOffer(existingOffer)}
+                            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                          >
+                            Katso tarjous
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => handleOffer(app)}
+                          className="inline-flex items-center px-6 py-3 border border-transparent text-lg font-medium rounded-full text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                        >
+                          <FaBuilding className="h-5 w-5 mr-2" />
+                          Tee tarjous
+                        </button>
+                      )}
                       <button
                         onClick={() => handleToggle(index)}
                         className="text-gray-500 hover:text-gray-700 text-lg"
@@ -200,13 +274,6 @@ export const ViewCustomerApplications = () => {
                         ) : (
                           <FaChevronDown className="h-6 w-6" />
                         )}
-                      </button>
-                      <button
-                        onClick={() => handleOffer(app)}
-                        className="inline-flex items-center px-6 py-3 border border-transparent text-lg font-medium rounded-full text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-                      >
-                        <FaBuilding className="h-5 w-5 mr-2" />
-                        Tee tarjous
                       </button>
                     </div>
                   </div>
@@ -223,9 +290,13 @@ export const ViewCustomerApplications = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           {section.fields.map((field) => {
                             const value = formData[field];
-                            if (value === undefined || value === "") return null;
+                            if (value === undefined || value === "")
+                              return null;
                             return (
-                              <div key={field} className="bg-white p-4 rounded-lg shadow-sm">
+                              <div
+                                key={field}
+                                className="bg-white p-4 rounded-lg shadow-sm"
+                              >
                                 <span className="block text-lg font-medium text-gray-700 mb-1">
                                   {field}
                                 </span>
@@ -247,12 +318,80 @@ export const ViewCustomerApplications = () => {
 
         {filteredApplications.length === 0 && (
           <div className="text-center py-12 bg-white rounded-lg shadow">
-            <p className="text-xl text-gray-600">
-              Ei hakemuksia näytettäväksi
-            </p>
+            <p className="text-xl text-gray-600">Ei hakemuksia näytettäväksi</p>
           </div>
         )}
       </div>
+
+      {/* Offer Modal */}
+      {selectedOffer && (
+        <div className="fixed inset-0 bg-gray-900/30 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-start mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">Tarjouksen tiedot</h2>
+                <button
+                  onClick={handleCloseOfferModal}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <FaTimes className="h-6 w-6" />
+                </button>
+              </div>
+
+              <div className="space-y-6">
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Perustiedot</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-gray-600">Tila</p>
+                      <p className="text-lg font-medium text-gray-900">{selectedOffer.status}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">Päivämäärä</p>
+                      <p className="text-lg font-medium text-gray-900">
+                        {new Date(selectedOffer.timestamp).toLocaleDateString('fi-FI')}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Tarjouksen sisältö</h3>
+                  <div className="space-y-4">
+                    <div className="flex items-center">
+                      <FaEuroSign className="h-5 w-5 text-gray-500 mr-2" />
+                      <div>
+                        <p className="text-sm text-gray-600">Hinta</p>
+                        <p className="text-lg font-medium text-gray-900">{selectedOffer.offerData.price} €</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start">
+                      <FaFileAlt className="h-5 w-5 text-gray-500 mr-2 mt-1" />
+                      <div>
+                        <p className="text-sm text-gray-600">Kuvaus</p>
+                        <p className="text-lg text-gray-900">{selectedOffer.offerData.description}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {selectedOffer.offerData.pdfFile && (
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Liitetiedosto</h3>
+                    <a
+                      href={`data:${selectedOffer.offerData.pdfFile.mimetype};base64,${selectedOffer.offerData.pdfFile.buffer}`}
+                      download={selectedOffer.offerData.pdfFile.filename}
+                      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    >
+                      Lataa PDF
+                    </a>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
