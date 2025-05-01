@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 const finnishCities = [
   "Helsinki",
@@ -22,7 +23,13 @@ const provinces = [
   "Satakunta",
 ];
 
-export const PerustiedotForm = ({ formData, setFormData, validationErrors }) => {
+export const PerustiedotForm = ({
+  formData,
+  setFormData,
+  validationErrors,
+}) => {
+  const { t } = useTranslation();
+
   // Initialize all possible fields in formData
   const initialDetailsState = {
     kodinhoitohuone: false,
@@ -31,57 +38,61 @@ export const PerustiedotForm = ({ formData, setFormData, validationErrors }) => 
     autokatos: false,
     autotalli: false,
   };
-  
+
   const [showDetails, setShowDetails] = useState(initialDetailsState);
 
   // Initialize showDetails based on formData when component mounts or formData changes
   useEffect(() => {
     setShowDetails({
-      kodinhoitohuone: formData.kodinhoitohuone === "Kyllä",
-      arkieteinen: formData.arkieteinen === "Kyllä",
-      terassi: formData.terassi === "Kyllä",
-      autokatos: formData.autokatos === "Kyllä",
-      autotalli: formData.autotalli === "Kyllä"
+      kodinhoitohuone: formData.kodinhoitohuone === t("form.options.yes"),
+      arkieteinen: formData.arkieteinen === t("form.options.yes"),
+      terassi: formData.terassi === t("form.options.yes"),
+      autokatos: formData.autokatos === t("form.options.yes"),
+      autotalli: formData.autotalli === t("form.options.yes"),
     });
   }, [
     formData.kodinhoitohuone,
     formData.arkieteinen,
     formData.terassi,
     formData.autokatos,
-    formData.autotalli
+    formData.autotalli,
+    t,
   ]);
 
   // Handle radio button changes
   const handleRadioChange = (field, value) => {
-    setFormData({ 
-      ...formData, 
+    setFormData({
+      ...formData,
       [field]: value,
-      // Clear details if "Ei" is selected
-      ...(value === "Ei" && { [`${field}Details`]: "" })
+      // Clear details if "No" is selected
+      ...(value === t("form.options.no") && { [`${field}Details`]: "" }),
     });
-    setShowDetails(prev => ({ ...prev, [field]: value === "Kyllä" }));
+    setShowDetails((prev) => ({
+      ...prev,
+      [field]: value === t("form.options.yes"),
+    }));
   };
 
   // Handle number inputs with validation
   const handleNumberInput = (field, value) => {
     const numValue = value === "" ? "" : Number(value);
-    
+
     // Update the individual min/max values
     setFormData({ ...formData, [field]: numValue });
-    
+
     // Update the formatted range fields
     if (field === "minBudget" || field === "maxBudget") {
       const min = field === "minBudget" ? numValue : formData.minBudget;
       const max = field === "maxBudget" ? numValue : formData.maxBudget;
       const formattedRange = min && max ? `${min} € - ${max} €` : "";
-      setFormData(prev => ({ ...prev, budjetti: formattedRange }));
+      setFormData((prev) => ({ ...prev, budjetti: formattedRange }));
     }
-    
+
     if (field === "minSize" || field === "maxSize") {
       const min = field === "minSize" ? numValue : formData.minSize;
       const max = field === "maxSize" ? numValue : formData.maxSize;
       const formattedRange = min && max ? `${min} m² - ${max} m²` : "";
-      setFormData(prev => ({ ...prev, talonKoko: formattedRange }));
+      setFormData((prev) => ({ ...prev, talonKoko: formattedRange }));
     }
   };
 
@@ -92,39 +103,53 @@ export const PerustiedotForm = ({ formData, setFormData, validationErrors }) => 
 
   // Field configurations for dynamic rendering
   const radioFields = [
-    { label: "Kodinhoitohuone *", field: "kodinhoitohuone" },
-    { label: "Arkieteinen *", field: "arkieteinen" },
-    { label: "Terassi *", field: "terassi" },
+    {
+      label: t("form.fields.utilityRoom").split(" ")[0],
+      field: "kodinhoitohuone",
+    },
+    { label: t("form.fields.mudroom"), field: "arkieteinen" },
+    { label: t("form.fields.terrace"), field: "terassi" },
   ];
 
   const garageFields = [
-    { label: "Autokatos *", field: "autokatos" },
-    { label: "Autotalli *", field: "autotalli" },
+    { label: t("form.fields.carport"), field: "autokatos" },
+    { label: t("form.fields.garage"), field: "autotalli" },
   ];
+
+  // Map Finnish details field names to English translation keys for translation
+  const detailsFieldTranslationMap = {
+    kodinhoitohuoneDetails: "utilityRoomDetails",
+    arkieteinenDetails: "mudroomDetails",
+    terassiDetails: "terraceDetails",
+    autokatosDetails: "carportDetails",
+    autotalliDetails: "garageDetails",
+  };
 
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-semibold text-gray-800 border-b pb-3">
-        Perustiedot
+        {t("form.steps.basicInfo")}
       </h2>
 
       {/* City (Required) */}
       <div>
         <label className="block text-lg font-medium text-gray-700">
-          Kaupunki *
+          {t("form.fields.city")} *
           {validationErrors.kaupunki && (
-            <span className="text-red-500 text-sm ml-2">{validationErrors.kaupunki}</span>
+            <span className="text-red-500 text-sm ml-2">
+              {validationErrors.kaupunki}
+            </span>
           )}
         </label>
         <select
           className={`w-full p-3 border rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 ${
-            validationErrors.kaupunki ? 'border-red-500' : ''
+            validationErrors.kaupunki ? "border-red-500" : ""
           }`}
           value={formData.kaupunki || ""}
           onChange={(e) => handleTextInput("kaupunki", e.target.value)}
           required
         >
-          <option value="">Valitse kaupunki</option>
+          <option value="">{t("form.options.selectCity")}</option>
           {finnishCities.map((city) => (
             <option key={city} value={city}>
               {city}
@@ -136,20 +161,22 @@ export const PerustiedotForm = ({ formData, setFormData, validationErrors }) => 
       {/* Province (Required) */}
       <div>
         <label className="block text-lg font-medium text-gray-700">
-          Maakunta *
+          {t("form.fields.province")} *
           {validationErrors.maakunta && (
-            <span className="text-red-500 text-sm ml-2">{validationErrors.maakunta}</span>
+            <span className="text-red-500 text-sm ml-2">
+              {validationErrors.maakunta}
+            </span>
           )}
         </label>
         <select
           className={`w-full p-3 border rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 ${
-            validationErrors.maakunta ? 'border-red-500' : ''
+            validationErrors.maakunta ? "border-red-500" : ""
           }`}
           value={formData.maakunta || ""}
           onChange={(e) => handleTextInput("maakunta", e.target.value)}
           required
         >
-          <option value="">Valitse maakunta</option>
+          <option value="">{t("form.options.selectProvince")}</option>
           {provinces.map((province) => (
             <option key={province} value={province}>
               {province}
@@ -160,71 +187,77 @@ export const PerustiedotForm = ({ formData, setFormData, validationErrors }) => 
 
       {/* Budget */}
       <div>
-        <label className="block text-lg font-medium text-gray-700">Budjetti (€)</label>
+        <label className="block text-lg font-medium text-gray-700">
+          {t("form.fields.budget")}
+        </label>
         <div className="flex gap-2">
           <input
             type="number"
-            placeholder="Min"
+            placeholder="Min €"
             className="w-1/2 p-3 border rounded-lg"
             value={formData.minBudget ?? ""}
             onChange={(e) => handleNumberInput("minBudget", e.target.value)}
             min="0"
-            step="1000"
+            step={1000}
           />
           <input
             type="number"
-            placeholder="Max"
+            placeholder="Max €"
             className="w-1/2 p-3 border rounded-lg"
             value={formData.maxBudget ?? ""}
             onChange={(e) => handleNumberInput("maxBudget", e.target.value)}
             min={formData.minBudget || "0"}
-            step="1000"
+            step={1000}
           />
         </div>
       </div>
 
       {/* House Size */}
       <div>
-        <label className="block text-lg font-medium text-gray-700">Talon Koko (m²)</label>
+        <label className="block text-lg font-medium text-gray-700">
+          {t("form.fields.houseSize")}
+        </label>
         <div className="flex gap-2">
           <input
             type="number"
-            placeholder="Min"
+            placeholder="Min m²"
             className="w-1/2 p-3 border rounded-lg"
             value={formData.minSize ?? ""}
             onChange={(e) => handleNumberInput("minSize", e.target.value)}
             min="0"
-            step="5"
+            step={5}
           />
           <input
             type="number"
-            placeholder="Max"
+            placeholder="Max m²"
             className="w-1/2 p-3 border rounded-lg"
             value={formData.maxSize ?? ""}
             onChange={(e) => handleNumberInput("maxSize", e.target.value)}
             min={formData.minSize || "0"}
-            step="5"
+            step={5}
           />
         </div>
       </div>
 
-      {/* Bedrooms (Required) */}
+      {/* Number of Bedrooms */}
       <div>
         <label className="block text-lg font-medium text-gray-700">
-          Makuuhuoneiden määrä *
+          {t("form.fields.bedrooms")} *
           {validationErrors.bedrooms && (
-            <span className="text-red-500 text-sm ml-2">{validationErrors.bedrooms}</span>
+            <span className="text-red-500 text-sm ml-2">
+              {validationErrors.bedrooms}
+            </span>
           )}
         </label>
         <select
           className={`w-full p-3 border rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 ${
-            validationErrors.bedrooms ? 'border-red-500' : ''
+            validationErrors.bedrooms ? "border-red-500" : ""
           }`}
           value={formData.bedrooms || ""}
           onChange={(e) => handleTextInput("bedrooms", e.target.value)}
           required
         >
-          <option value="">Valitse määrä</option>
+          <option value="">{t("form.options.selectAmount")}</option>
           {[1, 2, 3, 4, 5, 6, 7, "8+"].map((num) => (
             <option key={num} value={num}>
               {num}
@@ -237,13 +270,15 @@ export const PerustiedotForm = ({ formData, setFormData, validationErrors }) => 
       {radioFields.map(({ label, field }) => (
         <div key={field}>
           <label className="block text-lg font-medium text-gray-700">
-            {label}
+            {label} *
             {validationErrors[field] && (
-              <span className="text-red-500 text-sm ml-2">{validationErrors[field]}</span>
+              <span className="text-red-500 text-sm ml-2">
+                {validationErrors[field]}
+              </span>
             )}
           </label>
           <div className="flex gap-4 mt-2">
-            {["Kyllä", "Ei"].map((option) => (
+            {[t("form.options.yes"), t("form.options.no")].map((option) => (
               <label key={option} className="flex items-center gap-2">
                 <input
                   type="radio"
@@ -262,9 +297,11 @@ export const PerustiedotForm = ({ formData, setFormData, validationErrors }) => 
             <input
               type="text"
               className="w-full mt-2 p-3 border rounded-lg"
-              placeholder={`${label} - Lisätietoja`}
+              placeholder={t(
+                `form.fields.${detailsFieldTranslationMap[`${field}Details`]}`
+              )}
               value={formData[`${field}Details`] || ""}
-              onChange={(e) => 
+              onChange={(e) =>
                 handleTextInput(`${field}Details`, e.target.value)
               }
             />
@@ -276,13 +313,15 @@ export const PerustiedotForm = ({ formData, setFormData, validationErrors }) => 
       {garageFields.map(({ label, field }) => (
         <div key={field}>
           <label className="block text-lg font-medium text-gray-700">
-            {label}
+            {label} *
             {validationErrors[field] && (
-              <span className="text-red-500 text-sm ml-2">{validationErrors[field]}</span>
+              <span className="text-red-500 text-sm ml-2">
+                {validationErrors[field]}
+              </span>
             )}
           </label>
           <div className="flex gap-4 mt-2">
-            {["Kyllä", "Ei"].map((option) => (
+            {[t("form.options.yes"), t("form.options.no")].map((option) => (
               <label key={option} className="flex items-center gap-2">
                 <input
                   type="radio"
@@ -305,7 +344,7 @@ export const PerustiedotForm = ({ formData, setFormData, validationErrors }) => 
                   placeholder="Min koko (m²)"
                   className="w-1/2 p-3 border rounded-lg"
                   value={formData[`${field}Min`] ?? ""}
-                  onChange={(e) => 
+                  onChange={(e) =>
                     handleNumberInput(`${field}Min`, e.target.value)
                   }
                   min="0"
@@ -315,7 +354,7 @@ export const PerustiedotForm = ({ formData, setFormData, validationErrors }) => 
                   placeholder="Max koko (m²)"
                   className="w-1/2 p-3 border rounded-lg"
                   value={formData[`${field}Max`] ?? ""}
-                  onChange={(e) => 
+                  onChange={(e) =>
                     handleNumberInput(`${field}Max`, e.target.value)
                   }
                   min={formData[`${field}Min`] || "0"}
@@ -324,9 +363,11 @@ export const PerustiedotForm = ({ formData, setFormData, validationErrors }) => 
               <input
                 type="text"
                 className="w-full mt-2 p-3 border rounded-lg"
-                placeholder={`${label} - Lisätietoja`}
+                placeholder={t(
+                  `form.fields.${detailsFieldTranslationMap[`${field}Details`]}`
+                )}
                 value={formData[`${field}Details`] || ""}
-                onChange={(e) => 
+                onChange={(e) =>
                   handleTextInput(`${field}Details`, e.target.value)
                 }
               />

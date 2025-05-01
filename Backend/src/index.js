@@ -13,10 +13,10 @@ const PORT = process.env.PORT || 8000;
 
 // Define allowed origins for CORS
 const allowedOrigins = [
-  "serverapi.talopakettiin.fi",
-  "https://serverapi.talopakettiin.fi/",
   "https://talopakettiin.fi",
-  "talopakettiin.fi",
+  "https://talopakettiin.fi",
+  "https://www.talopakettiin.fi",
+  "http://www.talopakettiin.fi",
   "http://localhost:5173",
   "https://localhost:8001",
   "http://localhost:8000",
@@ -68,6 +68,11 @@ app.get("/api/test", (req, res) => {
     message:
       "This is a test. Connection established between frontend and backend",
   });
+});
+
+// Serve index.html for all other routes
+app.get('*', (req, res) => {
+  res.sendFile('index.html', { root: './dist' });
 });
 
 // Middleware to catch TokenExpiredError

@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8000/api/user";
+const API_URL = "https://talopakettiin.fi/api/user";
+const BASE_URL = "https://talopakettiin.fi";
 
 // Signup
 export const signup = async (username, password, email, userType) => {
@@ -19,7 +20,7 @@ export const signup = async (username, password, email, userType) => {
 
 export const testConnection = async () => {
   try {
-    const response = await axios.get("http://localhost:8000/api/test");
+    const response = await axios.get(`${BASE_URL}/api/test`);
     console.log("Response is: ", response.data);
     return response.data;
   } catch (error) {

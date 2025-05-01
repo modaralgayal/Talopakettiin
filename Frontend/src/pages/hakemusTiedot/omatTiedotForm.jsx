@@ -1,62 +1,75 @@
 import React from "react";
+import { useTranslation } from 'react-i18next';
 
 export const OmatTiedotForm = ({ formData, setFormData, validationErrors }) => {
-  const handleOlenChange = (e) => {
-    const selectedOptions = e.target.checked
-      ? [...(formData.olen || []), e.target.value]
-      : formData.olen.filter((item) => item !== e.target.value);
-    setFormData({ ...formData, olen: selectedOptions });
-  };
+  const { t } = useTranslation();
 
-  const handleTextChange = (e) => {
-    setFormData({ ...formData, vapaamuotoisiaLisatietoja: e.target.value });
+  const handleCheckboxChange = (field, value) => {
+    const currentValues = formData[field] || [];
+    const newValues = currentValues.includes(value)
+      ? currentValues.filter(item => item !== value)
+      : [...currentValues, value];
+
+    setFormData({
+      ...formData,
+      [field]: newValues
+    });
   };
 
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-semibold text-gray-800 border-b pb-3">
-        Omat Tiedot
+        {t('form.steps.personalInfo')}
       </h2>
 
-      {/* Olen Checkbox */}
-      <div>
+      {/* Asiakas */}
+      <div className="space-y-4">
         <label className="block text-lg font-medium text-gray-700">
-          Olen *
-          {validationErrors.olen && (
-            <span className="text-red-500 text-sm ml-2">{validationErrors.olen}</span>
+          {t('form.fields.customerStatus')} *
+          {validationErrors.asiakas && (
+            <span className="text-red-500 text-sm ml-2">{validationErrors.asiakas}</span>
           )}
         </label>
-        <div className="space-y-3 mt-2">
+        <div className="space-y-3">
           {[
-            "Harkitsemassa talopakettia (ei vielä rahoitusta)",
-            "Etsimässä sopivaa talopakettia",
-            "Kilpailuttamassa talopakettia (minulla on rahoitus)",
+            t('form.options.privatePerson'),
+            t('form.options.company'),
+            t('form.options.association'),
+            t('form.options.municipality')
           ].map((option) => (
-            <div key={option} className="flex items-center gap-3">
-              <input
-                type="checkbox"
-                value={option}
-                checked={formData.olen?.includes(option)}
-                onChange={handleOlenChange}
-                className="w-5 h-5 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
-              />
-              <label className="text-md text-gray-700">{option}</label>
+            <div key={option} className="flex items-start">
+              <div className="flex items-center h-5">
+                <input
+                  type="checkbox"
+                  id={`asiakas-${option}`}
+                  name="asiakas"
+                  value={option}
+                  checked={formData.asiakas?.includes(option) || false}
+                  onChange={(e) => handleCheckboxChange("asiakas", e.target.value)}
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                />
+              </div>
+              <div className="ml-3 text-sm">
+                <label htmlFor={`asiakas-${option}`} className="font-medium text-gray-700">
+                  {option}
+                </label>
+              </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Vapaamuotoisia lisätietoja */}
-      <div>
+      {/* Muu Tieto */}
+      <div className="space-y-4">
         <label className="block text-lg font-medium text-gray-700">
-          Vapaamuotoisia lisätietoja
+          {t('form.fields.otherInfo')}
         </label>
         <textarea
-          placeholder="Kirjoita lisätietoja..."
-          className="w-full mt-2 p-3 border rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500"
-          onChange={handleTextChange}
-          value={formData.vapaamuotoisiaLisatietoja || ""}
+          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3 border"
           rows="4"
+          value={formData.muuTieto || ""}
+          onChange={(e) => setFormData({ ...formData, muuTieto: e.target.value })}
+          placeholder={t('form.options.enterDetails')}
         />
       </div>
     </div>

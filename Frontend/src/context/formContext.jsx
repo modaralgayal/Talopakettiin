@@ -1,60 +1,64 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect } from "react";
 
-// Define the shape of your form data with exact field names matching the form
-const defaultFormData = {
-  // Perustiedot fields
-  kaupunki: "",
-  maakunta: "",
-  budjetti: "",
-  talonKoko: "",
-  bedrooms: "",
-  kodinhoitohuone: "",
-  kodinhoitohuoneDetails: "",
-  arkieteinen: "",
-  arkieteinenDetails: "",
-  terassi: "",
-  terassiDetails: "",
-  autokatos: "",
-  autokatosDetails: "",
-  autotalli: "",
-  autotalliDetails: "",
+import { useLanguage } from "./languageContext";
 
-  // Ulkopuoli fields
-  talonMateriaali: "",
-  talonMateriaaliMuu: "",
-  vesikatto: "",
-  vesikattoMuu: "",
+const createDefaultForm = (language) => {
+  const defaultFormData = {
+    city: "",
+    province: "",
+    budjetti: "",
+    talonKoko: "",
+    bedrooms: "",
+    kodinhoitohuone: "",
+    kodinhoitohuoneDetails: "",
+    mudroom: "",
+    mudroomDetails: "",
+    terassi: "",
+    terassiDetails: "",
+    autokatos: "",
+    autokatosDetails: "",
+    autotalli: "",
+    autotalliDetails: "",
 
-  // Sisäpuoli fields
-  lattia: "",
-  lattiaDetails: "",
-  valiseinat: "",
-  valiseinatDetails: "",
-  sisakatto: "",
-  sisakattoDetails: "",
+    // Ulkopuoli fields
+    talonMateriaali: "",
+    talonMateriaaliMuu: "",
+    vesikatto: "",
+    vesikattoMuu: "",
 
-  // Lämmitys fields
-  lämmitysmuoto: [],
-  muuLämmitysmuoto: "",
-  takka: "",
-  varaavuus: "",
-  leivinuuni: "",
-  muuTieto: "",
+    // Sisäpuoli fields
+    lattia: "",
+    lattiaDetails: "",
+    valiseinat: "",
+    valiseinatDetails: "",
+    sisakatto: "",
+    sisakattoDetails: "",
 
-  // Talotekniikka fields
-  minuaKiinnostaa: [],
-  muuMinuaKiinnostaa: "",
-  haluanTarjous: [],
-  muuHaluanTarjous: "",
+    // Lämmitys fields
+    lämmitysmuoto: [],
+    muuLämmitysmuoto: "",
+    takka: "",
+    varaavuus: "",
+    leivinuuni: "",
+    muuTieto: "",
 
-  // Omat Tiedot fields
-  olen: [],
-  vapaamuotoisiaLisatietoja: "",
+    // Talotekniikka fields
+    minuaKiinnostaa: [],
+    muuMinuaKiinnostaa: "",
+    haluanTarjous: [],
+    muuHaluanTarjous: "",
+
+    // Omat Tiedot fields
+    olen: [],
+    vapaamuotoisiaLisatietoja: "",
+  };
+
+  return defaultFormData
 };
 
 // Create context
 const FormContext = createContext({
-  formData: defaultFormData,
+  formData: createDefaultForm(),
   setFormData: () => {},
   resetForm: () => {},
   currentStep: 1,
@@ -66,14 +70,16 @@ const FormContext = createContext({
 
 export const FormProvider = ({ children }) => {
   // Initialize state from localStorage if available
+  const { currentLanguage } = useLanguage();
+  console.log("Current language is: ", currentLanguage);
   const [formData, setFormData] = useState(() => {
-    const savedData = localStorage.getItem('formData');
-    return savedData ? JSON.parse(savedData) : defaultFormData;
+    const savedData = localStorage.getItem("formData");
+    return savedData ? JSON.parse(savedData) : createDefaultForm();
   });
 
   // Initialize current step from localStorage
   const [currentStep, setCurrentStep] = useState(() => {
-    const savedStep = localStorage.getItem('formStep');
+    const savedStep = localStorage.getItem("formStep");
     return savedStep ? parseInt(savedStep) : 1;
   });
 
@@ -82,31 +88,33 @@ export const FormProvider = ({ children }) => {
 
   // Save to localStorage whenever formData changes
   useEffect(() => {
-    localStorage.setItem('formData', JSON.stringify(formData));
+    localStorage.setItem("formData", JSON.stringify(formData));
   }, [formData]);
 
   // Save to localStorage whenever step changes
   useEffect(() => {
-    localStorage.setItem('formStep', currentStep.toString());
+    localStorage.setItem("formStep", currentStep.toString());
   }, [currentStep]);
 
   // Function to validate the current step
   const validateStep = (step) => {
     const errors = {};
-    
+
     switch (step) {
       case 1: // Perustiedot
         if (!formData.kaupunki) errors.kaupunki = "Pakollinen kenttä";
         if (!formData.maakunta) errors.maakunta = "Pakollinen kenttä";
         if (!formData.bedrooms) errors.bedrooms = "Pakollinen kenttä";
-        if (!formData.kodinhoitohuone) errors.kodinhoitohuone = "Pakollinen kenttä";
+        if (!formData.kodinhoitohuone)
+          errors.kodinhoitohuone = "Pakollinen kenttä";
         if (!formData.arkieteinen) errors.arkieteinen = "Pakollinen kenttä";
         if (!formData.terassi) errors.terassi = "Pakollinen kenttä";
         if (!formData.autokatos) errors.autokatos = "Pakollinen kenttä";
         if (!formData.autotalli) errors.autotalli = "Pakollinen kenttä";
         break;
       case 2: // Ulkopuoli
-        if (!formData.talonMateriaali) errors.talonMateriaali = "Pakollinen kenttä";
+        if (!formData.talonMateriaali)
+          errors.talonMateriaali = "Pakollinen kenttä";
         if (!formData.vesikatto) errors.vesikatto = "Pakollinen kenttä";
         break;
       case 3: // Sisäpuoli
@@ -138,12 +146,12 @@ export const FormProvider = ({ children }) => {
   // Function to update form data and clear validation errors for the updated field
   const updateFormData = (newData) => {
     setFormData(newData);
-    
+
     // Clear validation errors only for the fields that were updated
     const updatedFields = Object.keys(newData);
-    setValidationErrors(prevErrors => {
+    setValidationErrors((prevErrors) => {
       const newErrors = { ...prevErrors };
-      updatedFields.forEach(field => {
+      updatedFields.forEach((field) => {
         if (newData[field]) {
           delete newErrors[field];
         }
@@ -154,26 +162,37 @@ export const FormProvider = ({ children }) => {
 
   // Function to completely reset the form
   const resetForm = () => {
-    setFormData(defaultFormData);
+    setFormData(createDefaultForm(currentLanguage));
     setCurrentStep(1);
     setValidationErrors({});
-    localStorage.removeItem('formData');
-    localStorage.removeItem('formStep');
+    localStorage.removeItem("formData");
+    localStorage.removeItem("formStep");
   };
 
+  // Reset form data when language changes
+  useEffect(() => {
+    setFormData(createDefaultForm(currentLanguage));
+    setCurrentStep(1);
+    setValidationErrors({});
+    localStorage.removeItem("formData");
+    localStorage.removeItem("formStep");
+  }, [currentLanguage]);
+
   return (
-    <FormContext.Provider value={{ 
-      formData, 
-      setFormData: updateFormData, 
-      resetForm, 
-      isAuthenticated, 
-      setIsAuthenticated,
-      currentStep,
-      setCurrentStep,
-      validationErrors,
-      setValidationErrors,
-      validateStep
-    }}>
+    <FormContext.Provider
+      value={{
+        formData,
+        setFormData: updateFormData,
+        resetForm,
+        isAuthenticated,
+        setIsAuthenticated,
+        currentStep,
+        setCurrentStep,
+        validationErrors,
+        setValidationErrors,
+        validateStep,
+      }}
+    >
       {children}
     </FormContext.Provider>
   );
@@ -183,7 +202,7 @@ export const FormProvider = ({ children }) => {
 export const useFormContext = () => {
   const context = useContext(FormContext);
   if (!context) {
-    throw new Error('useFormContext must be used within a FormProvider');
+    throw new Error("useFormContext must be used within a FormProvider");
   }
   return context;
 };

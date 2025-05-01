@@ -1,0 +1,174 @@
+{
+  "common": {
+    "signIn": "Kirjaudu",
+    "signUp": "Rekisteröidy",
+    "logout": "Kirjaudu ulos",
+    "email": "Sähköposti",
+    "password": "Salasana",
+    "confirmPassword": "Vahvista salasana",
+    "submit": "Lähetä",
+    "cancel": "Peruuta",
+    "loading": "Ladataan...",
+    "logoAlt": "Talopakettiin Logo"
+  },
+  "navigation": {
+    "home": "Etusivu",
+    "about": "Tietoa meistä",
+    "contact": "Yhteystiedot",
+    "fillApplication": "Täytä hakemus",
+    "application": "Hakemus",
+    "myApplications": "Omat hakemukset",
+    "myOffers": "Omat tarjoukset",
+    "allApplications": "Kaikki hakemukset",
+    "previous": "Edellinen",
+    "startAgain": "Aloita Uudestaan", 
+    "next": "Seuraava",
+    "sendApplication": "Lähetä Hakemus"
+  },
+  "auth": {
+    "selectUserType": "Valitse käyttäjätyyppisi jatkaaksesi",
+    "customer": {
+      "title": "Hakija",
+      "description": "Etsin sopivaa talopakettia"
+    },
+    "provider": {
+      "title": "Toimittaja",
+      "description": "Teen talopakettitarjouksia"
+    },
+    "googleSignIn": "Kirjaudu Google-tilillä",
+    "selectUserTypeFirst": "Valitse käyttäjätyyppi yllä olevista vaihtoehdoista jatkaaksesi"
+  },
+  "errors": {
+    "general": "Jokin meni pieleen",
+    "invalidCredentials": "Virheelliset kirjautumistiedot",
+    "networkError": "Verkkovirhe tapahtui"
+  },
+  "homepage": {
+    "hero": {
+      "title": "Löydä unelmiesi talopaketti",
+      "subtitle": "Helpoin tapa vertailla talopaketteja ja saada tarjouksia luotettavilta toimittajilta. Täytä yksi hakemus ja anna meidän hoitaa loput.",
+      "cta": "Aloita hakuprosessi",
+      "subtext": "Täytä hakemus ja saat tarjouksia luotettavilta talotoimittajilta"
+    },
+    "features": {
+      "dreamHome": {
+        "title": "Unelmakotisi suunnittelu",
+        "description": "Määrittele toiveesi ja vaatimuksesi unelmakodillesi - autamme sinua löytämään täydellisen talopaketin."
+      },
+      "easyProcess": {
+        "title": "Helppo hakuprosessi",
+        "description": "Täytä yksi hakemus ja saat tarjouksia useilta luotettavilta talotoimittajilta."
+      },
+      "reliablePartners": {
+        "title": "Luotettavat kumppanit",
+        "description": "Verkostoomme kuuluu vain tarkasti valittuja, luotettavia talotoimittajia."
+      },
+      "saveTime": {
+        "title": "Säästä aikaa ja vaivaa",
+        "description": "Ei tarvetta ottaa yhteyttä jokaiseen toimittajaan erikseen - me hoidamme sen puolestasi."
+      }
+    },
+    "process": {
+      "title": "Näin prosessi toimii",
+      "steps": {
+        "apply": {
+          "title": "Täytä hakemus",
+          "description": "Kerro meille toiveistasi ja vaatimuksistasi uuden kotisi suhteen."
+        },
+        "offers": {
+          "title": "Saat tarjouksia",
+          "description": "Talotoimittajat tutustuvat hakemukseesi ja tekevät sinulle tarjouksia."
+        },
+        "choose": {
+          "title": "Valitse paras",
+          "description": "Vertaile tarjouksia ja valitse sinulle sopivin vaihtoehto."
+        }
+      }
+    },
+    "cta": {
+      "title": "Valmis aloittamaan unelmakotisi suunnittelun?",
+      "subtitle": "Täytä hakemus nyt ja ota ensimmäinen askel kohti uutta kotiasi.",
+      "button": "Täytä hakemus"
+    },
+    "blog": {
+      "title": "Ajankohtaisia artikkeleita",
+      "readMore": "Lue lisää →"
+    }
+  },
+  "form": {
+    "steps": {
+      "basicInfo": "Perustiedot",
+      "exterior": "Ulkopuoli",
+      "interior": "Sisäpuoli",
+      "heating": "Lämmitys",
+      "technical": "Talotekniikka",
+      "personalInfo": "Omat Tiedot"
+    },
+    "fields": {
+      "city": "Kaupunki",
+      "province": "Maakunta",
+      "budget": "Budjetti",
+      "houseSize": "Talon koko",
+      "bedrooms": "Makuuhuoneiden määrä",
+      "utilityRoom": "Kodinhoitohuone",
+      "utilityRoomDetails": "Kodinhoitohuone - Lisätietoja",
+      "mudroom": "Arkieteinen",
+      "mudroomDetails": "Arkieteinen - Lisätietoja",
+      "terrace": "Terassi",
+      "terraceDetails": "Terassi - Lisätietoja",
+      "carport": "Autokatos",
+      "carportDetails": "Autokatos - Lisätietoja",
+      "garage": "Autotalli",
+      "garageDetails": "Autotalli - Lisätietoja",
+      "houseMaterial": "Talon Materiaali",
+      "houseMaterialOther": "Muu materiaali",
+      "roof": "Vesikatto",
+      "roofOther": "Muu vesikatto",
+      "floor": "Lattia",
+      "floorDetails": "Lattiamateriaali",
+      "interiorWalls": "Väliseinät",
+      "interiorWallsDetails": "Väliseinämateriaali",
+      "ceiling": "Sisäkatto",
+      "ceilingDetails": "Sisäkaton materiaali",
+      "heatingType": "Lämmitysmuoto",
+      "heatingTypeOther": "Muu lämmitysmuoto",
+      "fireplace": "Takka/Tulisija",
+      "fireplaceHeatStorage": "Varaavuus",
+      "bakingOven": "Leivinuuni",
+      "bakingOvenDetails": "Leivinuunin lisätiedot",
+      "otherInfo": "Muu tieto",
+      "interestedIn": "Minua kiinnostaa",
+      "interestedInOther": "Muu kiinnostava asia",
+      "wantsInOffer": "Haluan, että tarjoukseen sisältyy",
+      "wantsInOfferOther": "Muu tarjoukseen sisältyvä asia",
+      "personalStatus": "Olen",
+      "additionalInfo": "Vapaamuotoisia lisätietoja",
+      "technicalFeatures": "Talotekniikka",
+      "quote": "Tarjous",
+      "customerStatus": "Asiakasstatus"
+    },
+    "options": {
+      "yes": "Kyllä",
+      "no": "Ei",
+      "dontKnow": "En tiedä vielä",
+      "other": "Muu",
+      "otherWhat": "Muu, mikä?",
+      "selectOption": "Valitse vaihtoehto",
+      "selectCity": "Valitse kaupunki",
+      "selectProvince": "Valitse maakunta",
+      "selectAmount": "Valitse määrä",
+      "selectMaterial": "Valitse materiaali",
+      "selectRoof": "Valitse vesikatto",
+      "enterDetails": "Syötä lisätietoja...",
+      "enterOther": "Muu - mikä?",
+      "privatePerson": "Yksityishenkilö",
+      "company": "Yritys",
+      "association": "Yhdistys",
+      "municipality": "Kunta"
+    },
+    "validation": {
+      "required": "Pakollinen kenttä",
+      "selectOne": "Valitse vähintään yksi"
+    }
+  }
+} 

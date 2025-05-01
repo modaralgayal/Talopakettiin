@@ -1,71 +1,80 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 
 export const LämmitysForm = ({ formData, setFormData, validationErrors }) => {
-  // Initialize all possible heating options
-  const heatingOptions = [
-    "Sähkö",
-    "Ilma-vesilämpöpumppu",
-    "Maalämpöpumppu",
-    "Kaukolämpö",
-    "Puu, pelletti tai hake",
-    "Öljylämmitys",
-    "Ilmalämpöpumppu",
-    "Lämmöntalteenotto",
-    "Muu",
-  ];
-
-  // State for showing details
+  const { t } = useTranslation();
   const [showDetails, setShowDetails] = useState({
+    muuLämmitys: false,
     takka: false,
-    leivinuuni: false,
-    muuLämmitys: false
+    leivinuuni: false
   });
+
+  const heatingOptions = [
+    "Ilmalämpöpumppu",
+    "Maalämpö",
+    "Sähkö",
+    "Öljy",
+    "Puulämmitys",
+    "Kaukolämpö",
+    t('form.options.other')
+  ];
 
   // Initialize showDetails based on formData when component mounts or formData changes
   useEffect(() => {
     setShowDetails({
-      takka: formData.takka === "Kyllä",
-      leivinuuni: formData.leivinuuni === "Kyllä",
-      muuLämmitys: formData.lämmitysmuoto?.includes("Muu")
+      muuLämmitys: (formData.lämmitysmuoto || []).includes(t('form.options.other')),
+      takka: formData.takka === t('form.options.yes'),
+      leivinuuni: formData.leivinuuni === t('form.options.yes')
     });
-  }, [formData.takka, formData.leivinuuni, formData.lämmitysmuoto]);
+  }, [formData.lämmitysmuoto, formData.takka, formData.leivinuuni, t]);
 
-  // Handle checkbox changes for heating types
   const handleLämmitysmuotoChange = (e) => {
-    const { value, checked } = e.target;
-    const currentSelection = formData.lämmitysmuoto || [];
-    
-    const updatedLämmitysmuoto = checked
-      ? [...currentSelection, value]
-      : currentSelection.filter(item => item !== value);
+    const value = e.target.value;
+    const currentValues = formData.lämmitysmuoto || [];
+    let newValues;
 
-    setFormData({ 
-      ...formData, 
-      lämmitysmuoto: updatedLämmitysmuoto,
-      // Clear "other" field if "Muu" is unselected
-      muuLämmitysmuoto: value === "Muu" && !checked ? "" : formData.muuLämmitysmuoto
+    if (e.target.checked) {
+      newValues = [...currentValues, value];
+    } else {
+      newValues = currentValues.filter(item => item !== value);
+    }
+
+    setFormData({
+      ...formData,
+      lämmitysmuoto: newValues,
+      ...(value === t('form.options.other') && !e.target.checked && { muuLämmitysmuoto: "" })
     });
+
+    setShowDetails(prev => ({
+      ...prev,
+      muuLämmitys: newValues.includes(t('form.options.other'))
+    }));
   };
 
-  // Handle radio button changes
   const handleRadioChange = (field, value) => {
-    setFormData({ 
-      ...formData, 
+    setFormData({
+      ...formData,
       [field]: value,
-      // Clear details if "Ei" is selected
-      ...(field === "takka" && value !== "Kyllä" && { varaavuus: "" }),
-      ...(field === "leivinuuni" && value !== "Kyllä" && { leivinuuniDetails: "" })
+      ...(field === "takka" && value !== t('form.options.yes') && { varaavuus: "" }),
+      ...(field === "leivinuuni" && value !== t('form.options.yes') && { leivinuuniDetails: "" })
     });
+
+    setShowDetails(prev => ({
+      ...prev,
+      [field]: value === t('form.options.yes')
+    }));
   };
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-semibold text-gray-800 border-b pb-3">Lämmitys</h2>
+      <h2 className="text-2xl font-semibold text-gray-800 border-b pb-3">
+        {t('form.steps.heating')}
+      </h2>
 
       {/* Lämmitysmuoto (Multiple Choice) */}
       <div className="space-y-4">
         <label className="block text-lg font-medium text-gray-700">
-          Lämmitysmuoto *
+          {t('form.fields.heatingType')} *
           {validationErrors.lämmitysmuoto && (
             <span className="text-red-500 text-sm ml-2">{validationErrors.lämmitysmuoto}</span>
           )}
@@ -96,7 +105,7 @@ export const LämmitysForm = ({ formData, setFormData, validationErrors }) => {
           <div className="mt-3">
             <input
               type="text"
-              placeholder="Muu - mikä?"
+              placeholder={t('form.fields.heatingTypeOther')}
               className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3 border"
               value={formData.muuLämmitysmuoto || ""}
               onChange={(e) =>
@@ -109,9 +118,11 @@ export const LämmitysForm = ({ formData, setFormData, validationErrors }) => {
 
       {/* Takka/Tulisija */}
       <div className="space-y-4">
-        <label className="block text-lg font-medium text-gray-700">Takka/Tulisija</label>
+        <label className="block text-lg font-medium text-gray-700">
+          {t('form.fields.fireplace')}
+        </label>
         <div className="flex flex-wrap gap-4">
-          {["Kyllä", "Ei", "En tiedä vielä"].map((option) => (
+          {[t('form.options.yes'), t('form.options.no'), t('form.options.dontKnow')].map((option) => (
             <div key={option} className="flex items-center">
               <input
                 type="radio"
@@ -130,7 +141,9 @@ export const LämmitysForm = ({ formData, setFormData, validationErrors }) => {
         </div>
         {showDetails.takka && (
           <div className="mt-4 space-y-3 pl-5 border-l-2 border-gray-200">
-            <label className="block text-base font-medium text-gray-700">Varaavuus</label>
+            <label className="block text-base font-medium text-gray-700">
+              {t('form.fields.fireplaceHeatStorage')}
+            </label>
             <div className="flex flex-wrap gap-4">
               {["Vaara", "Ei varaava"].map((option) => (
                 <div key={option} className="flex items-center">
@@ -157,9 +170,11 @@ export const LämmitysForm = ({ formData, setFormData, validationErrors }) => {
 
       {/* Leivinuuni */}
       <div className="space-y-4">
-        <label className="block text-lg font-medium text-gray-700">Leivinuuni</label>
+        <label className="block text-lg font-medium text-gray-700">
+          {t('form.fields.bakingOven')}
+        </label>
         <div className="flex flex-wrap gap-4">
-          {["Kyllä", "Ei", "En tiedä vielä"].map((option) => (
+          {[t('form.options.yes'), t('form.options.no'), t('form.options.dontKnow')].map((option) => (
             <div key={option} className="flex items-center">
               <input
                 type="radio"
@@ -180,7 +195,7 @@ export const LämmitysForm = ({ formData, setFormData, validationErrors }) => {
           <div className="mt-3">
             <input
               type="text"
-              placeholder="Leivinuunin lisätiedot"
+              placeholder={t('form.fields.bakingOvenDetails')}
               className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3 border"
               value={formData.leivinuuniDetails || ""}
               onChange={(e) =>
@@ -192,18 +207,17 @@ export const LämmitysForm = ({ formData, setFormData, validationErrors }) => {
       </div>
 
       {/* Muu Tieto */}
-      <div className="space-y-2">
-        <label className="block text-lg font-medium text-gray-700">Muu tieto</label>
-        <div className="mt-1">
-          <textarea
-            placeholder="Lisää muu tieto lämmityksestä"
-            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3 border min-h-[100px]"
-            value={formData.muuTieto || ""}
-            onChange={(e) =>
-              setFormData({ ...formData, muuTieto: e.target.value })
-            }
-          />
-        </div>
+      <div className="space-y-4">
+        <label className="block text-lg font-medium text-gray-700">
+          {t('form.fields.otherInfo')}
+        </label>
+        <textarea
+          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3 border"
+          rows="4"
+          value={formData.muuTieto || ""}
+          onChange={(e) => setFormData({ ...formData, muuTieto: e.target.value })}
+          placeholder={t('form.options.enterDetails')}
+        />
       </div>
     </div>
   );

@@ -2,8 +2,13 @@ import React, { useState, useEffect } from "react";
 import { signIn, signup } from "../controllers/userController";
 import { useNavigate } from "react-router-dom";
 import { FaUser, FaBuilding } from "react-icons/fa";
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from '../components/LanguageSwitcher';
+
+const API_BASE_URL = "https://talopakettiin.fi";
 
 export const UnifiedSignIn = ({ setUserType, setIsAuthenticated }) => {
+  const { t } = useTranslation();
   const [isRegister, setIsRegister] = useState(false);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -32,7 +37,7 @@ export const UnifiedSignIn = ({ setUserType, setIsAuthenticated }) => {
 
     setIsLoading(true);
     try {
-      const res = await fetch("http://localhost:8000/api/user/google-auth", {
+      const res = await fetch(`${API_BASE_URL}/api/user/google-auth`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -154,14 +159,15 @@ export const UnifiedSignIn = ({ setUserType, setIsAuthenticated }) => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-blue-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg">
-        <div>
+        <div className="flex justify-between items-center">
           <h2 className="text-center text-3xl font-extrabold text-gray-900">
-            Sign In
+            {t('common.signIn')}
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Please select your user type to continue
-          </p>
+          <LanguageSwitcher />
         </div>
+        <p className="mt-2 text-center text-sm text-gray-600">
+          {t('auth.selectUserType')}
+        </p>
 
         {/* User Type Selection */}
         <div className="grid grid-cols-2 gap-6 mb-8">
@@ -175,8 +181,8 @@ export const UnifiedSignIn = ({ setUserType, setIsAuthenticated }) => {
             }`}
           >
             <FaUser className="w-12 h-12 mb-4 text-blue-500" />
-            <span className="text-xl font-semibold">Hakija</span>
-            <span className="text-sm text-gray-500 mt-2">Haen sopivaa talopakettia</span>
+            <span className="text-xl font-semibold">{t('auth.customer.title')}</span>
+            <span className="text-sm text-gray-500 mt-2">{t('auth.customer.description')}</span>
           </button>
           <button
             type="button"
@@ -188,12 +194,12 @@ export const UnifiedSignIn = ({ setUserType, setIsAuthenticated }) => {
             }`}
           >
             <FaBuilding className="w-12 h-12 mb-4 text-blue-500" />
-            <span className="text-xl font-semibold">Toimittaja</span>
-            <span className="text-sm text-gray-500 mt-2">Teen talopaketti tarjouksia</span>
+            <span className="text-xl font-semibold">{t('auth.provider.title')}</span>
+            <span className="text-sm text-gray-500 mt-2">{t('auth.provider.description')}</span>
           </button>
         </div>
 
-        {/* Google Sign-In Container - Always present but only populated when ready */}
+        {/* Google Sign-In Container */}
         <div
           id="google-signin"
           className="flex justify-center min-h-[40px]"
@@ -201,7 +207,7 @@ export const UnifiedSignIn = ({ setUserType, setIsAuthenticated }) => {
 
         {!selectedUserType && (
           <p className="text-center text-sm text-gray-600">
-            Please select a user type above to enable sign-in
+            {t('auth.selectUserTypeFirst')}
           </p>
         )}
 

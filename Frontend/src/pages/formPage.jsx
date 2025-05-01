@@ -8,30 +8,32 @@ import { OmatTiedotForm } from "./hakemusTiedot/omatTiedotForm";
 import { useFormContext } from "../context/formContext";
 import { sendFormData } from "../controllers/formController";
 import { FaExclamationTriangle } from "react-icons/fa";
+import { useTranslation } from 'react-i18next';
 
 export const ApplicationForm = (prop) => {
-  const { 
-    formData, 
-    setFormData, 
-    resetForm, 
-    currentStep, 
+  const {
+    formData,
+    setFormData,
+    resetForm,
+    currentStep,
     setCurrentStep,
     validationErrors,
-    validateStep 
+    validateStep,
   } = useFormContext();
   const [error, setError] = useState(null);
   const [applicationCount, setApplicationCount] = useState(null);
   const [applicationLimit, setApplicationLimit] = useState(10);
   const [isGoogleScriptLoaded, setIsGoogleScriptLoaded] = useState(false);
   const [showGoogleSignInPrompt, setShowGoogleSignInPrompt] = useState(false);
+  const { t } = useTranslation();
 
   const steps = [
-    { number: 1, title: "Perustiedot" },
-    { number: 2, title: "Ulkopuoli" },
-    { number: 3, title: "Sisäpuoli" },
-    { number: 4, title: "Lämmitys" },
-    { number: 5, title: "Talotekniikka" },
-    { number: 6, title: "Omat Tiedot" },
+    { number: 1, title: t('form.steps.basicInfo') },
+    { number: 2, title: t('form.steps.exterior') },
+    { number: 3, title: t('form.steps.interior') },
+    { number: 4, title: t('form.steps.heating') },
+    { number: 5, title: t('form.steps.technical') },
+    { number: 6, title: t('form.steps.personalInfo') },
   ];
 
   let isAuthenticated = prop.isAuthenticated;
@@ -57,7 +59,7 @@ export const ApplicationForm = (prop) => {
 
   const handleGoogleResponse = async (response) => {
     try {
-      const res = await fetch("http://localhost:8000/api/user/google-auth", {
+      const res = await fetch("https://talopakettiin.fi/api/user/google-auth", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -92,8 +94,8 @@ export const ApplicationForm = (prop) => {
       alert("Hakemus lähetetty onnistuneesti!");
       resetForm();
       setCurrentStep(1);
-      localStorage.removeItem('formData');
-      localStorage.removeItem('formStep');
+      localStorage.removeItem("formData");
+      localStorage.removeItem("formStep");
     } catch (error) {
       if (error.error === "Authentication Error") {
         setError(error.message);
@@ -212,30 +214,30 @@ export const ApplicationForm = (prop) => {
         <div className="bg-white shadow-xl rounded-lg overflow-hidden">
           <div className="p-8">
             {currentStep === 1 && (
-              <PerustiedotForm 
-                formData={formData} 
-                setFormData={setFormData} 
+              <PerustiedotForm
+                formData={formData}
+                setFormData={setFormData}
                 validationErrors={validationErrors}
               />
             )}
             {currentStep === 2 && (
-              <UlkopuoliForm 
-                formData={formData} 
-                setFormData={setFormData} 
+              <UlkopuoliForm
+                formData={formData}
+                setFormData={setFormData}
                 validationErrors={validationErrors}
               />
             )}
             {currentStep === 3 && (
-              <SisapuoliForm 
-                formData={formData} 
-                setFormData={setFormData} 
+              <SisapuoliForm
+                formData={formData}
+                setFormData={setFormData}
                 validationErrors={validationErrors}
               />
             )}
             {currentStep === 4 && (
-              <LämmitysForm 
-                formData={formData} 
-                setFormData={setFormData} 
+              <LämmitysForm
+                formData={formData}
+                setFormData={setFormData}
                 validationErrors={validationErrors}
               />
             )}
@@ -247,9 +249,9 @@ export const ApplicationForm = (prop) => {
               />
             )}
             {currentStep === 6 && (
-              <OmatTiedotForm 
-                formData={formData} 
-                setFormData={setFormData} 
+              <OmatTiedotForm
+                formData={formData}
+                setFormData={setFormData}
                 validationErrors={validationErrors}
               />
             )}
@@ -258,22 +260,22 @@ export const ApplicationForm = (prop) => {
           <div className="px-8 py-6 bg-gray-50 border-t border-gray-200 flex flex-col items-center gap-4">
             <div className="flex w-full justify-between">
               <div className="flex gap-4">
-              <button
-                onClick={prevStep}
-                disabled={currentStep === 1}
-                className={`px-6 py-3 rounded-lg font-medium transition-colors ${
-                  currentStep === 1
-                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                    : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-300 shadow-sm"
-                }`}
-              >
-                Edellinen
-              </button>
+                <button
+                  onClick={prevStep}
+                  disabled={currentStep === 1}
+                  className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+                    currentStep === 1
+                      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                      : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-300 shadow-sm"
+                  }`}
+                >
+                  {t('navigation.previous')}
+                </button>
                 <button
                   onClick={resetForm}
                   className="px-6 py-3 rounded-lg font-medium transition-colors bg-white text-red-600 hover:bg-red-50 border border-red-300 shadow-sm"
                 >
-                  Aloita uudestaan
+                  {t('navigation.startAgain')}
                 </button>
               </div>
 
@@ -294,7 +296,7 @@ export const ApplicationForm = (prop) => {
                   onClick={nextStep}
                   className="px-6 py-3 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors shadow-md"
                 >
-                  Seuraava
+                  {t('navigation.next')}
                 </button>
               )}
             </div>

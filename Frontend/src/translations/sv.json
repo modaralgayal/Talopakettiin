@@ -1,0 +1,174 @@
+{
+  "common": {
+    "signIn": "Logga in",
+    "signUp": "Registrera",
+    "logout": "Logga ut",
+    "email": "E-post",
+    "password": "Lösenord",
+    "confirmPassword": "Bekräfta lösenord",
+    "submit": "Skicka",
+    "cancel": "Avbryt",
+    "loading": "Laddar...",
+    "logoAlt": "Talopakettiin Logo"
+  },
+  "navigation": {
+    "home": "Hem",
+    "about": "Om oss",
+    "contact": "Kontakt",
+    "fillApplication": "Fyll i ansökan",
+    "application": "Ansökan",
+    "myApplications": "Mina ansökningar",
+    "myOffers": "Mina erbjudanden",
+    "allApplications": "Alla ansökningar",
+    "previous": "Tidigare",
+    "startAgain": "Börja om", 
+    "next": "Nästa",
+    "sendApplication": "Skicka ansökan"
+  },
+  "auth": {
+    "selectUserType": "Välj din användartyp för att fortsätta",
+    "customer": {
+      "title": "Sökande",
+      "description": "Jag söker ett lämpligt huspaket"
+    },
+    "provider": {
+      "title": "Leverantör",
+      "description": "Jag gör erbjudanden på huspaket"
+    },
+    "googleSignIn": "Logga in med Google",
+    "selectUserTypeFirst": "Välj en användartyp ovan för att aktivera inloggning"
+  },
+  "errors": {
+    "general": "Något gick fel",
+    "invalidCredentials": "Ogiltiga inloggningsuppgifter",
+    "networkError": "Ett nätverksfel uppstod"
+  },
+  "form": {
+    "steps": {
+      "basicInfo": "Grundläggande information",
+      "exterior": "Utvändigt",
+      "interior": "Invändigt",
+      "heating": "Uppvärmning",
+      "technical": "Husautomation",
+      "personalInfo": "Personlig information"
+    },
+    "fields": {
+      "city": "Stad",
+      "province": "Landskap",
+      "budget": "Budget",
+      "houseSize": "Husets storlek",
+      "bedrooms": "Antal sovrum",
+      "utilityRoom": "Pannrum",
+      "utilityRoomDetails": "Pannrum - Ytterligare information",
+      "mudroom": "Förstuga",
+      "mudroomDetails": "Förstuga - Ytterligare information",
+      "terrace": "Terrass",
+      "terraceDetails": "Terrass - Ytterligare information",
+      "carport": "Carport",
+      "carportDetails": "Carport - Ytterligare information",
+      "garage": "Garage",
+      "garageDetails": "Garage - Ytterligare information",
+      "houseMaterial": "Husets material",
+      "houseMaterialOther": "Annat material",
+      "roof": "Tak",
+      "roofOther": "Annat tak",
+      "floor": "Golv",
+      "floorDetails": "Golvmaterial",
+      "interiorWalls": "Innerväggar",
+      "interiorWallsDetails": "Innerväggsmaterial",
+      "ceiling": "Innertak",
+      "ceilingDetails": "Innertaksmaterial",
+      "heatingType": "Uppvärmningstyp",
+      "heatingTypeOther": "Annan uppvärmningstyp",
+      "fireplace": "Öppen spis",
+      "fireplaceHeatStorage": "Värmelagring",
+      "bakingOven": "Bakugn",
+      "bakingOvenDetails": "Bakugn - Ytterligare information",
+      "otherInfo": "Övrig information",
+      "interestedIn": "Jag är intresserad av",
+      "interestedInOther": "Annan intresse",
+      "wantsInOffer": "Jag vill att erbjudandet inkluderar",
+      "wantsInOfferOther": "Annan inkluderad tjänst",
+      "personalStatus": "Jag är",
+      "additionalInfo": "Övrig information",
+      "technicalFeatures": "Tekniska funktioner",
+      "quote": "Offert",
+      "customerStatus": "Kundstatus"
+    },
+    "options": {
+      "yes": "Ja",
+      "no": "Nej",
+      "dontKnow": "Vet inte än",
+      "other": "Annan",
+      "otherWhat": "Annan, vad?",
+      "selectOption": "Välj alternativ",
+      "selectCity": "Välj stad",
+      "selectProvince": "Välj landskap",
+      "selectAmount": "Välj antal",
+      "selectMaterial": "Välj material",
+      "selectRoof": "Välj tak",
+      "enterDetails": "Ange ytterligare information...",
+      "enterOther": "Annan - vad?",
+      "privatePerson": "Privatperson",
+      "company": "Företag",
+      "association": "Förening",
+      "municipality": "Kommun"
+    },
+    "validation": {
+      "required": "Obligatoriskt fält",
+      "selectOne": "Välj minst ett"
+    }
+  },
+  "homepage": {
+    "hero": {
+      "title": "Hitta Ditt Drömhuspaket",
+      "subtitle": "Det enklaste sättet att jämföra huspaket och få offerter från pålitliga leverantörer. Fyll i en ansökan och låt oss hantera resten.",
+      "cta": "Starta Ansökningsprocessen",
+      "subtext": "Fyll i ansökan och få offerter från pålitliga husleverantörer"
+    },
+    "features": {
+      "dreamHome": {
+        "title": "Drömhem Planering",
+        "description": "Definiera dina önskemål och krav för ditt drömhem - vi hjälper dig hitta det perfekta huspaketet."
+      },
+      "easyProcess": {
+        "title": "Enkel Ansökningsprocess",
+        "description": "Fyll i en ansökan och få offerter från flera pålitliga husleverantörer."
+      },
+      "reliablePartners": {
+        "title": "Pålitliga Partners",
+        "description": "Vårt nätverk inkluderar endast noggrant utvalda, pålitliga husleverantörer."
+      },
+      "saveTime": {
+        "title": "Spara Tid och Möda",
+        "description": "Inget behov av att kontakta varje leverantör separat - vi hanterar det åt dig."
+      }
+    },
+    "process": {
+      "title": "Hur Processen Fungerar",
+      "steps": {
+        "apply": {
+          "title": "Fyll i Ansökan",
+          "description": "Berätta för oss om dina önskemål och krav för ditt nya hem."
+        },
+        "offers": {
+          "title": "Få Offerter",
+          "description": "Husleverantörer kommer att granska din ansökan och göra dig offerter."
+        },
+        "choose": {
+          "title": "Välj Bästa",
+          "description": "Jämför offerter och välj det bästa alternativet för dig."
+        }
+      }
+    },
+    "cta": {
+      "title": "Redo att Börja Planera Ditt Drömhem?",
+      "subtitle": "Fyll i ansökan nu och ta det första steget mot ditt nya hem.",
+      "button": "Fyll i Ansökan"
+    },
+    "blog": {
+      "title": "Senaste Artiklar",
+      "readMore": "Läs Mer →"
+    }
+  }
+} 

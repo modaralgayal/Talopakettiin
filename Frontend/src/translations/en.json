@@ -1,0 +1,174 @@
+{
+  "common": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "loading": "Loading...",
+    "logoAlt": "Talopakettiin Logo"
+  },
+  "navigation": {
+    "home": "Home",
+    "about": "About Us",
+    "contact": "Contact",
+    "fillApplication": "Fill Application",
+    "application": "Application",
+    "myApplications": "My Applications",
+    "myOffers": "My Offers",
+    "allApplications": "All Applications",
+    "previous": "Previous",
+    "startAgain": "Start Again",
+    "next": "Next",
+    "sendApplication": "Send Application"
+  },
+  "auth": {
+    "selectUserType": "Please select your user type to continue",
+    "customer": {
+      "title": "Applicant",
+      "description": "I'm looking for a suitable house package"
+    },
+    "provider": {
+      "title": "Provider",
+      "description": "I make house package offers"
+    },
+    "googleSignIn": "Sign in with Google",
+    "selectUserTypeFirst": "Please select a user type above to enable sign-in"
+  },
+  "errors": {
+    "general": "Something went wrong",
+    "invalidCredentials": "Invalid credentials",
+    "networkError": "Network error occurred"
+  },
+  "homepage": {
+    "hero": {
+      "title": "Find Your Dream House Package",
+      "subtitle": "The easiest way to compare house packages and get offers from reliable providers. Fill out one application and let us handle the rest.",
+      "cta": "Start Application Process",
+      "subtext": "Fill out the application and get offers from reliable house providers"
+    },
+    "features": {
+      "dreamHome": {
+        "title": "Dream Home Planning",
+        "description": "Define your wishes and requirements for your dream home - we'll help you find the perfect house package."
+      },
+      "easyProcess": {
+        "title": "Easy Application Process",
+        "description": "Fill out one application and get offers from multiple reliable house providers."
+      },
+      "reliablePartners": {
+        "title": "Reliable Partners",
+        "description": "Our network includes only carefully selected, reliable house providers."
+      },
+      "saveTime": {
+        "title": "Save Time and Effort",
+        "description": "No need to contact each provider separately - we'll handle it for you."
+      }
+    },
+    "process": {
+      "title": "How the Process Works",
+      "steps": {
+        "apply": {
+          "title": "Fill Out Application",
+          "description": "Tell us about your wishes and requirements for your new home."
+        },
+        "offers": {
+          "title": "Get Offers",
+          "description": "House providers will review your application and make you offers."
+        },
+        "choose": {
+          "title": "Choose the Best",
+          "description": "Compare offers and choose the best option for you."
+        }
+      }
+    },
+    "cta": {
+      "title": "Ready to Start Planning Your Dream Home?",
+      "subtitle": "Fill out the application now and take the first step towards your new home.",
+      "button": "Fill Out Application"
+    },
+    "blog": {
+      "title": "Latest Articles",
+      "readMore": "Read More →"
+    }
+  },
+  "form": {
+    "steps": {
+      "basicInfo": "Basic Information",
+      "exterior": "Exterior",
+      "interior": "Interior",
+      "heating": "Heating",
+      "technical": "Technical",
+      "personalInfo": "Personal Information"
+    },
+    "fields": {
+      "city": "City",
+      "province": "Province",
+      "budget": "Budget",
+      "houseSize": "House Size",
+      "bedrooms": "Number of Bedrooms",
+      "utilityRoom": "Utility Room",
+      "utilityRoomDetails": "Utility Room - Additional Information",
+      "mudroom": "Mudroom",
+      "mudroomDetails": "Mudroom - Additional Information",
+      "terrace": "Terrace",
+      "terraceDetails": "Terrace - Additional Information",
+      "carport": "Carport",
+      "carportDetails": "Carport - Additional Information",
+      "garage": "Garage",
+      "garageDetails": "Garage - Additional Information",
+      "houseMaterial": "House Material",
+      "houseMaterialOther": "Other Material",
+      "roof": "Roof",
+      "roofOther": "Other Roof",
+      "floor": "Floor",
+      "floorDetails": "Floor Material",
+      "interiorWalls": "Interior Walls",
+      "interiorWallsDetails": "Interior Wall Material",
+      "ceiling": "Ceiling",
+      "ceilingDetails": "Ceiling Material",
+      "heatingType": "Heating Type",
+      "heatingTypeOther": "Other Heating Type",
+      "fireplace": "Fireplace",
+      "fireplaceHeatStorage": "Heat Storage",
+      "bakingOven": "Baking Oven",
+      "bakingOvenDetails": "Baking Oven - Additional Information",
+      "otherInfo": "Other Information",
+      "interestedIn": "I'm interested in",
+      "interestedInOther": "Other Interest",
+      "wantsInOffer": "I want the offer to include",
+      "wantsInOfferOther": "Other Included Service",
+      "personalStatus": "I am",
+      "additionalInfo": "Additional Information",
+      "technicalFeatures": "Technical Features",
+      "quote": "Quote",
+      "customerStatus": "Customer Status"
+    },
+    "options": {
+      "yes": "Yes",
+      "no": "No",
+      "dontKnow": "Don't know yet",
+      "other": "Other",
+      "otherWhat": "Other, what?",
+      "selectOption": "Select option",
+      "selectCity": "Select city",
+      "selectProvince": "Select province",
+      "selectAmount": "Select amount",
+      "selectMaterial": "Select material",
+      "selectRoof": "Select roof",
+      "enterDetails": "Enter additional information...",
+      "enterOther": "Other - what?",
+      "privatePerson": "Private Person",
+      "company": "Company",
+      "association": "Association",
+      "municipality": "Municipality"
+    },
+    "validation": {
+      "required": "Required field",
+      "selectOne": "Select at least one"
+    }
+  }
+}

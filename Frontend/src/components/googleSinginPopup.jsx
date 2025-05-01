@@ -14,7 +14,7 @@ export const GoogleSignInPopup = ({ isOpen, onClose, onSuccess, userType }) => {
   const handleGoogleResponse = async (response) => {
     setIsLoading(true);
     try {
-      const res = await fetch("http://localhost:8000/api/user/google-auth", {
+      const res = await fetch("https://talopakettiin.fi/api/user/google-auth", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
