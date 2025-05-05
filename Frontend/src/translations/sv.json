@@ -21,7 +21,7 @@
     "myOffers": "Mina erbjudanden",
     "allApplications": "Alla ansökningar",
     "previous": "Tidigare",
-    "startAgain": "Börja om", 
+    "startAgain": "Börja om",
     "next": "Nästa",
     "sendApplication": "Skicka ansökan"
   },
@@ -112,11 +112,54 @@
       "privatePerson": "Privatperson",
       "company": "Företag",
       "association": "Förening",
-      "municipality": "Kommun"
+      "municipality": "Kommun",
+      "fieldRequired": "Obligatoriskt Fält",
+      "wood": "Trä",
+      "timber": "Timber",
+      "CLT": "CLT",
+      "concrete": "Betong / Sten",
+      "metalRoof": "Plåttak / Seam tak",
+      "brick": "Tegel",
+      "felt": "Feltak",
+      "parquet": "Parkett",
+      "laminate": "Laminat",
+      "vinyl": "Vinyl",
+      "cork": "Kork",
+      "tile": "Kakel",
+      "plasterBoard": "Gipsskiva",
+      "lightConcrete": "Lättbetong",
+      "woodPanel": "Träpanel",
+
+      "lead1": "Överväger huspaket (Ingen finansiering)",
+      "lead2": "Letar efter ett lämpligt huspaket",
+      "lead3": "Tar in offerter för huspaket (Finansiering klar)",
+
+      "airSourceHeatPump": "Luftvärmepump",
+      "geothermalHeat": "Jordvärme",
+      "electric": "El",
+      "oil": "Olja",
+      "woodHeating": "Veduppvärmning",
+      "districtHeating": "Fjärrvärme",
+      "minSize": "Minsta yta (m²)",
+      "maxSize": "Maximal yta (m²)",
+      "heatStoring": "Värmelagrande",
+      "notHeatStoring": "Ej värmelagrande"
     },
     "validation": {
       "required": "Obligatoriskt fält",
       "selectOne": "Välj minst ett"
+    },
+    "technicalOptions": {
+      "homeAutomation": "Husautomation",
+      "solarElectricity": "Solenergi",
+      "evCharging": "Laddstation för elbil",
+      "securitySystem": "Säkerhetssystem",
+      "other": "Annan"
+    },
+    "quoteOptions": {
+      "hvac": "VVS-arbeten",
+      "electrical": "Elarbeten",
+      "other": "Annan"
     }
   },
   "homepage": {
@@ -171,4 +214,4 @@
       "readMore": "Läs Mer →"
     }
   }
-} 
+}

@@ -1,35 +1,41 @@
 import React, { useState, useEffect } from "react";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 
 export const UlkopuoliForm = ({ formData, setFormData, validationErrors }) => {
   const { t } = useTranslation();
   const [showDetails, setShowDetails] = useState({
-    talonMateriaali: false,
-    vesikatto: false
+    houseMaterial: false,
+    roof: false,
   });
 
   // Initialize showDetails based on formData when component mounts or formData changes
   useEffect(() => {
     setShowDetails({
-      talonMateriaali: formData.talonMateriaali === t('form.options.otherWhat'),
-      vesikatto: formData.vesikatto === t('form.options.otherWhat')
+      houseMaterial: formData.houseMaterial === t("form.options.otherWhat"),
+      roof: formData.roof === t("form.options.otherWhat"),
     });
-  }, [formData.talonMateriaali, formData.vesikatto, t]);
+  }, [formData.houseMaterial, formData.roof, t]);
 
   const handleSelectChange = (field, value) => {
     const update = { ...formData, [field]: value };
 
-    if (field === "talonMateriaali") {
-      setShowDetails(prev => ({ ...prev, talonMateriaali: value === t('form.options.otherWhat') }));
-      if (value !== t('form.options.otherWhat')) {
-        update.talonMateriaaliMuu = "";
+    if (field === "houseMaterial") {
+      setShowDetails((prev) => ({
+        ...prev,
+        houseMaterial: value === t("form.options.otherWhat"),
+      }));
+      if (value !== t("form.options.otherWhat")) {
+        update.houseMaterialOther = "";
       }
     }
 
-    if (field === "vesikatto") {
-      setShowDetails(prev => ({ ...prev, vesikatto: value === t('form.options.otherWhat') }));
-      if (value !== t('form.options.otherWhat')) {
-        update.vesikattoMuu = "";
+    if (field === "roof") {
+      setShowDetails((prev) => ({
+        ...prev,
+        roof: value === t("form.options.otherWhat"),
+      }));
+      if (value !== t("form.options.otherWhat")) {
+        update.roofOther = "";
       }
     }
 
@@ -42,43 +48,59 @@ export const UlkopuoliForm = ({ formData, setFormData, validationErrors }) => {
 
   // Map Finnish details field names to English translation keys for translation
   const detailsFieldTranslationMap = {
-    talonMateriaaliMuu: 'houseMaterialOther',
-    vesikattoMuu: 'roofOther',
+    houseMaterialOther: "houseMaterialOther",
+    roofOther: "roofOther",
   };
 
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-semibold text-gray-800 border-b pb-3">
-        {t('form.steps.exterior')}
+        {t("form.steps.exterior")}
       </h2>
 
       {/* Talon Materiaali */}
       <div className="space-y-4">
         <label className="block text-lg font-medium text-gray-700">
-          {t('form.fields.houseMaterial')} *
-          {validationErrors.talonMateriaali && (
-            <span className="text-red-500 text-sm ml-2">{validationErrors.talonMateriaali}</span>
+          {t("form.fields.houseMaterial")} *
+          {validationErrors.houseMaterial && (
+            <span className="text-red-500 text-sm ml-2">
+              {validationErrors.houseMaterial}
+            </span>
           )}
         </label>
         <select
           className={`block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3 border bg-white ${
-            validationErrors.talonMateriaali ? 'border-red-500' : ''
+            validationErrors.houseMaterial ? "border-red-500" : ""
           }`}
-          value={formData.talonMateriaali || ""}
-          onChange={(e) => handleSelectChange("talonMateriaali", e.target.value)}
+          value={formData.houseMaterial || ""}
+          onChange={(e) =>
+            handleSelectChange("houseMaterial", e.target.value)
+          }
         >
-          <option value="">{t('form.options.selectMaterial')}</option>
-          {["Puu", "Hirsi", "CLT", "Betoni/Kivi", t('form.options.otherWhat')].map((option) => (
-            <option key={option} value={option}>{option}</option>
+          <option value="">{t("form.options.selectMaterial")}</option>
+          {[
+            t("form.options.wood"),
+            t("form.options.timber"),
+            t("form.options.CLT"),
+            t("form.options.concrete"),
+            t("form.options.otherWhat"),
+          ].map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
           ))}
         </select>
-        {showDetails.talonMateriaali && (
+        {showDetails.houseMaterial && (
           <input
             type="text"
-            placeholder={t(`form.fields.${detailsFieldTranslationMap['talonMateriaaliMuu']}`)}
+            placeholder={t(
+              `form.fields.${detailsFieldTranslationMap["houseMaterialOther"]}`
+            )}
             className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-3 border mt-3"
-            value={formData.talonMateriaaliMuu || ""}
-            onChange={(e) => handleTextInput("talonMateriaaliMuu", e.target.value)}
+            value={formData.houseMaterialOther || ""}
+            onChange={(e) =>
+              handleTextInput("houseMaterialOther", e.target.value)
+            }
           />
         )}
       </div>
@@ -86,30 +108,41 @@ export const UlkopuoliForm = ({ formData, setFormData, validationErrors }) => {
       {/* Vesikatto */}
       <div className="space-y-4">
         <label className="block text-lg font-medium text-gray-700">
-          {t('form.fields.roof')} *
-          {validationErrors.vesikatto && (
-            <span className="text-red-500 text-sm ml-2">{validationErrors.vesikatto}</span>
+          {t("form.fields.roof")} *
+          {validationErrors.roof && (
+            <span className="text-red-500 text-sm ml-2">
+              {validationErrors.roof}
+            </span>
           )}
         </label>
         <select
           className={`block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3 border bg-white ${
-            validationErrors.vesikatto ? 'border-red-500' : ''
+            validationErrors.roof ? "border-red-500" : ""
           }`}
-          value={formData.vesikatto || ""}
-          onChange={(e) => handleSelectChange("vesikatto", e.target.value)}
+          value={formData.roof || ""}
+          onChange={(e) => handleSelectChange("roof", e.target.value)}
         >
-          <option value="">{t('form.options.selectRoof')}</option>
-          {["Pelti/Saumakatto", "Tiili", "Huopa", t('form.options.otherWhat')].map((option) => (
-            <option key={option} value={option}>{option}</option>
+          <option value="">{t("form.options.selectRoof")}</option>
+          {[
+            t("form.options.metalRoof"),
+            t("form.options.brick"),
+            t("form.options.felt"),
+            t("form.options.otherWhat"),
+          ].map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
           ))}
         </select>
-        {showDetails.vesikatto && (
+        {showDetails.roof && (
           <input
             type="text"
-            placeholder={t(`form.fields.${detailsFieldTranslationMap['vesikattoMuu']}`)}
+            placeholder={t(
+              `form.fields.${detailsFieldTranslationMap["roofOther"]}`
+            )}
             className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-3 border mt-3"
-            value={formData.vesikattoMuu || ""}
-            onChange={(e) => handleTextInput("vesikattoMuu", e.target.value)}
+            value={formData.roofOther || ""}
+            onChange={(e) => handleTextInput("roofOther", e.target.value)}
           />
         )}
       </div>

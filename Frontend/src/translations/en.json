@@ -120,32 +120,34 @@
       "carportDetails": "Carport - Additional Information",
       "garage": "Garage",
       "garageDetails": "Garage - Additional Information",
+
       "houseMaterial": "House Material",
       "houseMaterialOther": "Other Material",
       "roof": "Roof",
       "roofOther": "Other Roof",
+
       "floor": "Floor",
       "floorDetails": "Floor Material",
       "interiorWalls": "Interior Walls",
       "interiorWallsDetails": "Interior Wall Material",
       "ceiling": "Ceiling",
       "ceilingDetails": "Ceiling Material",
+
       "heatingType": "Heating Type",
       "heatingTypeOther": "Other Heating Type",
       "fireplace": "Fireplace",
       "fireplaceHeatStorage": "Heat Storage",
       "bakingOven": "Baking Oven",
       "bakingOvenDetails": "Baking Oven - Additional Information",
-      "otherInfo": "Other Information",
+      "otherInfoIndoor": "Other Information",
+
       "interestedIn": "I'm interested in",
       "interestedInOther": "Other Interest",
       "wantsInOffer": "I want the offer to include",
       "wantsInOfferOther": "Other Included Service",
-      "personalStatus": "I am",
-      "additionalInfo": "Additional Information",
-      "technicalFeatures": "Technical Features",
-      "quote": "Quote",
-      "customerStatus": "Customer Status"
+
+      "customerStatus": "Customer Status",
+      "additionalInfo": "Additional Information"
     },
     "options": {
       "yes": "Yes",
@@ -164,11 +166,56 @@
       "privatePerson": "Private Person",
       "company": "Company",
       "association": "Association",
-      "municipality": "Municipality"
+      "municipality": "Municipality",
+      "fieldRequired": "Field Required",
+      "wood": "Wood",
+      "timber": "Timber",
+      "CLT": "CLT",
+      "concrete": "Concrete / Rock",
+      "metalRoof": "Sheet metal / Seam roof",
+      "brick": "Brick",
+      "felt": "Felt Roof",
+
+      "parquet": "Parquet",
+      "laminate": "Laminate",
+      "vinyl": "Vinyl",
+      "cork": "Cork",
+      "tile": "Tile",
+      "plasterBoard": "Plaster Board",
+      "lightConcrete": "Lightweight Concrete",
+      "woodPanel": "Wood Panel",
+
+      "lead1": "Considering a House Package (No Financing)",
+      "lead2": "Looking for a Suitable House Package",
+      "lead3": "Getting quotes for a house package (I have financing)",
+
+      "airSourceHeatPump": "Air Source Heat Pump",
+      "geothermalHeat": "Geothermal Heat",
+      "electric": "Electric",
+      "oil": "Oil",
+      "woodHeating": "Wood Heating",
+      "districtHeating": "District Heating",
+
+      "minSize": "Min size (m²)",
+      "maxSize": "Max size (m²)",
+      "heatStoring": "Heat Storing",
+      "notHeatStoring": "Not Heat Storing"
     },
     "validation": {
       "required": "Required field",
       "selectOne": "Select at least one"
+    },
+    "technicalOptions": {
+      "homeAutomation": "Home Automation",
+      "solarElectricity": "Solar Electricity",
+      "evCharging": "EV Charging Station",
+      "securitySystem": "Security System",
+      "other": "Other"
+    },
+    "quoteOptions": {
+      "hvac": "HVAC Work",
+      "electrical": "Electrical Work",
+      "other": "Other"
     }
   }
 }

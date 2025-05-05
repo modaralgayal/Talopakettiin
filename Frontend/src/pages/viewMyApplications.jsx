@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { getUserForms, deleteUserEntry } from "../controllers/formController";
 import { FaTrash, FaChevronDown, FaChevronUp, FaExclamationTriangle } from "react-icons/fa";
+import { useTranslation } from 'react-i18next';
 
 export const MyApplications = () => {
   const [applications, setApplications] = useState([]);
   const [expandedIndex, setExpandedIndex] = useState(null);
   const [deleteError, setDeleteError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
   const [deleteConfirmation, setDeleteConfirmation] = useState({
     show: false,
     entryId: null,
     kaupunki: null
   });
+  const { t } = useTranslation();
 
   const fetchApplications = async () => {
     try {
@@ -101,86 +104,228 @@ export const MyApplications = () => {
   const renderFormDataRows = (formData, sectionTitle) => {
     const entries = Object.entries(formData);
     return entries.map(([key, value]) => {
-      // Format the key to be a readable label (e.g., "maxSize" => "Max Size")
-      const label = key
-        .split(/(?=[A-Z])/)
-        .join(" ")
-        .replace(/^\w/, (c) => c.toUpperCase());
+      // Get the translated label for the field
+      const label = t(`form.fields.${key}`);
 
-      // Check if the value is an array and handle accordingly
-      const formattedValue = Array.isArray(value) ? value.join(", ") : value;
+      // Special handling for different field types
+      if (["interestedIn", "wantsInOffer"].includes(key)) {
+        let displayValue = "-";
+        if (Array.isArray(value) && value.length > 0) {
+          // Try to translate each value based on the field type
+          displayValue = value
+            .map((v) => {
+              if (key === "interestedIn") {
+                return t(`form.technicalOptions.${v}`) !== `form.technicalOptions.${v}` 
+                  ? t(`form.technicalOptions.${v}`) 
+                  : v;
+              }
+              if (key === "wantsInOffer") {
+                return t(`form.quoteOptions.${v}`) !== `form.quoteOptions.${v}` 
+                  ? t(`form.quoteOptions.${v}`) 
+                  : v;
+              }
+              return v;
+            })
+            .join(", ");
+        }
+        return (
+          <div
+            key={`${sectionTitle}-${key}`}
+            className="flex justify-between items-center py-2 border-b"
+          >
+            <span className="font-medium">{label}:</span>
+            <span className="text-gray-700">{displayValue}</span>
+          </div>
+        );
+      }
 
+      // Handle yes/no/dontKnow fields
+      if (["utilityRoom", "mudroom", "terrace", "carport", "garage", "fireplace", "bakingOven"].includes(key)) {
+        const displayValue = value === t("form.options.yes") ? t("form.options.yes") : 
+                           value === t("form.options.no") ? t("form.options.no") : 
+                           value === t("form.options.dontKnow") ? t("form.options.dontKnow") :
+                           value || "-";
+        return (
+          <div
+            key={`${sectionTitle}-${key}`}
+            className="flex justify-between items-center py-2 border-b"
+          >
+            <span className="font-medium">{label}:</span>
+            <span className="text-gray-700">{displayValue}</span>
+          </div>
+        );
+      }
+
+      // Handle select fields with predefined options
+      if (["houseMaterial", "roof", "floor", "interiorWalls", "ceiling"].includes(key)) {
+        let displayValue = "-";
+        if (value) {
+          // Try to translate the value
+          const translated = t(`form.options.${value}`);
+          displayValue = translated !== `form.options.${value}` ? translated : value;
+        }
+        return (
+          <div
+            key={`${sectionTitle}-${key}`}
+            className="flex justify-between items-center py-2 border-b"
+          >
+            <span className="font-medium">{label}:</span>
+            <span className="text-gray-700">{displayValue}</span>
+          </div>
+        );
+      }
+
+      // Handle heating type array
+      if (key === "heatingType") {
+        let displayValue = "-";
+        if (Array.isArray(value) && value.length > 0) {
+          displayValue = value
+            .map(v => {
+              const translated = t(`form.options.${v}`);
+              return translated !== `form.options.${v}` ? translated : v;
+            })
+            .join(", ");
+        }
+        return (
+          <div
+            key={`${sectionTitle}-${key}`}
+            className="flex justify-between items-center py-2 border-b"
+          >
+            <span className="font-medium">{label}:</span>
+            <span className="text-gray-700">{displayValue}</span>
+          </div>
+        );
+      }
+
+      // Handle customer status
+      if (key === "customerStatus") {
+        let displayValue = "-";
+        if (value) {
+          const translated = t(`form.options.${value}`);
+          displayValue = translated !== `form.options.${value}` ? translated : value;
+        }
+        return (
+          <div
+            key={`${sectionTitle}-${key}`}
+            className="flex justify-between items-center py-2 border-b"
+          >
+            <span className="font-medium">{label}:</span>
+            <span className="text-gray-700">{displayValue}</span>
+          </div>
+        );
+      }
+
+      // Handle other fields (city, province, budget, etc.)
+      const displayValue = value || "-";
       return (
         <div
           key={`${sectionTitle}-${key}`}
           className="flex justify-between items-center py-2 border-b"
         >
           <span className="font-medium">{label}:</span>
-          <span className="text-gray-700">{formattedValue}</span>
+          <span className="text-gray-700">{displayValue}</span>
         </div>
       );
     });
   };
 
-  // Grouped sections based on the structure of the form data
-  const groupedSections = [
+  // Define the order of sections
+  const sectionOrder = [
     {
-      title: "Perustiedot",
+      title: t("form.steps.basicInfo"),
       fields: [
-        "kaupunki",
-        "maakunta",
-        "budjetti",
-        "talonKoko",
-        "makuuhuoneidenMaara",
-        "kodinhoitohuone",
-        "arkieteinen",
-        "terassi",
-        "autokatos",
-        "autotalli",
+        "city",
+        "province",
+        "budget",
+        "houseSize",
+        "bedrooms",
+        "utilityRoom",
+        "utilityRoomDetails",
+        "mudroom",
+        "mudroomDetails",
+        "terrace",
+        "terraceDetails",
+        "carport",
+        "carportDetails",
+        "garage",
+        "garageDetails",
       ],
     },
     {
-      title: "Ulkopuoli",
+      title: t("form.steps.exterior"),
       fields: [
-        "talonMateriaali",
-        "talonMateriaaliMuu",
-        "vesikatto",
-        "vesikattoMuu",
+        "houseMaterial",
+        "houseMaterialOther",
+        "roof",
+        "roofOther",
       ],
     },
     {
-      title: "Sisäpuoli",
+      title: t("form.steps.interior"),
       fields: [
-        "lattia",
-        "lattiaDetails",
-        "valiseinat",
-        "valiseinatDetails",
-        "sisakatto",
-        "sisakattoDetails",
+        "floor",
+        "floorDetails",
+        "interiorWalls",
+        "interiorWallsDetails",
+        "ceiling",
+        "ceilingDetails",
       ],
     },
     {
-      title: "Lämmitys",
+      title: t("form.steps.heating"),
       fields: [
-        "lämmitysmuoto",
-        "muuLämmitysmuoto",
-        "takka",
-        "varaavuus",
-        "leivinuuni",
-        "muuTieto",
+        "heatingType",
+        "heatingTypeOther",
+        "fireplace",
+        "fireplaceHeatStorage",
+        "bakingOven",
+        "bakingOvenDetails",
+        "otherInfoIndoor",
       ],
     },
     {
-      title: "Talotekniikka",
+      title: t("form.steps.technical"),
       fields: [
-        "minuaKiinnostaa",
-        "muuMinuaKiinnostaa",
-        "haluanTarjous",
-        "muuHaluanTarjous",
+        "interestedIn",
+        "interestedInOther",
+        "wantsInOffer",
+        "wantsInOfferOther",
       ],
     },
-    { title: "Omat Tiedot", fields: ["olen", "vapaamuotoisiaLisatietoja"] },
+    {
+      title: t("form.steps.personalInfo"),
+      fields: [
+        "customerStatus",
+        "additionalInfo",
+      ],
+    },
   ];
+
+  // Function to format field values
+  const formatFieldValue = (key, value) => {
+    if (Array.isArray(value)) {
+      return value.join(", ");
+    }
+    if (key === "budget" && value) {
+      return value;
+    }
+    if (key === "houseSize" && value) {
+      return value;
+    }
+    return value;
+  };
+
+  const filteredApplications = applications.filter((app) => {
+    const formData = filterEmptyValues(app.formData);
+    const searchLower = searchTerm.toLowerCase();
+
+    return (
+      (formData.city &&
+        formData.city.toLowerCase().includes(searchLower)) ||
+      (formData.province &&
+        formData.province.toLowerCase().includes(searchLower))
+    );
+  });
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
@@ -192,6 +337,17 @@ export const MyApplications = () => {
           <p className="text-lg text-gray-600">
             Tarkastele ja hallitse hakemuksiasi
           </p>
+        </div>
+
+        {/* Add search input */}
+        <div className="mb-6">
+          <input
+            type="text"
+            placeholder="Hae kaupungin tai maakunnan perusteella..."
+            className="w-full p-3 border rounded-lg focus:ring-blue-500 focus:border-blue-500"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
 
         {deleteError && (
@@ -208,9 +364,9 @@ export const MyApplications = () => {
           </div>
         ) : (
           <div className="space-y-4">
-            {applications.map((application, index) => {
+            {filteredApplications.map((application, index) => {
               const formData = filterEmptyValues(application.formData);
-              const kaupunki = formData.kaupunki || "Tuntematon kaupunki";
+              const kaupunki = formData.city || "Tuntematon kaupunki";
               const isExpanded = expandedIndex === index;
 
               return (
@@ -250,7 +406,7 @@ export const MyApplications = () => {
 
                     {isExpanded && (
                       <div className="mt-6 space-y-6">
-                        {groupedSections.map((section) => {
+                        {sectionOrder.map((section) => {
                           const sectionFields = section.fields.reduce(
                             (acc, field) => {
                               if (formData[field]) {

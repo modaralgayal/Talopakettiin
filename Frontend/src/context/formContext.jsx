@@ -1,59 +1,62 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 
 import { useLanguage } from "./languageContext";
+import { useTranslation } from "react-i18next";
 
-const createDefaultForm = (language) => {
+const createDefaultForm = () => {
   const defaultFormData = {
+    // Basic Info
     city: "",
     province: "",
-    budjetti: "",
-    talonKoko: "",
+    budget: "",
+    houseSize: "",
     bedrooms: "",
-    kodinhoitohuone: "",
-    kodinhoitohuoneDetails: "",
+    utilityRoom: "",
+    utilityRoomDetails: "",
     mudroom: "",
     mudroomDetails: "",
-    terassi: "",
-    terassiDetails: "",
-    autokatos: "",
-    autokatosDetails: "",
-    autotalli: "",
-    autotalliDetails: "",
+    terrace: "",
+    terraceDetails: "",
+    carport: "",
+    carportDetails: "",
+    garage: "",
+    garageDetails: "",
 
-    // Ulkopuoli fields
-    talonMateriaali: "",
-    talonMateriaaliMuu: "",
-    vesikatto: "",
-    vesikattoMuu: "",
+    // Exterior
+    houseMaterial: "",
+    houseMaterialOther: "",
+    roof: "",
+    roofOther: "",
 
-    // Sisäpuoli fields
-    lattia: "",
-    lattiaDetails: "",
-    valiseinat: "",
-    valiseinatDetails: "",
-    sisakatto: "",
-    sisakattoDetails: "",
+    // Interior
+    floor: "",
+    floorDetails: "",
+    interiorWalls: "",
+    interiorWallsDetails: "",
+    ceiling: "",
+    ceilingDetails: "",
 
-    // Lämmitys fields
-    lämmitysmuoto: [],
-    muuLämmitysmuoto: "",
-    takka: "",
-    varaavuus: "",
-    leivinuuni: "",
-    muuTieto: "",
+    // Heating
+    heatingType: [],
+    heatingTypeOther: "",
+    fireplace: "",
+    fireplaceHeatStorage: "",
+    bakingOven: "",
+    bakingOvenDetails: "",
+    otherInfoIndoor: "",
 
-    // Talotekniikka fields
-    minuaKiinnostaa: [],
-    muuMinuaKiinnostaa: "",
-    haluanTarjous: [],
-    muuHaluanTarjous: "",
+    // Technical
+    interestedIn: [],
+    interestedInOther: "",
+    wantsInOffer: [],
+    wantsInOfferOther: "",
 
-    // Omat Tiedot fields
-    olen: [],
-    vapaamuotoisiaLisatietoja: "",
+    // Personal Info
+    customerStatus: "",
+    additionalInfo: "",
   };
 
-  return defaultFormData
+  return defaultFormData;
 };
 
 // Create context
@@ -71,7 +74,9 @@ const FormContext = createContext({
 export const FormProvider = ({ children }) => {
   // Initialize state from localStorage if available
   const { currentLanguage } = useLanguage();
+  const { t } = useTranslation();
   console.log("Current language is: ", currentLanguage);
+  console.log("testing t", t("form.options.fieldRequired"))
   const [formData, setFormData] = useState(() => {
     const savedData = localStorage.getItem("formData");
     return savedData ? JSON.parse(savedData) : createDefaultForm();
@@ -96,43 +101,51 @@ export const FormProvider = ({ children }) => {
     localStorage.setItem("formStep", currentStep.toString());
   }, [currentStep]);
 
+
   // Function to validate the current step
   const validateStep = (step) => {
     const errors = {};
 
     switch (step) {
       case 1: // Perustiedot
-        if (!formData.kaupunki) errors.kaupunki = "Pakollinen kenttä";
-        if (!formData.maakunta) errors.maakunta = "Pakollinen kenttä";
-        if (!formData.bedrooms) errors.bedrooms = "Pakollinen kenttä";
-        if (!formData.kodinhoitohuone)
-          errors.kodinhoitohuone = "Pakollinen kenttä";
-        if (!formData.arkieteinen) errors.arkieteinen = "Pakollinen kenttä";
-        if (!formData.terassi) errors.terassi = "Pakollinen kenttä";
-        if (!formData.autokatos) errors.autokatos = "Pakollinen kenttä";
-        if (!formData.autotalli) errors.autotalli = "Pakollinen kenttä";
+        if (!formData.city) errors.city = t("form.options.fieldRequired");
+        if (!formData.province) errors.province = t("form.options.fieldRequired");
+        if (!formData.bedrooms) errors.bedrooms = t("form.options.fieldRequired");
+        if (!formData.utilityRoom)
+          errors.utilityRoom = t("form.options.fieldRequired");
+        if (!formData.mudroom) errors.mudroom = t("form.options.fieldRequired");
+        if (!formData.terrace) errors.terrace = t("form.options.fieldRequired");
+        if (!formData.carport) errors.carport = t("form.options.fieldRequired");
+        if (!formData.garage) errors.garage = t("form.options.fieldRequired");
+        // Budget and house size required
+        if (!formData.budget || formData.budget.trim() === "") {
+          errors.budget = t("form.options.fieldRequired");
+        }
+        if (!formData.houseSize || formData.houseSize.trim() === "") {
+          errors.houseSize = t("form.options.fieldRequired");
+        }
         break;
       case 2: // Ulkopuoli
-        if (!formData.talonMateriaali)
-          errors.talonMateriaali = "Pakollinen kenttä";
-        if (!formData.vesikatto) errors.vesikatto = "Pakollinen kenttä";
+        if (!formData.houseMaterial)
+          errors.houseMaterial = t("form.options.fieldRequired");
+        if (!formData.roof) errors.roof = t("form.options.fieldRequired");
         break;
       case 3: // Sisäpuoli
-        if (!formData.lattia) errors.lattia = "Pakollinen kenttä";
-        if (!formData.valiseinat) errors.valiseinat = "Pakollinen kenttä";
-        if (!formData.sisakatto) errors.sisakatto = "Pakollinen kenttä";
+        if (!formData.floor) errors.floor = t("form.options.fieldRequired");
+        if (!formData.interiorWalls) errors.interiorWalls = t("form.options.fieldRequired");
+        if (!formData.ceiling) errors.ceiling = t("form.options.fieldRequired");
         break;
       case 4: // Lämmitys
-        if (!formData.lämmitysmuoto || formData.lämmitysmuoto.length === 0) {
-          errors.lämmitysmuoto = "Valitse vähintään yksi";
+        if (!formData.heatingType || formData.heatingType.length === 0) {
+          errors.heatingType = "Valitse vähintään yksi";
         }
         break;
       case 5: // Talotekniikka
         // No required fields in this step
         break;
       case 6: // Omat Tiedot
-        if (!formData.olen || formData.olen.length === 0) {
-          errors.olen = "Valitse vähintään yksi";
+        if (!formData.customerStatus || formData.customerStatus.length === 0) {
+          errors.customerStatus = "Valitse vähintään yksi";
         }
         break;
       default:

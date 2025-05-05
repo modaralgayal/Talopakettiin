@@ -8,7 +8,7 @@ import { OmatTiedotForm } from "./hakemusTiedot/omatTiedotForm";
 import { useFormContext } from "../context/formContext";
 import { sendFormData } from "../controllers/formController";
 import { FaExclamationTriangle } from "react-icons/fa";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 
 export const ApplicationForm = (prop) => {
   const {
@@ -28,16 +28,16 @@ export const ApplicationForm = (prop) => {
   const { t } = useTranslation();
 
   const steps = [
-    { number: 1, title: t('form.steps.basicInfo') },
-    { number: 2, title: t('form.steps.exterior') },
-    { number: 3, title: t('form.steps.interior') },
-    { number: 4, title: t('form.steps.heating') },
-    { number: 5, title: t('form.steps.technical') },
-    { number: 6, title: t('form.steps.personalInfo') },
+    { number: 1, title: t("form.steps.basicInfo") },
+    { number: 2, title: t("form.steps.exterior") },
+    { number: 3, title: t("form.steps.interior") },
+    { number: 4, title: t("form.steps.heating") },
+    { number: 5, title: t("form.steps.technical") },
+    { number: 6, title: t("form.steps.personalInfo") },
   ];
 
   let isAuthenticated = prop.isAuthenticated;
-  console.log(isAuthenticated);
+  //console.log(isAuthenticated);
 
   const nextStep = () => {
     if (currentStep < steps.length) {
@@ -83,6 +83,7 @@ export const ApplicationForm = (prop) => {
   };
 
   const handleGuestSubmit = () => {
+    console.log("Calling guest submit")
     setShowGoogleSignInPrompt(true);
   };
 
@@ -154,6 +155,10 @@ export const ApplicationForm = (prop) => {
       }
     }
   }, [isGoogleScriptLoaded, showGoogleSignInPrompt]);
+
+  useEffect(() => {
+    console.log("This is the form Data: ", formData);
+  }, [formData]);
 
   return (
     <div className="min-h-screen bg-gray-50 pt-12 pb-16 px-4 sm:px-6 lg:px-8">
@@ -269,13 +274,13 @@ export const ApplicationForm = (prop) => {
                       : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-300 shadow-sm"
                   }`}
                 >
-                  {t('navigation.previous')}
+                  {t("navigation.previous")}
                 </button>
                 <button
                   onClick={resetForm}
                   className="px-6 py-3 rounded-lg font-medium transition-colors bg-white text-red-600 hover:bg-red-50 border border-red-300 shadow-sm"
                 >
-                  {t('navigation.startAgain')}
+                  {t("navigation.startAgain")}
                 </button>
               </div>
 
@@ -296,7 +301,7 @@ export const ApplicationForm = (prop) => {
                   onClick={nextStep}
                   className="px-6 py-3 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors shadow-md"
                 >
-                  {t('navigation.next')}
+                  {t("navigation.next")}
                 </button>
               )}
             </div>

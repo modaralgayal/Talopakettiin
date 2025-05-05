@@ -2,6 +2,7 @@ import { makeOfferToUser } from "./formController";
 
 export const sendOffer = async (offerData, pdfFile = null) => {
   try {
+    console.log("Offering this: ", offerData.entryId)
     const response = await makeOfferToUser(
       offerData,
       offerData.customerEmail,

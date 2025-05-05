@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 // Initial state for offerData
 const initialOfferData = {
   userId: "",
-  entryId: "",
+  entryId: "", // This will be set when making an offer
   price: "",
   firmName: "",
   description: "",

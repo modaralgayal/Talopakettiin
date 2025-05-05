@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useOfferContext } from "../context/offerContext";
-import { FaChevronDown, FaChevronUp, FaBuilding, FaEuroSign, FaRuler } from "react-icons/fa";
+import {
+  FaChevronDown,
+  FaChevronUp,
+  FaBuilding,
+  FaEuroSign,
+  FaRuler,
+} from "react-icons/fa";
 import { sendOffer } from "../controllers/offerController";
 
 const MakeOffer = () => {
@@ -11,59 +17,53 @@ const MakeOffer = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [pdfFile, setPdfFile] = useState(null);
+  const location = useLocation();
+  const applicationId = location.state?.id;
+  console.log("This is the application: ", applicationId);
 
   // Define the order of sections
   const sectionOrder = [
-    { title: "Perustiedot", fields: [
-      "kaupunki",
-      "maakunta",
-      "budjetti",
-      "talonKoko",
-      "makuuhuoneidenMaara",
-      "kodinhoitohuone",
-      "kodinhoitohuoneDetails",
-      "arkieteinen",
-      "arkieteinenDetails",
-      "terassi",
-      "terassiDetails",
-      "autokatos",
-      "autokatosDetails",
-      "autotalli",
-      "autotalliDetails"
-    ]},
-    { title: "Ulkopuoli", fields: [
-      "talonMateriaali",
-      "talonMateriaaliMuu",
-      "vesikatto",
-      "vesikattoMuu"
-    ]},
-    { title: "Sisäpuoli", fields: [
-      "lattia",
-      "lattiaDetails",
-      "valiseinat",
-      "valiseinatDetails",
-      "sisakatto",
-      "sisakattoDetails"
-    ]},
-    { title: "Lämmitys", fields: [
-      "lämmitysmuoto",
-      "muuLämmitysmuoto",
-      "takka",
-      "varaavuus",
-      "leivinuuni",
-      "leivinuuniDetails",
-      "muuTieto"
-    ]},
-    { title: "Talotekniikka", fields: [
-      "minuaKiinnostaa",
-      "muuMinuaKiinnostaa",
-      "haluanTarjous",
-      "muuHaluanTarjous"
-    ]},
-    { title: "Omat Tiedot", fields: [
-      "olen",
-      "vapaamuotoisiaLisatietoja"
-    ]}
+    {
+      title: "Perustiedot",
+      fields: [
+        "city", "province", "budget", "houseSize", "bedrooms",
+        "utilityRoom", "utilityRoomDetails", "mudroom", "mudroomDetails",
+        "terrace", "terraceDetails", "carport", "carportDetails",
+        "garage", "garageDetails"
+      ],
+    },
+    {
+      title: "Ulkopuoli",
+      fields: [
+        "houseMaterial", "houseMaterialOther", "roof", "roofOther"
+      ],
+    },
+    {
+      title: "Sisäpuoli",
+      fields: [
+        "floor", "floorDetails", "interiorWalls", "interiorWallsDetails",
+        "ceiling", "ceilingDetails"
+      ],
+    },
+    {
+      title: "Lämmitys",
+      fields: [
+        "heatingType", "heatingTypeOther", "fireplace", "fireplaceHeatStorage",
+        "bakingOven", "bakingOvenDetails", "otherInfoIndoor"
+      ],
+    },
+    {
+      title: "Talotekniikka",
+      fields: [
+        "interestedIn", "interestedInOther", "wantsInOffer", "wantsInOfferOther"
+      ],
+    },
+    {
+      title: "Omat Tiedot",
+      fields: [
+        "customerStatus", "additionalInfo"
+      ],
+    },
   ];
 
   // Function to format field values
@@ -86,10 +86,19 @@ const MakeOffer = () => {
     setSuccess(false);
 
     try {
-      await sendOffer(offerData, pdfFile);
+      // Ensure offerData.entryId is set to the application being offered to
+      let updatedOfferData = { ...offerData };
+      if (
+        !updatedOfferData.entryId &&
+        updatedOfferData.formData &&
+        updatedOfferData.formData.entryId
+      ) {
+        updatedOfferData.entryId = applicationId;
+      }
+      await sendOffer(updatedOfferData, pdfFile);
       setSuccess(true);
       setTimeout(() => {
-        navigate("/viewmyoffers");
+        navigate("/allapplications");
       }, 2000);
     } catch (err) {
       setError(err.message);
@@ -114,8 +123,12 @@ const MakeOffer = () => {
     return (
       <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto text-center">
-          <h1 className="text-2xl font-semibold text-gray-900">Ei valittua hakemusta</h1>
-          <p className="mt-2 text-gray-600">Valitse ensin hakemus, jolle haluat tehdä tarjouksen.</p>
+          <h1 className="text-2xl font-semibold text-gray-900">
+            Ei valittua hakemusta
+          </h1>
+          <p className="mt-2 text-gray-600">
+            Valitse ensin hakemus, jolle haluat tehdä tarjouksen.
+          </p>
         </div>
       </div>
     );
@@ -126,7 +139,9 @@ const MakeOffer = () => {
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Tee tarjous</h1>
-          <p className="text-xl text-gray-600">Täytä tarjouksen tiedot alla olevaan lomakkeeseen</p>
+          <p className="text-xl text-gray-600">
+            Täytä tarjouksen tiedot alla olevaan lomakkeeseen
+          </p>
         </div>
 
         {/* Application Preview Toggle */}
@@ -135,7 +150,9 @@ const MakeOffer = () => {
             onClick={() => setIsPreviewOpen(!isPreviewOpen)}
             className="w-full flex items-center justify-between p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
           >
-            <span className="text-lg font-medium text-gray-900">Näytä hakemuksen tiedot</span>
+            <span className="text-lg font-medium text-gray-900">
+              Näytä hakemuksen tiedot
+            </span>
             {isPreviewOpen ? (
               <FaChevronUp className="h-5 w-5 text-gray-500" />
             ) : (
@@ -281,5 +298,5 @@ const MakeOffer = () => {
     </div>
   );
 };
-
 export default MakeOffer;
+

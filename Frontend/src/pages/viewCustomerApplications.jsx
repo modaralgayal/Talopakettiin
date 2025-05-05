@@ -1,47 +1,68 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  getAllEntries,
-  getOffersForProvider,
-} from "../controllers/formController";
+import { getAllEntries } from "../controllers/formController";
 import { useOfferContext } from "../context/offerContext";
-import {
-  FaSearch,
-  FaChevronDown,
-  FaChevronUp,
-  FaBuilding,
-  FaCheckCircle,
-  FaTimes,
-  FaEuroSign,
-  FaFileAlt,
-} from "react-icons/fa";
+import { FaSearch, FaMapMarkerAlt, FaBuilding, FaEuroSign, FaRuler } from "react-icons/fa";
 
 export const ViewCustomerApplications = () => {
   const [applications, setApplications] = useState([]);
-  const [providerOffers, setProviderOffers] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
   const [openedAppIndex, setOpenedAppIndex] = useState(null);
-  const [selectedOffer, setSelectedOffer] = useState(null);
-  const { updateOfferData } = useOfferContext();
+  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [offersResponse, entriesResponse] = await Promise.all([
-          getOffersForProvider(),
-          getAllEntries()
-        ]);
-        
-        console.log("These are the offers made by you: ", offersResponse.data.offers);
-        setProviderOffers(offersResponse.data.offers || []);
-        setApplications(entriesResponse.entries || []);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
+  const { updateOfferData } = useOfferContext();
 
-    fetchData();
+  const sectionOrder = [
+    {
+      title: "Perustiedot",
+      fields: [
+        "city", "province", "budget", "houseSize", "bedrooms",
+        "utilityRoom", "utilityRoomDetails", "mudroom", "mudroomDetails",
+        "terrace", "terraceDetails", "carport", "carportDetails",
+        "garage", "garageDetails"
+      ],
+    },
+    {
+      title: "Ulkopuoli",
+      fields: [
+        "houseMaterial", "houseMaterialOther", "roof", "roofOther"
+      ],
+    },
+    {
+      title: "Sisäpuoli",
+      fields: [
+        "floor", "floorDetails", "interiorWalls", "interiorWallsDetails",
+        "ceiling", "ceilingDetails"
+      ],
+    },
+    {
+      title: "Lämmitys",
+      fields: [
+        "heatingType", "heatingTypeOther", "fireplace", "fireplaceHeatStorage",
+        "bakingOven", "bakingOvenDetails", "otherInfoIndoor"
+      ],
+    },
+    {
+      title: "Talotekniikka",
+      fields: [
+        "interestedIn", "interestedInOther", "wantsInOffer", "wantsInOfferOther"
+      ],
+    },
+    {
+      title: "Omat Tiedot",
+      fields: [
+        "customerStatus", "additionalInfo"
+      ],
+    },
+  ];
+
+  useEffect(() => {
+    getAllEntries()
+      .then((response) => {
+        console.log(response.entries);
+        setApplications(response.entries || []);
+      })
+      .catch((error) => console.log(error));
   }, []);
 
   const parseValue = (val) => {
@@ -63,142 +84,46 @@ export const ViewCustomerApplications = () => {
     return result;
   };
 
-  const getOfferForApplication = (entryId) => {
-    return providerOffers.find(offer => offer.entryId === entryId);
-  };
-
-  const handleViewOffer = (offer) => {
-    setSelectedOffer(offer);
-  };
-
-  const handleCloseOfferModal = () => {
-    setSelectedOffer(null);
-  };
-
-  const handleOffer = (application) => {
-    const customerEmail = application.customerEmail || application.email;
-    if (!customerEmail) {
-      alert("Customer email not found for this application");
-      return;
-    }
-
-    const formData = filterEmptyValues(application.formData);
-    const offerData = {
-      customerEmail,
-      entryId: application.entryId,
-      formData,
-      price: "",
-      firmName: "",
-      description: "",
-    };
-    updateOfferData(offerData);
-    navigate("/makeoffer");
-  };
-
-  // Define the order of sections
-  const sectionOrder = [
-    {
-      title: "Perustiedot",
-      fields: [
-        "kaupunki",
-        "maakunta",
-        "budjetti",
-        "talonKoko",
-        "makuuhuoneidenMaara",
-        "kodinhoitohuone",
-        "kodinhoitohuoneDetails",
-        "arkieteinen",
-        "arkieteinenDetails",
-        "terassi",
-        "terassiDetails",
-        "autokatos",
-        "autokatosDetails",
-        "autotalli",
-        "autotalliDetails",
-      ],
-    },
-    {
-      title: "Ulkopuoli",
-      fields: [
-        "talonMateriaali",
-        "talonMateriaaliMuu",
-        "vesikatto",
-        "vesikattoMuu",
-      ],
-    },
-    {
-      title: "Sisäpuoli",
-      fields: [
-        "lattia",
-        "lattiaDetails",
-        "valiseinat",
-        "valiseinatDetails",
-        "sisakatto",
-        "sisakattoDetails",
-      ],
-    },
-    {
-      title: "Lämmitys",
-      fields: [
-        "lämmitysmuoto",
-        "muuLämmitysmuoto",
-        "takka",
-        "varaavuus",
-        "leivinuuni",
-        "leivinuuniDetails",
-        "muuTieto",
-      ],
-    },
-    {
-      title: "Talotekniikka",
-      fields: [
-        "minuaKiinnostaa",
-        "muuMinuaKiinnostaa",
-        "haluanTarjous",
-        "muuHaluanTarjous",
-      ],
-    },
-    { title: "Omat Tiedot", fields: ["olen", "vapaamuotoisiaLisatietoja"] },
-  ];
-
-  // Function to format field values
-  const formatFieldValue = (key, value) => {
-    if (Array.isArray(value)) {
-      return value.join(", ");
-    }
-    if (key === "budjetti" && value) {
-      return value;
-    }
-    if (key === "talonKoko" && value) {
-      return value;
-    }
-    return value;
-  };
-
   const filteredApplications = applications.filter((app) => {
-    const formData = filterEmptyValues(app.formData);
+    const formData = filterEmptyValues(app.formData || {});
     const searchLower = searchTerm.toLowerCase();
 
+    // Use translation keys as in the new implementation
+    const city = formData.city || "";
+    const province = formData.province || "";
+
     return (
-      (formData.kaupunki &&
-        formData.kaupunki.toLowerCase().includes(searchLower)) ||
-      (formData.maakunta &&
-        formData.maakunta.toLowerCase().includes(searchLower))
+      city.toLowerCase().includes(searchLower) ||
+      province.toLowerCase().includes(searchLower)
     );
   });
 
   const handleToggle = (index) => {
-    setOpenedAppIndex(openedAppIndex === index ? null : index);
+    setOpenedAppIndex(index === openedAppIndex ? null : index);
+  };
+
+  const handleOffer = (userId, entryId, formData) => {
+    updateOfferData({
+      userId,
+      entryId,
+      formData,
+      price: "",
+      firmName: "",
+      description: "",
+      providerEmail: "",
+    });
+    console.log(formData);
+    navigate("/makeoffer", { state: { id: entryId } });
   };
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Kaikki hakemukset
           </h1>
-          <p className="text-xl text-gray-600">
+          <p className="text-lg text-gray-600">
             Selaa ja suodata hakemuksia sijainnin mukaan
           </p>
         </div>
@@ -207,11 +132,11 @@ export const ViewCustomerApplications = () => {
         <div className="max-w-2xl mx-auto mb-8">
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <FaSearch className="h-6 w-6 text-gray-400" />
+              <FaSearch className="h-5 w-5 text-gray-400" />
             </div>
             <input
               type="text"
-              className="block w-full pl-12 pr-3 py-4 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg"
+              className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               placeholder="Hae kaupungin tai maakunnan mukaan..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -220,95 +145,80 @@ export const ViewCustomerApplications = () => {
         </div>
 
         {/* Applications Grid */}
-        <div className="space-y-6">
+        <div className="flex flex-col gap-6 w-full">
           {filteredApplications.map((app, index) => {
-            const formData = filterEmptyValues(app.formData);
-            const kaupunki = formData.kaupunki || "Tuntematon kaupunki";
-            const isExpanded = openedAppIndex === index;
-            const existingOffer = getOfferForApplication(app.entryId);
+            const formData = filterEmptyValues(app.formData || {});
+            const city = formData.city || `Hakemus ${index + 1}`;
+            const province = formData.province || "Ei määritelty";
+            const budget = formData.budget || "Ei määritelty";
+            const size = formData.houseSize || "Ei määritelty";
+            const bedrooms = formData.bedrooms || "Ei määritelty";
 
             return (
               <div
-                key={app.uniqueId}
-                className="bg-white rounded-xl shadow-lg overflow-hidden"
+                key={app.entryId}
+                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200"
               >
                 <div className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <h2 className="text-2xl font-semibold text-gray-900 mb-2">
-                        {kaupunki}
-                      </h2>
-                      <p className="text-lg text-gray-600">
-                        Tila: {app.status}
-                      </p>
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-xl font-semibold text-gray-900">{city}</h2>
+                    <span className="px-3 py-1 text-sm font-medium rounded-full bg-blue-100 text-blue-800">
+                      {app.status}
+                    </span>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex items-center text-gray-600">
+                      <FaMapMarkerAlt className="h-5 w-5 mr-2 text-blue-500" />
+                      <span>{province}</span>
                     </div>
-                    <div className="flex items-center space-x-4">
-                      {existingOffer ? (
-                        <div className="flex items-center space-x-2">
-                          <span className="text-green-600 font-medium flex items-center">
-                            <FaCheckCircle className="mr-1" />
-                            Tarjous tehty
-                          </span>
-                          <button
-                            onClick={() => handleViewOffer(existingOffer)}
-                            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                          >
-                            Katso tarjous
-                          </button>
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() => handleOffer(app)}
-                          className="inline-flex items-center px-6 py-3 border border-transparent text-lg font-medium rounded-full text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-                        >
-                          <FaBuilding className="h-5 w-5 mr-2" />
-                          Tee tarjous
-                        </button>
-                      )}
-                      <button
-                        onClick={() => handleToggle(index)}
-                        className="text-gray-500 hover:text-gray-700 text-lg"
-                      >
-                        {isExpanded ? (
-                          <FaChevronUp className="h-6 w-6" />
-                        ) : (
-                          <FaChevronDown className="h-6 w-6" />
-                        )}
-                      </button>
+                    <div className="flex items-center text-gray-600">
+                      <FaEuroSign className="h-5 w-5 mr-2 text-blue-500" />
+                      <span>{budget}</span>
                     </div>
+                    <div className="flex items-center text-gray-600">
+                      <FaRuler className="h-5 w-5 mr-2 text-blue-500" />
+                      <span>{size}</span>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 flex justify-between items-center">
+                    <button
+                      onClick={() => handleToggle(index)}
+                      className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                    >
+                      {openedAppIndex === index ? "Piilota tiedot" : "Näytä tiedot"}
+                    </button>
+                    <button
+                      onClick={() => handleOffer(app.userId, app.entryId, formData)}
+                      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    >
+                      <FaBuilding className="h-4 w-4 mr-2" />
+                      Tee tarjous
+                    </button>
                   </div>
                 </div>
 
                 {/* Application details */}
-                {isExpanded && (
+                {openedAppIndex === index && (
                   <div className="border-t border-gray-200 p-6 bg-gray-50">
-                    {sectionOrder.map((section) => (
-                      <div key={section.title} className="mb-8 last:mb-0">
-                        <h3 className="text-2xl font-semibold text-gray-900 mb-4">
-                          {section.title}
-                        </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {section.fields.map((field) => {
-                            const value = formData[field];
-                            if (value === undefined || value === "")
-                              return null;
-                            return (
-                              <div
-                                key={field}
-                                className="bg-white p-4 rounded-lg shadow-sm"
-                              >
-                                <span className="block text-lg font-medium text-gray-700 mb-1">
-                                  {field}
-                                </span>
-                                <span className="text-lg text-gray-600">
-                                  {formatFieldValue(field, value)}
-                                </span>
+                    {sectionOrder.map((section) => {
+                      const sectionFields = section.fields.filter((field) => formData[field]);
+                      if (sectionFields.length === 0) return null;
+                      return (
+                        <div key={section.title} className="mb-6">
+                          <h4 className="text-lg font-semibold text-gray-900 mb-3">{section.title}</h4>
+                          <div className="flex flex-col space-y-2 w-full">
+                            {sectionFields.map((field) => (
+                              <div key={field} className="text-sm flex justify-between border-b pb-1">
+                                <span className="font-medium text-gray-700">{field}:</span>
+                                <span className="text-gray-600">{formData[field]}</span>
                               </div>
-                            );
-                          })}
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>
@@ -317,81 +227,13 @@ export const ViewCustomerApplications = () => {
         </div>
 
         {filteredApplications.length === 0 && (
-          <div className="text-center py-12 bg-white rounded-lg shadow">
-            <p className="text-xl text-gray-600">Ei hakemuksia näytettäväksi</p>
+          <div className="text-center py-12">
+            <p className="text-gray-600 text-lg">
+              Ei hakemuksia näytettäväksi
+            </p>
           </div>
         )}
       </div>
-
-      {/* Offer Modal */}
-      {selectedOffer && (
-        <div className="fixed inset-0 bg-gray-900/30 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex justify-between items-start mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">Tarjouksen tiedot</h2>
-                <button
-                  onClick={handleCloseOfferModal}
-                  className="text-gray-500 hover:text-gray-700"
-                >
-                  <FaTimes className="h-6 w-6" />
-                </button>
-              </div>
-
-              <div className="space-y-6">
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Perustiedot</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-gray-600">Tila</p>
-                      <p className="text-lg font-medium text-gray-900">{selectedOffer.status}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600">Päivämäärä</p>
-                      <p className="text-lg font-medium text-gray-900">
-                        {new Date(selectedOffer.timestamp).toLocaleDateString('fi-FI')}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Tarjouksen sisältö</h3>
-                  <div className="space-y-4">
-                    <div className="flex items-center">
-                      <FaEuroSign className="h-5 w-5 text-gray-500 mr-2" />
-                      <div>
-                        <p className="text-sm text-gray-600">Hinta</p>
-                        <p className="text-lg font-medium text-gray-900">{selectedOffer.offerData.price} €</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start">
-                      <FaFileAlt className="h-5 w-5 text-gray-500 mr-2 mt-1" />
-                      <div>
-                        <p className="text-sm text-gray-600">Kuvaus</p>
-                        <p className="text-lg text-gray-900">{selectedOffer.offerData.description}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {selectedOffer.offerData.pdfFile && (
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Liitetiedosto</h3>
-                    <a
-                      href={`data:${selectedOffer.offerData.pdfFile.mimetype};base64,${selectedOffer.offerData.pdfFile.buffer}`}
-                      download={selectedOffer.offerData.pdfFile.filename}
-                      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                    >
-                      Lataa PDF
-                    </a>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

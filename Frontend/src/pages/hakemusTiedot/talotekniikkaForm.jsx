@@ -4,27 +4,32 @@ import { useTranslation } from 'react-i18next';
 export const TalotekniikkaForm = ({ formData, setFormData, validationErrors }) => {
   const { t } = useTranslation();
   const [showDetails, setShowDetails] = useState({
-    muuTekniikka: false,
-    muuTarjous: false
+    interestedInOther: false,
+    wantsInOfferOther: false
   });
 
+  // Use translation keys for all options
   const technicalOptions = [
-    "Automaatio",
-    "Älykoti",
-    "Valaistus",
-    "Turvajärjestelmä",
-    "Ilmanvaihto",
-    "Sähköjärjestelmä",
-    t('form.options.other')
+    "homeAutomation",
+    "solarElectricity",
+    "evCharging",
+    "securitySystem",
+    "other"
+  ];
+
+  const quoteOptions = [
+    "hvac",
+    "electrical",
+    "other"
   ];
 
   // Initialize showDetails based on formData when component mounts or formData changes
   useEffect(() => {
     setShowDetails({
-      muuTekniikka: (formData.talotekniikka || []).includes(t('form.options.other')),
-      muuTarjous: (formData.tarjous || []).includes(t('form.options.other'))
+      interestedInOther: (formData.interestedIn || []).includes(t('form.options.other')),
+      wantsInOfferOther: (formData.wantsInOffer || []).includes(t('form.options.other'))
     });
-  }, [formData.talotekniikka, formData.tarjous, t]);
+  }, [formData.interestedIn, formData.wantsInOffer, t]);
 
   const handleCheckboxChange = (field, value) => {
     const currentValues = formData[field] || [];
@@ -36,7 +41,7 @@ export const TalotekniikkaForm = ({ formData, setFormData, validationErrors }) =
         setFormData({
           ...formData,
           [field]: newValues,
-          [`${field}Muu`]: ""
+          [`${field}Other`]: ""
         });
       } else {
         newValues = [...currentValues, value];
@@ -59,7 +64,7 @@ export const TalotekniikkaForm = ({ formData, setFormData, validationErrors }) =
 
     setShowDetails(prev => ({
       ...prev,
-      [`muu${field.charAt(0).toUpperCase() + field.slice(1)}`]: newValues.includes(t('form.options.other'))
+      [`${field}Other`]: newValues.includes(t('form.options.other'))
     }));
   };
 
@@ -72,42 +77,45 @@ export const TalotekniikkaForm = ({ formData, setFormData, validationErrors }) =
       {/* Talotekniikka */}
       <div className="space-y-4">
         <label className="block text-lg font-medium text-gray-700">
-          {t('form.fields.technicalFeatures')} *
-          {validationErrors.talotekniikka && (
-            <span className="text-red-500 text-sm ml-2">{validationErrors.talotekniikka}</span>
+          {t('form.fields.interestedIn')} *
+          {validationErrors.interestedIn && (
+            <span className="text-red-500 text-sm ml-2">{validationErrors.interestedIn}</span>
           )}
         </label>
         <div className="space-y-3">
-          {technicalOptions.map((option) => (
-            <div key={option} className="flex items-start">
-              <div className="flex items-center h-5">
-                <input
-                  type="checkbox"
-                  id={`tekniikka-${option}`}
-                  name="talotekniikka"
-                  value={option}
-                  checked={formData.talotekniikka?.includes(option) || false}
-                  onChange={(e) => handleCheckboxChange("talotekniikka", e.target.value)}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
+          {technicalOptions.map((key) => {
+            const label = key === "other" ? t('form.options.other') : t(`form.technicalOptions.${key}`);
+            return (
+              <div key={key} className="flex items-start">
+                <div className="flex items-center h-5">
+                  <input
+                    type="checkbox"
+                    id={`interestedIn-${key}`}
+                    name="interestedIn"
+                    value={key}
+                    checked={formData.interestedIn?.includes(key) || false}
+                    onChange={(e) => handleCheckboxChange("interestedIn", e.target.value)}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                </div>
+                <div className="ml-3 text-sm">
+                  <label htmlFor={`interestedIn-${key}`} className="font-medium text-gray-700">
+                    {label}
+                  </label>
+                </div>
               </div>
-              <div className="ml-3 text-sm">
-                <label htmlFor={`tekniikka-${option}`} className="font-medium text-gray-700">
-                  {option}
-                </label>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
-        {showDetails.muuTekniikka && (
+        {showDetails.interestedInOther && (
           <div className="mt-3">
             <input
               type="text"
-              placeholder={t('form.fields.technicalFeaturesOther')}
+              placeholder={t('form.fields.interestedInOther')}
               className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3 border"
-              value={formData.talotekniikkaMuu || ""}
+              value={formData.interestedInOther || ""}
               onChange={(e) =>
-                setFormData({ ...formData, talotekniikkaMuu: e.target.value })
+                setFormData({ ...formData, interestedInOther: e.target.value })
               }
             />
           </div>
@@ -117,43 +125,44 @@ export const TalotekniikkaForm = ({ formData, setFormData, validationErrors }) =
       {/* Tarjous */}
       <div className="space-y-4">
         <label className="block text-lg font-medium text-gray-700">
-          {t('form.fields.quote')} *
-          {validationErrors.tarjous && (
-            <span className="text-red-500 text-sm ml-2">{validationErrors.tarjous}</span>
+          {t('form.fields.wantsInOffer')} *
+          {validationErrors.wantsInOffer && (
+            <span className="text-red-500 text-sm ml-2">{validationErrors.wantsInOffer}</span>
           )}
         </label>
         <div className="space-y-3">
-          {["Kokonaisratkaisu", "Osaratkaisu", t('form.options.other')].map((option) => (
-            <div key={option} className="flex items-start">
-              <div className="flex items-center h-5">
-                <input
-                  type="checkbox"
-                  id={`tarjous-${option}`}
-                  name="tarjous"
-                  value={option}
-                  checked={formData.tarjous?.includes(option) || false}
-                  onChange={(e) => handleCheckboxChange("tarjous", e.target.value)}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
+          {quoteOptions.map((key) => {
+            const label = key === "other" ? t('form.options.other') : t(`form.quoteOptions.${key}`);
+            return (
+              <div key={key} className="flex items-start">
+                <div className="flex items-center h-5">
+                  <input
+                    type="checkbox"
+                    id={`wantsInOffer-${key}`}
+                    name="wantsInOffer"
+                    value={key}
+                    checked={formData.wantsInOffer?.includes(key) || false}
+                    onChange={(e) => handleCheckboxChange("wantsInOffer", e.target.value)}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                </div>
+                <div className="ml-3 text-sm">
+                  <label htmlFor={`wantsInOffer-${key}`} className="font-medium text-gray-700">
+                    {label}
+                  </label>
+                </div>
               </div>
-              <div className="ml-3 text-sm">
-                <label htmlFor={`tarjous-${option}`} className="font-medium text-gray-700">
-                  {option}
-                </label>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
-        {showDetails.muuTarjous && (
+        {showDetails.wantsInOfferOther && (
           <div className="mt-3">
             <input
               type="text"
-              placeholder={t('form.fields.quoteOther')}
+              placeholder={t('form.fields.wantsInOfferOther')}
               className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3 border"
-              value={formData.tarjousMuu || ""}
-              onChange={(e) =>
-                setFormData({ ...formData, tarjousMuu: e.target.value })
-              }
+              value={formData.wantsInOfferOther || ""}
+              onChange={(e) => setFormData({ ...formData, wantsInOfferOther: e.target.value })}
             />
           </div>
         )}
@@ -167,8 +176,8 @@ export const TalotekniikkaForm = ({ formData, setFormData, validationErrors }) =
         <textarea
           className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3 border"
           rows="4"
-          value={formData.muuTieto || ""}
-          onChange={(e) => setFormData({ ...formData, muuTieto: e.target.value })}
+          value={formData.otherInfo || ""}
+          onChange={(e) => setFormData({ ...formData, otherInfo: e.target.value })}
           placeholder={t('form.options.enterDetails')}
         />
       </div>

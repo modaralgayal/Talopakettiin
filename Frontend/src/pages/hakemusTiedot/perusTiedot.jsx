@@ -28,15 +28,16 @@ export const PerustiedotForm = ({
   setFormData,
   validationErrors,
 }) => {
+  //console.log("These are the validationErrors: ", validationErrors)
   const { t } = useTranslation();
 
   // Initialize all possible fields in formData
   const initialDetailsState = {
-    kodinhoitohuone: false,
-    arkieteinen: false,
-    terassi: false,
-    autokatos: false,
-    autotalli: false,
+    utilityRoom: false,
+    mudroom: false,
+    terrace: false,
+    carport: false,
+    garage: false,
   };
 
   const [showDetails, setShowDetails] = useState(initialDetailsState);
@@ -44,18 +45,18 @@ export const PerustiedotForm = ({
   // Initialize showDetails based on formData when component mounts or formData changes
   useEffect(() => {
     setShowDetails({
-      kodinhoitohuone: formData.kodinhoitohuone === t("form.options.yes"),
-      arkieteinen: formData.arkieteinen === t("form.options.yes"),
-      terassi: formData.terassi === t("form.options.yes"),
-      autokatos: formData.autokatos === t("form.options.yes"),
-      autotalli: formData.autotalli === t("form.options.yes"),
+      utilityRoom: formData.utilityRoom === t("form.options.yes"),
+      mudroom: formData.mudroom === t("form.options.yes"),
+      terrace: formData.terrace === t("form.options.yes"),
+      carport: formData.carport === t("form.options.yes"),
+      garage: formData.garage === t("form.options.yes"),
     });
   }, [
-    formData.kodinhoitohuone,
-    formData.arkieteinen,
-    formData.terassi,
-    formData.autokatos,
-    formData.autotalli,
+    formData.utilityRoom,
+    formData.mudroom,
+    formData.terrace,
+    formData.carport,
+    formData.garage,
     t,
   ]);
 
@@ -85,14 +86,14 @@ export const PerustiedotForm = ({
       const min = field === "minBudget" ? numValue : formData.minBudget;
       const max = field === "maxBudget" ? numValue : formData.maxBudget;
       const formattedRange = min && max ? `${min} € - ${max} €` : "";
-      setFormData((prev) => ({ ...prev, budjetti: formattedRange }));
+      setFormData((prev) => ({ ...prev, budget: formattedRange }));
     }
 
     if (field === "minSize" || field === "maxSize") {
       const min = field === "minSize" ? numValue : formData.minSize;
       const max = field === "maxSize" ? numValue : formData.maxSize;
       const formattedRange = min && max ? `${min} m² - ${max} m²` : "";
-      setFormData((prev) => ({ ...prev, talonKoko: formattedRange }));
+      setFormData((prev) => ({ ...prev, houseSize: formattedRange }));
     }
   };
 
@@ -105,24 +106,24 @@ export const PerustiedotForm = ({
   const radioFields = [
     {
       label: t("form.fields.utilityRoom").split(" ")[0],
-      field: "kodinhoitohuone",
+      field: "utilityRoom",
     },
-    { label: t("form.fields.mudroom"), field: "arkieteinen" },
-    { label: t("form.fields.terrace"), field: "terassi" },
+    { label: t("form.fields.mudroom"), field: "mudroom" },
+    { label: t("form.fields.terrace"), field: "terrace" },
   ];
 
   const garageFields = [
-    { label: t("form.fields.carport"), field: "autokatos" },
-    { label: t("form.fields.garage"), field: "autotalli" },
+    { label: t("form.fields.carport"), field: "carport" },
+    { label: t("form.fields.garage"), field: "garage" },
   ];
 
   // Map Finnish details field names to English translation keys for translation
   const detailsFieldTranslationMap = {
-    kodinhoitohuoneDetails: "utilityRoomDetails",
-    arkieteinenDetails: "mudroomDetails",
-    terassiDetails: "terraceDetails",
-    autokatosDetails: "carportDetails",
-    autotalliDetails: "garageDetails",
+    utilityRoomDetails: "utilityRoomDetails",
+    mudroomDetails: "mudroomDetails",
+    terraceDetails: "terraceDetails",
+    carportDetails: "carportDetails",
+    garageDetails: "garageDetails",
   };
 
   return (
@@ -133,20 +134,20 @@ export const PerustiedotForm = ({
 
       {/* City (Required) */}
       <div>
-        <label className="block text-lg font-medium text-gray-700">
+        <label className="block text-lg font-medium text-gray-700" >
           {t("form.fields.city")} *
-          {validationErrors.kaupunki && (
+          {validationErrors.city && (
             <span className="text-red-500 text-sm ml-2">
-              {validationErrors.kaupunki}
+              {validationErrors.city}
             </span>
           )}
         </label>
         <select
           className={`w-full p-3 border rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 ${
-            validationErrors.kaupunki ? "border-red-500" : ""
+            validationErrors.city ? "border-red-500" : ""
           }`}
-          value={formData.kaupunki || ""}
-          onChange={(e) => handleTextInput("kaupunki", e.target.value)}
+          value={formData.city || ""}
+          onChange={(e) => handleTextInput("city", e.target.value)}
           required
         >
           <option value="">{t("form.options.selectCity")}</option>
@@ -162,18 +163,18 @@ export const PerustiedotForm = ({
       <div>
         <label className="block text-lg font-medium text-gray-700">
           {t("form.fields.province")} *
-          {validationErrors.maakunta && (
+          {validationErrors.province && (
             <span className="text-red-500 text-sm ml-2">
-              {validationErrors.maakunta}
+              {validationErrors.province}
             </span>
           )}
         </label>
         <select
           className={`w-full p-3 border rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 ${
-            validationErrors.maakunta ? "border-red-500" : ""
+            validationErrors.province ? "border-red-500" : ""
           }`}
-          value={formData.maakunta || ""}
-          onChange={(e) => handleTextInput("maakunta", e.target.value)}
+          value={formData.province || ""}
+          onChange={(e) => handleTextInput("province", e.target.value)}
           required
         >
           <option value="">{t("form.options.selectProvince")}</option>
@@ -185,56 +186,70 @@ export const PerustiedotForm = ({
         </select>
       </div>
 
-      {/* Budget */}
+      {/* Budget (Required) */}
       <div>
         <label className="block text-lg font-medium text-gray-700">
-          {t("form.fields.budget")}
+          {t("form.fields.budget")} *
+          {validationErrors.budget && (
+            <span className="text-red-500 text-sm ml-2">
+              {validationErrors.budget}
+            </span>
+          )}
         </label>
         <div className="flex gap-2">
           <input
             type="number"
             placeholder="Min €"
-            className="w-1/2 p-3 border rounded-lg"
+            className={`w-1/2 p-3 border rounded-lg ${validationErrors.budget ? 'border-red-500' : ''}`}
             value={formData.minBudget ?? ""}
             onChange={(e) => handleNumberInput("minBudget", e.target.value)}
             min="0"
             step={1000}
+            required
           />
           <input
             type="number"
             placeholder="Max €"
-            className="w-1/2 p-3 border rounded-lg"
+            className={`w-1/2 p-3 border rounded-lg ${validationErrors.budget ? 'border-red-500' : ''}`}
             value={formData.maxBudget ?? ""}
             onChange={(e) => handleNumberInput("maxBudget", e.target.value)}
             min={formData.minBudget || "0"}
             step={1000}
+            required
           />
         </div>
       </div>
 
-      {/* House Size */}
+      {/* House Size (Required) */}
       <div>
         <label className="block text-lg font-medium text-gray-700">
-          {t("form.fields.houseSize")}
+          {t("form.fields.houseSize")} *
+          {validationErrors.houseSize && (
+            <span className="text-red-500 text-sm ml-2">
+              {validationErrors.houseSize}
+            </span>
+          )}
         </label>
         <div className="flex gap-2">
           <input
             type="number"
             placeholder="Min m²"
-            className="w-1/2 p-3 border rounded-lg"
+            className={`w-1/2 p-3 border rounded-lg ${validationErrors.houseSize ? 'border-red-500' : ''}`}
             value={formData.minSize ?? ""}
             onChange={(e) => handleNumberInput("minSize", e.target.value)}
             min="0"
             step={5}
+            required
           />
           <input
             type="number"
             placeholder="Max m²"
-            className="w-1/2 p-3 border rounded-lg"
+            className={`w-1/2 p-3 border rounded-lg ${validationErrors.houseSize ? 'border-red-500' : ''}`}
             value={formData.maxSize ?? ""}
             onChange={(e) => handleNumberInput("maxSize", e.target.value)}
             min={formData.minSize || "0"}
             step={5}
+            required
           />
         </div>
       </div>
@@ -341,7 +356,7 @@ export const PerustiedotForm = ({
               <div className="flex gap-2 mt-2">
                 <input
                   type="number"
-                  placeholder="Min koko (m²)"
+                  placeholder={t("form.options.minSize")}
                   className="w-1/2 p-3 border rounded-lg"
                   value={formData[`${field}Min`] ?? ""}
                   onChange={(e) =>
