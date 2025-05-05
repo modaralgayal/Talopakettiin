@@ -20,6 +20,7 @@ const MakeOffer = () => {
   const location = useLocation();
   const applicationId = location.state?.id;
   console.log("This is the application: ", applicationId);
+  console.log("This is the offerData: ", offerData)
 
   // Define the order of sections
   const sectionOrder = [
@@ -86,15 +87,27 @@ const MakeOffer = () => {
     setSuccess(false);
 
     try {
-      // Ensure offerData.entryId is set to the application being offered to
+      // Ensure offerData.entryId and customerEmail are set to the application being offered to
       let updatedOfferData = { ...offerData };
+      console.log("Updated offer data:", updatedOfferData);
+
+      // Ensure entryId is set
       if (
         !updatedOfferData.entryId &&
         updatedOfferData.formData &&
         updatedOfferData.formData.entryId
       ) {
+        updatedOfferData.entryId = updatedOfferData.formData.entryId;
+      }
+      if (!updatedOfferData.entryId && applicationId) {
         updatedOfferData.entryId = applicationId;
       }
+
+      // Ensure customerEmail is set
+      if (!updatedOfferData.customerEmail && updatedOfferData.formData) {
+        updatedOfferData.customerEmail = updatedOfferData.formData.customerEmail || updatedOfferData.formData.email || "";
+      }
+
       await sendOffer(updatedOfferData, pdfFile);
       setSuccess(true);
       setTimeout(() => {

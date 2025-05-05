@@ -1,13 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getAllEntries } from "../controllers/formController";
+import {
+  getAllEntries,
+  getOffersForProvider,
+} from "../controllers/formController";
 import { useOfferContext } from "../context/offerContext";
-import { FaSearch, FaMapMarkerAlt, FaBuilding, FaEuroSign, FaRuler } from "react-icons/fa";
+import {
+  FaSearch,
+  FaMapMarkerAlt,
+  FaBuilding,
+  FaEuroSign,
+  FaRuler,
+  FaCheck,
+} from "react-icons/fa";
 
 export const ViewCustomerApplications = () => {
   const [applications, setApplications] = useState([]);
   const [openedAppIndex, setOpenedAppIndex] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [offers, setOffers] = useState([]);
   const navigate = useNavigate();
 
   const { updateOfferData } = useOfferContext();
@@ -16,43 +27,62 @@ export const ViewCustomerApplications = () => {
     {
       title: "Perustiedot",
       fields: [
-        "city", "province", "budget", "houseSize", "bedrooms",
-        "utilityRoom", "utilityRoomDetails", "mudroom", "mudroomDetails",
-        "terrace", "terraceDetails", "carport", "carportDetails",
-        "garage", "garageDetails"
+        "city",
+        "province",
+        "budget",
+        "houseSize",
+        "bedrooms",
+        "utilityRoom",
+        "utilityRoomDetails",
+        "mudroom",
+        "mudroomDetails",
+        "terrace",
+        "terraceDetails",
+        "carport",
+        "carportDetails",
+        "garage",
+        "garageDetails",
       ],
     },
     {
       title: "Ulkopuoli",
-      fields: [
-        "houseMaterial", "houseMaterialOther", "roof", "roofOther"
-      ],
+      fields: ["houseMaterial", "houseMaterialOther", "roof", "roofOther"],
     },
     {
       title: "Sisäpuoli",
       fields: [
-        "floor", "floorDetails", "interiorWalls", "interiorWallsDetails",
-        "ceiling", "ceilingDetails"
+        "floor",
+        "floorDetails",
+        "interiorWalls",
+        "interiorWallsDetails",
+        "ceiling",
+        "ceilingDetails",
       ],
     },
     {
       title: "Lämmitys",
       fields: [
-        "heatingType", "heatingTypeOther", "fireplace", "fireplaceHeatStorage",
-        "bakingOven", "bakingOvenDetails", "otherInfoIndoor"
+        "heatingType",
+        "heatingTypeOther",
+        "fireplace",
+        "fireplaceHeatStorage",
+        "bakingOven",
+        "bakingOvenDetails",
+        "otherInfoIndoor",
       ],
     },
     {
       title: "Talotekniikka",
       fields: [
-        "interestedIn", "interestedInOther", "wantsInOffer", "wantsInOfferOther"
+        "interestedIn",
+        "interestedInOther",
+        "wantsInOffer",
+        "wantsInOfferOther",
       ],
     },
     {
       title: "Omat Tiedot",
-      fields: [
-        "customerStatus", "additionalInfo"
-      ],
+      fields: ["customerStatus", "additionalInfo"],
     },
   ];
 
@@ -63,6 +93,22 @@ export const ViewCustomerApplications = () => {
         setApplications(response.entries || []);
       })
       .catch((error) => console.log(error));
+  }, []);
+
+  useEffect(() => {
+    getOffersForProvider()
+      .then((response) => {
+        console.log("Offers response:", response.data);
+        const offersData = Array.isArray(response.data?.offers)
+          ? response.data.offers
+          : [];
+        console.log("Offers data:", offersData);
+        setOffers(offersData);
+      })
+      .catch((error) => {
+        console.error("Error fetching offers:", error);
+        setOffers([]);
+      });
   }, []);
 
   const parseValue = (val) => {
@@ -102,18 +148,27 @@ export const ViewCustomerApplications = () => {
     setOpenedAppIndex(index === openedAppIndex ? null : index);
   };
 
-  const handleOffer = (userId, entryId, formData) => {
+  const handleOffer = (customerEmail, entryId, formData) => {
     updateOfferData({
-      userId,
       entryId,
       formData,
       price: "",
       firmName: "",
       description: "",
       providerEmail: "",
+      customerEmail: customerEmail,
+      userType: "provider",
     });
-    console.log(formData);
+    console.log("Form data: ", formData);
     navigate("/makeoffer", { state: { id: entryId } });
+  };
+
+  const hasOffer = (entryId) => {
+    if (!Array.isArray(offers)) {
+      console.warn("offers is not an array:", offers);
+      return false;
+    }
+    return offers.some((offer) => offer && offer.entryId === entryId);
   };
 
   return (
@@ -161,7 +216,9 @@ export const ViewCustomerApplications = () => {
               >
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-xl font-semibold text-gray-900">{city}</h2>
+                    <h2 className="text-xl font-semibold text-gray-900">
+                      {city}
+                    </h2>
                     <span className="px-3 py-1 text-sm font-medium rounded-full bg-blue-100 text-blue-800">
                       {app.status}
                     </span>
@@ -187,15 +244,29 @@ export const ViewCustomerApplications = () => {
                       onClick={() => handleToggle(index)}
                       className="text-blue-600 hover:text-blue-800 text-sm font-medium"
                     >
-                      {openedAppIndex === index ? "Piilota tiedot" : "Näytä tiedot"}
+                      {openedAppIndex === index
+                        ? "Piilota tiedot"
+                        : "Näytä tiedot"}
                     </button>
-                    <button
-                      onClick={() => handleOffer(app.userId, app.entryId, formData)}
-                      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                    >
-                      <FaBuilding className="h-4 w-4 mr-2" />
-                      Tee tarjous
-                    </button>
+                    {hasOffer(app.id) ? (
+                      <button
+                        disabled
+                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 cursor-not-allowed"
+                      >
+                        <FaCheck className="h-4 w-4 mr-2" />
+                        Tarjous tehty
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() =>
+                          handleOffer(app.customerEmail, app.id, formData)
+                        }
+                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      >
+                        <FaBuilding className="h-4 w-4 mr-2" />
+                        Tee tarjous
+                      </button>
+                    )}
                   </div>
                 </div>
 
@@ -203,16 +274,27 @@ export const ViewCustomerApplications = () => {
                 {openedAppIndex === index && (
                   <div className="border-t border-gray-200 p-6 bg-gray-50">
                     {sectionOrder.map((section) => {
-                      const sectionFields = section.fields.filter((field) => formData[field]);
+                      const sectionFields = section.fields.filter(
+                        (field) => formData[field]
+                      );
                       if (sectionFields.length === 0) return null;
                       return (
                         <div key={section.title} className="mb-6">
-                          <h4 className="text-lg font-semibold text-gray-900 mb-3">{section.title}</h4>
+                          <h4 className="text-lg font-semibold text-gray-900 mb-3">
+                            {section.title}
+                          </h4>
                           <div className="flex flex-col space-y-2 w-full">
                             {sectionFields.map((field) => (
-                              <div key={field} className="text-sm flex justify-between border-b pb-1">
-                                <span className="font-medium text-gray-700">{field}:</span>
-                                <span className="text-gray-600">{formData[field]}</span>
+                              <div
+                                key={field}
+                                className="text-sm flex justify-between border-b pb-1"
+                              >
+                                <span className="font-medium text-gray-700">
+                                  {field}:
+                                </span>
+                                <span className="text-gray-600">
+                                  {formData[field]}
+                                </span>
                               </div>
                             ))}
                           </div>
@@ -228,9 +310,7 @@ export const ViewCustomerApplications = () => {
 
         {filteredApplications.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-600 text-lg">
-              Ei hakemuksia näytettäväksi
-            </p>
+            <p className="text-gray-600 text-lg">Ei hakemuksia näytettäväksi</p>
           </div>
         )}
       </div>
