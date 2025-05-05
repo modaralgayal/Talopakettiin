@@ -9,6 +9,7 @@ import {
   FaRuler,
 } from "react-icons/fa";
 import { sendOffer } from "../controllers/offerController";
+import { useTranslation } from "react-i18next";
 
 const MakeOffer = () => {
   const { offerData, updateOfferData } = useOfferContext();
@@ -21,7 +22,8 @@ const MakeOffer = () => {
   const applicationId = location.state?.id;
   console.log("This is the application: ", applicationId);
   console.log("This is the offerData: ", offerData)
-
+  const { t } = useTranslation()
+ 
   // Define the order of sections
  // Example for both files:
 const sectionOrder = [
@@ -190,7 +192,7 @@ const sectionOrder = [
                       return (
                         <div key={field} className="bg-gray-50 p-4 rounded-lg">
                           <span className="block text-lg font-medium text-gray-700 mb-1">
-                            {field}
+                            {t(`form.fields.${field}`)}
                           </span>
                           <span className="text-lg text-gray-600">
                             {formatFieldValue(field, value)}
