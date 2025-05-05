@@ -73,6 +73,8 @@ export const ApplicationForm = (prop) => {
       if (data.success) {
         setShowGoogleSignInPrompt(false); // close popup after success
         await handleSubmit();
+        // Redirect to dashboard after successful submission
+        window.location.href = "/viewmyapplications";
       } else {
         setError(data.error || "Failed to sign in with Google");
       }
