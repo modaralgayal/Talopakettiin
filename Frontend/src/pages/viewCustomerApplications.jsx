@@ -13,7 +13,7 @@ import {
   FaRuler,
   FaCheck,
 } from "react-icons/fa";
-
+import { useTranslation } from "react-i18next";
 export const ViewCustomerApplications = () => {
   const [applications, setApplications] = useState([]);
   const [openedAppIndex, setOpenedAppIndex] = useState(null);
@@ -23,69 +23,53 @@ export const ViewCustomerApplications = () => {
 
   const { updateOfferData } = useOfferContext();
 
-  const sectionOrder = [
-    {
-      title: "Perustiedot",
-      fields: [
-        "city",
-        "province",
-        "budget",
-        "houseSize",
-        "bedrooms",
-        "utilityRoom",
-        "utilityRoomDetails",
-        "mudroom",
-        "mudroomDetails",
-        "terrace",
-        "terraceDetails",
-        "carport",
-        "carportDetails",
-        "garage",
-        "garageDetails",
-      ],
-    },
-    {
-      title: "Ulkopuoli",
-      fields: ["houseMaterial", "houseMaterialOther", "roof", "roofOther"],
-    },
-    {
-      title: "Sisäpuoli",
-      fields: [
-        "floor",
-        "floorDetails",
-        "interiorWalls",
-        "interiorWallsDetails",
-        "ceiling",
-        "ceilingDetails",
-      ],
-    },
-    {
-      title: "Lämmitys",
-      fields: [
-        "heatingType",
-        "heatingTypeOther",
-        "fireplace",
-        "fireplaceHeatStorage",
-        "bakingOven",
-        "bakingOvenDetails",
-        "otherInfoIndoor",
-      ],
-    },
-    {
-      title: "Talotekniikka",
-      fields: [
-        "interestedIn",
-        "interestedInOther",
-        "wantsInOffer",
-        "wantsInOfferOther",
-      ],
-    },
-    {
-      title: "Omat Tiedot",
-      fields: ["customerStatus", "additionalInfo"],
-    },
-  ];
+  const { t } = useTranslation();
 
+// Example for both files:
+const sectionOrder = [
+  {
+    title: "Perustiedot",
+    fields: [
+      "city", "province", "budget", "houseSize", "bedrooms",
+      "utilityRoom", "utilityRoomDetails", "mudroom", "mudroomDetails",
+      "terrace", "terraceDetails", "carport", "carportDetails",
+      "garage", "garageDetails"
+    ],
+  },
+  {
+    title: "Ulkopuoli",
+    fields: [
+      "houseMaterial", "houseMaterialOther", "roof", "roofOther"
+    ],
+  },
+  {
+    title: "Sisäpuoli",
+    fields: [
+      "floor", "floorDetails", "interiorWalls", "interiorWallsDetails",
+      "ceiling", "ceilingDetails"
+    ],
+  },
+  {
+    title: "Lämmitys",
+    fields: [
+      "heatingType", "heatingTypeOther", "fireplace", "fireplaceHeatStorage",
+      "directElectricHeating", // <-- add this
+      "bakingOven", "bakingOvenDetails", "otherInfoIndoor"
+    ],
+  },
+  {
+    title: "Talotekniikka",
+    fields: [
+      "interestedIn", "interestedInOther", "wantsInOffer", "wantsInOfferOther"
+    ],
+  },
+  {
+    title: "Omat Tiedot",
+    fields: [
+      "customerStatus", "hasPlot", "additionalInfo" // <-- add hasPlot
+    ],
+  },
+];
   useEffect(() => {
     getAllEntries()
       .then((response) => {
@@ -290,7 +274,7 @@ export const ViewCustomerApplications = () => {
                                 className="text-sm flex justify-between border-b pb-1"
                               >
                                 <span className="font-medium text-gray-700">
-                                  {field}:
+                                  {t(`form.fields.${field}`)}:
                                 </span>
                                 <span className="text-gray-600">
                                   {formData[field]}

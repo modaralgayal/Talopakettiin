@@ -23,49 +23,51 @@ const MakeOffer = () => {
   console.log("This is the offerData: ", offerData)
 
   // Define the order of sections
-  const sectionOrder = [
-    {
-      title: "Perustiedot",
-      fields: [
-        "city", "province", "budget", "houseSize", "bedrooms",
-        "utilityRoom", "utilityRoomDetails", "mudroom", "mudroomDetails",
-        "terrace", "terraceDetails", "carport", "carportDetails",
-        "garage", "garageDetails"
-      ],
-    },
-    {
-      title: "Ulkopuoli",
-      fields: [
-        "houseMaterial", "houseMaterialOther", "roof", "roofOther"
-      ],
-    },
-    {
-      title: "Sisäpuoli",
-      fields: [
-        "floor", "floorDetails", "interiorWalls", "interiorWallsDetails",
-        "ceiling", "ceilingDetails"
-      ],
-    },
-    {
-      title: "Lämmitys",
-      fields: [
-        "heatingType", "heatingTypeOther", "fireplace", "fireplaceHeatStorage",
-        "bakingOven", "bakingOvenDetails", "otherInfoIndoor"
-      ],
-    },
-    {
-      title: "Talotekniikka",
-      fields: [
-        "interestedIn", "interestedInOther", "wantsInOffer", "wantsInOfferOther"
-      ],
-    },
-    {
-      title: "Omat Tiedot",
-      fields: [
-        "customerStatus", "additionalInfo"
-      ],
-    },
-  ];
+ // Example for both files:
+const sectionOrder = [
+  {
+    title: "Perustiedot",
+    fields: [
+      "city", "province", "budget", "houseSize", "bedrooms",
+      "utilityRoom", "utilityRoomDetails", "mudroom", "mudroomDetails",
+      "terrace", "terraceDetails", "carport", "carportDetails",
+      "garage", "garageDetails"
+    ],
+  },
+  {
+    title: "Ulkopuoli",
+    fields: [
+      "houseMaterial", "houseMaterialOther", "roof", "roofOther"
+    ],
+  },
+  {
+    title: "Sisäpuoli",
+    fields: [
+      "floor", "floorDetails", "interiorWalls", "interiorWallsDetails",
+      "ceiling", "ceilingDetails"
+    ],
+  },
+  {
+    title: "Lämmitys",
+    fields: [
+      "heatingType", "heatingTypeOther", "fireplace", "fireplaceHeatStorage",
+      "directElectricHeating", // <-- add this
+      "bakingOven", "bakingOvenDetails", "otherInfoIndoor"
+    ],
+  },
+  {
+    title: "Talotekniikka",
+    fields: [
+      "interestedIn", "interestedInOther", "wantsInOffer", "wantsInOfferOther"
+    ],
+  },
+  {
+    title: "Omat Tiedot",
+    fields: [
+      "customerStatus", "hasPlot", "additionalInfo" // <-- add hasPlot
+    ],
+  },
+];
 
   // Function to format field values
   const formatFieldValue = (key, value) => {
