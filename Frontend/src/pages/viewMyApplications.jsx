@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { getUserForms, deleteUserEntry } from "../controllers/formController";
-import { FaTrash, FaChevronDown, FaChevronUp, FaExclamationTriangle } from "react-icons/fa";
+import { FaTrash, FaChevronDown, FaChevronUp, FaExclamationTriangle, FaEdit } from "react-icons/fa";
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from "react-router-dom";
 
 export const MyApplications = () => {
   const [applications, setApplications] = useState([]);
@@ -14,11 +15,12 @@ export const MyApplications = () => {
     kaupunki: null
   });
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const fetchApplications = async () => {
     try {
       const response = await getUserForms();
-      console.log("Fetched applications:", response);
+      //console.log("Fetched applications:", response);
       
       // Ensure each application has a unique ID and valid entryId
       const uniqueApplications = response.map((app, index) => {
@@ -30,7 +32,7 @@ export const MyApplications = () => {
         };
       });
       
-      console.log("Processed applications with unique IDs:", uniqueApplications);
+      //console.log("Processed applications with unique IDs:", uniqueApplications);
       setApplications(uniqueApplications);
     } catch (error) {
       console.error("Error fetching applications:", error);
@@ -215,6 +217,42 @@ export const MyApplications = () => {
         );
       }
 
+      // Handle fireplaceHeatStorage and directElectricHeating with translation
+      if (["fireplaceHeatStorage", "directElectricHeating"].includes(key)) {
+        let displayValue = "-";
+        if (value) {
+          const translated = t(`form.options.${value}`);
+          displayValue = translated !== `form.options.${value}` ? translated : value;
+        }
+        return (
+          <div
+            key={`${sectionTitle}-${key}`}
+            className="flex justify-between items-center py-2 border-b"
+          >
+            <span className="font-medium">{label}:</span>
+            <span className="text-gray-700">{displayValue}</span>
+          </div>
+        );
+      }
+
+      // Handle hasPlot with translation
+      if (key === "hasPlot") {
+        let displayValue = "-";
+        if (value) {
+          const translated = t(`form.options.${value}`);
+          displayValue = translated !== `form.options.${value}` ? translated : value;
+        }
+        return (
+          <div
+            key={`${sectionTitle}-${key}`}
+            className="flex justify-between items-center py-2 border-b"
+          >
+            <span className="font-medium">{label}:</span>
+            <span className="text-gray-700">{displayValue}</span>
+          </div>
+        );
+      }
+
       // Handle other fields (city, province, budget, etc.)
       const displayValue = value || "-";
       return (
@@ -278,6 +316,7 @@ export const MyApplications = () => {
         "heatingTypeOther",
         "fireplace",
         "fireplaceHeatStorage",
+        "directElectricHeating",
         "bakingOven",
         "bakingOvenDetails",
         "otherInfoIndoor",
@@ -296,6 +335,7 @@ export const MyApplications = () => {
       title: t("form.steps.personalInfo"),
       fields: [
         "customerStatus",
+        "hasPlot",
         "additionalInfo",
       ],
     },
@@ -394,6 +434,15 @@ export const MyApplications = () => {
                           ) : (
                             <FaChevronDown className="h-5 w-5" />
                           )}
+                        </button>
+                        <button
+                          onClick={() => {
+                            navigate("/formpage", { state: { formData, id: application.id, entryId: application.entryId, edit: true } });
+                          }}
+                          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-colors"
+                        >
+                          <FaEdit className="h-4 w-4" />
+                          <span>Edit</span>
                         </button>
                         <button
                           onClick={() => handleDeleteClick(application.id, kaupunki)}

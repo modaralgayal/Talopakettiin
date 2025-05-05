@@ -83,6 +83,7 @@ export const UlkopuoliForm = ({ formData, setFormData, validationErrors }) => {
             t("form.options.timber"),
             t("form.options.CLT"),
             t("form.options.concrete"),
+            t("form.options.noPreference"),
             t("form.options.otherWhat"),
           ].map((option) => (
             <option key={option} value={option}>
@@ -127,6 +128,7 @@ export const UlkopuoliForm = ({ formData, setFormData, validationErrors }) => {
             t("form.options.metalRoof"),
             t("form.options.brick"),
             t("form.options.felt"),
+            t("form.options.noPreference"),
             t("form.options.otherWhat"),
           ].map((option) => (
             <option key={option} value={option}>

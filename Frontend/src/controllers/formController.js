@@ -160,3 +160,12 @@ export const getOffersForProvider = async () => {
     throw error.response?.data || error?.message;
   }
 };
+
+export const updateApplication = async (id, formData) => {
+  try {
+    const response = await axios.put(`${API_URL}/forms/${id}`, formData, { withCredentials: true });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};

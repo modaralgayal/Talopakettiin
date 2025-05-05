@@ -18,7 +18,7 @@
     "fillApplication": "Fyll i ansökan",
     "application": "Ansökan",
     "myApplications": "Mina ansökningar",
-    "myOffers": "Mina erbjudanden",
+    "myOffers": "Fått Erbjudanden",
     "allApplications": "Alla ansökningar",
     "previous": "Tidigare",
     "startAgain": "Börja om",
@@ -93,7 +93,9 @@
       "additionalInfo": "Övrig information",
       "technicalFeatures": "Tekniska funktioner",
       "quote": "Offert",
-      "customerStatus": "Kundstatus"
+      "customerStatus": "Kundstatus",
+      "hasPlot": "Har du en tomt?",
+      "directElectricHeating": "Direkt elvärme"
     },
     "options": {
       "yes": "Ja",
@@ -118,6 +120,7 @@
       "timber": "Timber",
       "CLT": "CLT",
       "concrete": "Betong / Sten",
+      "noPreference": "Ingen Skillnad",
       "metalRoof": "Plåttak / Seam tak",
       "brick": "Tegel",
       "felt": "Feltak",
@@ -137,13 +140,15 @@
       "airSourceHeatPump": "Luftvärmepump",
       "geothermalHeat": "Jordvärme",
       "electric": "El",
-      "oil": "Olja",
+      "waterCirculatedHeating": "Vattencirkulerad golvvärme",
       "woodHeating": "Veduppvärmning",
       "districtHeating": "Fjärrvärme",
       "minSize": "Minsta yta (m²)",
       "maxSize": "Maximal yta (m²)",
       "heatStoring": "Värmelagrande",
-      "notHeatStoring": "Ej värmelagrande"
+      "airCirculationFireplace": "Öppen spis med cirkulerande luft",
+      "openFireplace": "öppen spis", 
+      "hasPlot": "Har du en tomt?"
     },
     "validation": {
       "required": "Obligatoriskt fält",

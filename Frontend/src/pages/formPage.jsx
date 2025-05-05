@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { PerustiedotForm } from "./hakemusTiedot/perusTiedot";
 import { UlkopuoliForm } from "./hakemusTiedot/ulkoPuoliForm";
 import { SisapuoliForm } from "./hakemusTiedot/sisäPuoliForm";
@@ -6,9 +6,10 @@ import { LämmitysForm } from "./hakemusTiedot/lämmitysForm";
 import { TalotekniikkaForm } from "./hakemusTiedot/talotekniikkaForm";
 import { OmatTiedotForm } from "./hakemusTiedot/omatTiedotForm";
 import { useFormContext } from "../context/formContext";
-import { sendFormData } from "../controllers/formController";
+import { sendFormData, getUserForms, updateApplication, deleteUserEntry } from "../controllers/formController";
 import { FaExclamationTriangle } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export const ApplicationForm = (prop) => {
   const {
@@ -21,11 +22,14 @@ export const ApplicationForm = (prop) => {
     validateStep,
   } = useFormContext();
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
   const [applicationCount, setApplicationCount] = useState(null);
   const [applicationLimit, setApplicationLimit] = useState(10);
   const [isGoogleScriptLoaded, setIsGoogleScriptLoaded] = useState(false);
   const [showGoogleSignInPrompt, setShowGoogleSignInPrompt] = useState(false);
   const { t } = useTranslation();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const steps = [
     { number: 1, title: t("form.steps.basicInfo") },
@@ -89,29 +93,32 @@ export const ApplicationForm = (prop) => {
     setShowGoogleSignInPrompt(true);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+    setSuccess(false);
+    // Check for edit mode from location.state
+    const isEdit = location.state && location.state.edit;
+    const id = location.state && location.state.id;
     try {
-      const result = await sendFormData(formData);
-      setApplicationCount(result.currentCount);
-      setApplicationLimit(result.limit);
-      alert("Hakemus lähetetty onnistuneesti!");
-      resetForm();
-      setCurrentStep(1);
-      localStorage.removeItem("formData");
-      localStorage.removeItem("formStep");
-    } catch (error) {
-      if (error.error === "Authentication Error") {
-        setError(error.message);
+      if (isEdit && id) {
+        // Delete the old application first
+        await deleteUserEntry(id);
+        // Then submit the new application
+        await sendFormData(formData);
+        setSuccess(true);
         setTimeout(() => {
-          window.location.href = "/signin";
-        }, 3000);
-      } else if (error.error === "Application limit reached") {
-        setError(error.message);
-        setApplicationCount(error.currentCount);
-        setApplicationLimit(error.limit);
+          navigate("/viewmyapplications");
+        }, 1500);
       } else {
-        setError("Virhe hakemuksen lähetyksessä. Yritä uudelleen.");
+        await sendFormData(formData);
+        setSuccess(true);
+        setTimeout(() => {
+          navigate("/viewmyapplications");
+        }, 1500);
       }
+    } catch (err) {
+      setError(err.message || "Error submitting application");
     }
   };
 
@@ -161,6 +168,21 @@ export const ApplicationForm = (prop) => {
   useEffect(() => {
     console.log("This is the form Data: ", formData);
   }, [formData]);
+
+  const isPrefilled = useRef(false);
+
+  useEffect(() => {
+    if (
+      !isPrefilled.current &&
+      location.state &&
+      location.state.edit &&
+      location.state.id &&
+      location.state.formData
+    ) {
+      setFormData(location.state.formData);
+      isPrefilled.current = true;
+    }
+  }, [location.state, setFormData]);
 
   return (
     <div className="min-h-screen bg-gray-50 pt-12 pb-16 px-4 sm:px-6 lg:px-8">

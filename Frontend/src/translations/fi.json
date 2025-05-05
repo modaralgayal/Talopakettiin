@@ -18,7 +18,7 @@
     "fillApplication": "Täytä hakemus",
     "application": "Hakemus",
     "myApplications": "Omat hakemukset",
-    "myOffers": "Omat tarjoukset",
+    "myOffers": "Saapuneet Tarjoukset",
     "allApplications": "Kaikki hakemukset",
     "previous": "Edellinen",
     "startAgain": "Aloita Uudestaan", 
@@ -144,7 +144,10 @@
       "personalStatus": "Olen",
       "additionalInfo": "Vapaamuotoisia lisätietoja",
       "technicalFeatures": "Talotekniikka",
-      "customerStatus": "Asiakasstatus"
+      "customerStatus": "Asiakasstatus",
+      "otherInfo": "Muu tieto",
+      "hasPlot": "Onko sinulla tontti?",
+      "directElectricHeating": "Suora sähkölämmitys"
     },
     "options": {
       "yes": "Kyllä",
@@ -169,6 +172,7 @@
       "timber": "Hirsi",
       "CLT": "CLT",
       "concrete": "Betoni / Kivi",
+      "noPreference": "Ei Merkitystä",
       "metalRoof": "Pelti / Saumakatto",
       "brick": "Tiili",
       "felt": "Huopa",
@@ -190,14 +194,16 @@
       "airSourceHeatPump": "Ilmalämpöpumppu",
       "geothermalHeat": "Maalämpö",
       "electric": "Sähkö",
-      "oil": "Öljy",
+      "waterCirculatedHeating": "Vesikiertoinen lattialämmitys",
       "woodHeating": "Puulämmitys",
       "districtHeating": "Kaukolämpö",
 
       "minSize": "Min koko (m²)",
       "maxSize": "Max koko (m²)",
       "heatStoring": "Varaava",
-      "notHeatStoring": "Ei varaava"
+      "airCirculationFireplace": "Kiertoilmatakka",
+      "openFireplace": "Avotakka", 
+      "hasPlot": "Onko sinulla tontti?"
     },
     "validation": {
       "required": "Pakollinen kenttä",
@@ -207,13 +213,21 @@
       "homeAutomation": "Taloautomaatio",
       "solarElectricity": "Aurinkosähkö",
       "evCharging": "Sähköauton latausasema",
-      "securitySystem": "Vartijajärjestelmä",
-      "other": "Muu"
+      "surveillanceSystem": "Valvontajärjestelmä",
+      "other": "Muu",
+      "earthworks": "Maatyöt",
+      "foundations": "Perustukset",
+      "constructionManagement": "Rakennuttamispalvelut"
     },
     "quoteOptions": {
       "hvac": "LVI-työt",
       "electrical": "Sähkötyöt",
+      "earthworks": "Maatyöt",
+      "foundations": "Perustukset",
+      "constructionManagement": "Rakennuttamispalvelut",
       "other": "Muu"
-    }
+    },
+    "kiertoilmaTakka": "Kiertoilmatakka",
+    "avotakka": "Avotakka"
   }
 } 

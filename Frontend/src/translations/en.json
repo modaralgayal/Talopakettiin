@@ -18,7 +18,7 @@
     "fillApplication": "Fill Application",
     "application": "Application",
     "myApplications": "My Applications",
-    "myOffers": "My Offers",
+    "myOffers": "Received Offers",
     "allApplications": "All Applications",
     "previous": "Previous",
     "startAgain": "Start Again",
@@ -147,6 +147,8 @@
       "wantsInOfferOther": "Other Included Service",
 
       "customerStatus": "Customer Status",
+      "hasPlot": "Do you have a plot?",
+      "directElectricHeating": "Direct Electric Heating",
       "additionalInfo": "Additional Information"
     },
     "options": {
@@ -172,6 +174,7 @@
       "timber": "Timber",
       "CLT": "CLT",
       "concrete": "Concrete / Rock",
+      "noPreference": "No Peference",
       "metalRoof": "Sheet metal / Seam roof",
       "brick": "Brick",
       "felt": "Felt Roof",
@@ -192,14 +195,16 @@
       "airSourceHeatPump": "Air Source Heat Pump",
       "geothermalHeat": "Geothermal Heat",
       "electric": "Electric",
-      "oil": "Oil",
+      "waterCirculatedHeating": "Water-circulated underfloor heating",
       "woodHeating": "Wood Heating",
       "districtHeating": "District Heating",
 
       "minSize": "Min size (m²)",
       "maxSize": "Max size (m²)",
       "heatStoring": "Heat Storing",
-      "notHeatStoring": "Not Heat Storing"
+      "airCirculationFireplace": "Kiertoilmatakka",
+      "openFireplace": "Avotakka", 
+      "hasPlot": "Do you have a plot?"
     },
     "validation": {
       "required": "Required field",

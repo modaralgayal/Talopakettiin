@@ -13,13 +13,16 @@ export const TalotekniikkaForm = ({ formData, setFormData, validationErrors }) =
     "homeAutomation",
     "solarElectricity",
     "evCharging",
-    "securitySystem",
+    "surveillanceSystem",
     "other"
   ];
 
   const quoteOptions = [
     "hvac",
     "electrical",
+    "earthworks",
+    "foundations",
+    "constructionManagement",
     "other"
   ];
 

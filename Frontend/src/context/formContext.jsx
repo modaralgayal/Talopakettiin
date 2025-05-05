@@ -39,6 +39,7 @@ const createDefaultForm = () => {
     // Heating
     heatingType: [],
     heatingTypeOther: "",
+    directElectricHeating: "",
     fireplace: "",
     fireplaceHeatStorage: "",
     bakingOven: "",
@@ -53,6 +54,7 @@ const createDefaultForm = () => {
 
     // Personal Info
     customerStatus: "",
+    hasPlot: "",
     additionalInfo: "",
   };
 
@@ -158,7 +160,10 @@ export const FormProvider = ({ children }) => {
 
   // Function to update form data and clear validation errors for the updated field
   const updateFormData = (newData) => {
-    setFormData(newData);
+    setFormData(prevData => ({
+      ...prevData,
+      ...newData
+    }));
 
     // Clear validation errors only for the fields that were updated
     const updatedFields = Object.keys(newData);

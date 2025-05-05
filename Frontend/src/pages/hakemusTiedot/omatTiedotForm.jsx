@@ -59,6 +59,29 @@ export const OmatTiedotForm = ({ formData, setFormData, validationErrors }) => {
         </div>
       </div>
 
+      {/* Has Plot */}
+      <div className="space-y-4">
+        <label className="block text-lg font-medium text-gray-700">
+          {t("form.options.hasPlot")} *
+        </label>
+        <div className="flex gap-4 mt-2">
+          {[t("form.options.yes"), t("form.options.no")].map((option) => (
+            <label key={option} className="flex items-center gap-2">
+              <input
+                type="radio"
+                name="hasPlot"
+                value={option}
+                checked={formData.hasPlot === option}
+                onChange={(e) => handleRadioChange("hasPlot", e.target.value)}
+                className="accent-blue-500"
+                required
+              />
+              {option}
+            </label>
+          ))}
+        </div>
+      </div>
+
       {/* Additional Info */}
       <div className="space-y-4">
         <label className="block text-lg font-medium text-gray-700">
