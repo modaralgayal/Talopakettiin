@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useLanguage } from "../../context/languageContext";
+import { OptionRender } from "../../components/optionRender";
 
 const finnishCities = [
   "Helsinki",
@@ -30,6 +32,20 @@ export const PerustiedotForm = ({
 }) => {
   //console.log("These are the validationErrors: ", validationErrors)
   const { t } = useTranslation();
+  const { currentLanguage } = useLanguage();
+  const [houseTypeOptions, setHouseTypeOptions] = useState([]);
+  const [deliveryOptions, setDeliveryOptions] = useState([]);
+
+  useEffect(() => {
+    //console.log("Here");
+    const houseTypes = t("form.options.houseTypes", { returnObjects: true });
+    const deliveryOptions = t("form.options.delivery", { returnObjects: true });
+    //console.log("These are the deliveryOptions:", deliveryOptions);
+    if (houseTypes) {
+      setHouseTypeOptions(Object.keys(houseTypes));
+      setDeliveryOptions(Object.keys(deliveryOptions));
+    }
+  }, [currentLanguage, t]);
 
   // Initialize all possible fields in formData
   const initialDetailsState = {
@@ -78,23 +94,33 @@ export const PerustiedotForm = ({
   const handleNumberInput = (field, value) => {
     const numValue = value === "" ? "" : Number(value);
 
-    // Update the individual min/max values
-    setFormData({ ...formData, [field]: numValue });
+    // Create a new form data object with the updated field
+    const newFormData = {
+      ...formData,
+      [field]: numValue,
+    };
 
     // Update the formatted range fields
     if (field === "minBudget" || field === "maxBudget") {
-      const min = field === "minBudget" ? numValue : formData.minBudget;
-      const max = field === "maxBudget" ? numValue : formData.maxBudget;
-      const formattedRange = min && max ? `${min} € - ${max} €` : "";
-      setFormData((prev) => ({ ...prev, budget: formattedRange }));
+      const min = field === "minBudget" ? numValue : newFormData.minBudget;
+      const max = field === "maxBudget" ? numValue : newFormData.maxBudget;
+
+      if (min !== "" && max !== "") {
+        newFormData.budget = `${min} € - ${max} €`;
+      }
     }
 
     if (field === "minSize" || field === "maxSize") {
-      const min = field === "minSize" ? numValue : formData.minSize;
-      const max = field === "maxSize" ? numValue : formData.maxSize;
-      const formattedRange = min && max ? `${min} m² - ${max} m²` : "";
-      setFormData((prev) => ({ ...prev, houseSize: formattedRange }));
+      const min = field === "minSize" ? numValue : newFormData.minSize;
+      const max = field === "maxSize" ? numValue : newFormData.maxSize;
+
+      if (min !== "" && max !== "") {
+        newFormData.houseSize = `${min} m² - ${max} m²`;
+      }
     }
+
+    // Update the form data with all changes at once
+    setFormData(newFormData);
   };
 
   // Handle text input changes
@@ -134,7 +160,7 @@ export const PerustiedotForm = ({
 
       {/* City (Required) */}
       <div>
-        <label className="block text-lg font-medium text-gray-700" >
+        <label className="block text-lg font-medium text-gray-700">
           {t("form.fields.city")} *
           {validationErrors.city && (
             <span className="text-red-500 text-sm ml-2">
@@ -186,6 +212,25 @@ export const PerustiedotForm = ({
         </select>
       </div>
 
+      <OptionRender
+        field={"houseType"}
+        formData={formData}
+        setFormData={setFormData}
+        validationErrors={validationErrors}
+      />
+
+
+      <OptionRender
+        field={"delivery"}
+        formData={formData}
+        setFormData={setFormData}
+        validationErrors={validationErrors}
+      />
+
+
+    
+      {/* Floors */}
+
       {/* Budget (Required) */}
       <div>
         <label className="block text-lg font-medium text-gray-700">
@@ -200,7 +245,9 @@ export const PerustiedotForm = ({
           <input
             type="number"
             placeholder="Min €"
-            className={`w-1/2 p-3 border rounded-lg ${validationErrors.budget ? 'border-red-500' : ''}`}
+            className={`w-1/2 p-3 border rounded-lg ${
+              validationErrors.budget ? "border-red-500" : ""
+            }`}
             value={formData.minBudget ?? ""}
             onChange={(e) => handleNumberInput("minBudget", e.target.value)}
             min="0"
@@ -210,7 +257,9 @@ export const PerustiedotForm = ({
           <input
             type="number"
             placeholder="Max €"
-            className={`w-1/2 p-3 border rounded-lg ${validationErrors.budget ? 'border-red-500' : ''}`}
+            className={`w-1/2 p-3 border rounded-lg ${
+              validationErrors.budget ? "border-red-500" : ""
+            }`}
             value={formData.maxBudget ?? ""}
             onChange={(e) => handleNumberInput("maxBudget", e.target.value)}
             min={formData.minBudget || "0"}
@@ -234,7 +283,9 @@ export const PerustiedotForm = ({
           <input
             type="number"
             placeholder="Min m²"
-            className={`w-1/2 p-3 border rounded-lg ${validationErrors.houseSize ? 'border-red-500' : ''}`}
+            className={`w-1/2 p-3 border rounded-lg ${
+              validationErrors.houseSize ? "border-red-500" : ""
+            }`}
             value={formData.minSize ?? ""}
             onChange={(e) => handleNumberInput("minSize", e.target.value)}
             min="0"
@@ -244,7 +295,9 @@ export const PerustiedotForm = ({
           <input
             type="number"
             placeholder="Max m²"
-            className={`w-1/2 p-3 border rounded-lg ${validationErrors.houseSize ? 'border-red-500' : ''}`}
+            className={`w-1/2 p-3 border rounded-lg ${
+              validationErrors.houseSize ? "border-red-500" : ""
+            }`}
             value={formData.maxSize ?? ""}
             onChange={(e) => handleNumberInput("maxSize", e.target.value)}
             min={formData.minSize || "0"}

@@ -57,7 +57,7 @@ function App() {
       console.error("Logout failed:", error);
     }
   };
-
+  // Tarkistaa joka kerta
   useEffect(() => {
     const checkSession = async () => {
       console.log("Checking session...");

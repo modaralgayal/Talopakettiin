@@ -5,6 +5,7 @@ import { SisapuoliForm } from "./hakemusTiedot/sisäPuoliForm";
 import { LämmitysForm } from "./hakemusTiedot/lämmitysForm";
 import { TalotekniikkaForm } from "./hakemusTiedot/talotekniikkaForm";
 import { OmatTiedotForm } from "./hakemusTiedot/omatTiedotForm";
+import { KitchenForm } from "./hakemusTiedot/keittioForm";
 import { useFormContext } from "../context/formContext";
 import { sendFormData, getUserForms, updateApplication, deleteUserEntry } from "../controllers/formController";
 import { FaExclamationTriangle } from "react-icons/fa";
@@ -35,9 +36,11 @@ export const ApplicationForm = (prop) => {
     { number: 1, title: t("form.steps.basicInfo") },
     { number: 2, title: t("form.steps.exterior") },
     { number: 3, title: t("form.steps.interior") },
-    { number: 4, title: t("form.steps.heating") },
-    { number: 5, title: t("form.steps.technical") },
-    { number: 6, title: t("form.steps.personalInfo") },
+    { number: 4, title: t("form.steps.kitchen") },
+
+    { number: 5, title: t("form.steps.heating") },
+    { number: 6, title: t("form.steps.technical") },
+    { number: 7, title: t("form.steps.personalInfo") },
   ];
 
   let isAuthenticated = prop.isAuthenticated;
@@ -264,20 +267,27 @@ export const ApplicationForm = (prop) => {
               />
             )}
             {currentStep === 4 && (
-              <LämmitysForm
+              <KitchenForm
                 formData={formData}
                 setFormData={setFormData}
                 validationErrors={validationErrors}
               />
             )}
             {currentStep === 5 && (
-              <TalotekniikkaForm
+              <LämmitysForm
                 formData={formData}
                 setFormData={setFormData}
                 validationErrors={validationErrors}
               />
             )}
             {currentStep === 6 && (
+              <TalotekniikkaForm
+                formData={formData}
+                setFormData={setFormData}
+                validationErrors={validationErrors}
+              />
+            )}
+            {currentStep === 7 && (
               <OmatTiedotForm
                 formData={formData}
                 setFormData={setFormData}

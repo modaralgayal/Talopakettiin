@@ -95,7 +95,12 @@
       "quote": "Offert",
       "customerStatus": "Kundstatus",
       "hasPlot": "Har du en tomt?",
-      "directElectricHeating": "Direkt elvärme"
+      "directElectricHeating": "Direkt elvärme",
+      "applicationName": "Ansökans titel",
+      "heatingMethod": "Uppvärmningsmetod",
+      "heatingMethodOther": "Annan uppvärmningsmetod",
+      "kitchenType": "Kök",
+      "kitchenAccessories": "Kökstillbehör"
     },
     "options": {
       "yes": "Ja",
@@ -132,11 +137,9 @@
       "plasterBoard": "Gipsskiva",
       "lightConcrete": "Lättbetong",
       "woodPanel": "Träpanel",
-
       "lead1": "Överväger huspaket (Ingen finansiering)",
       "lead2": "Letar efter ett lämpligt huspaket",
       "lead3": "Tar in offerter för huspaket (Finansiering klar)",
-
       "airSourceHeatPump": "Luftvärmepump",
       "geothermalHeat": "Jordvärme",
       "electric": "El",
@@ -147,8 +150,36 @@
       "maxSize": "Maximal yta (m²)",
       "heatStoring": "Värmelagrande",
       "airCirculationFireplace": "Öppen spis med cirkulerande luft",
-      "openFireplace": "öppen spis", 
-      "hasPlot": "Har du en tomt?"
+      "openFireplace": "öppen spis",
+      "hasPlot": "Har du en tomt?",
+      "ownHouse": "Fristående hus",
+      "pairHouse": "Parhus",
+      "leisureHouse": "Fritidshus",
+      "otherHouseType": "Annat?",
+      "movingReady": "Inflyttningsklart",
+      "decorationReady": "Dekorationsklart",
+      "basicPackage": "Grundpaket",
+      "1-floor": "1 våning",
+      "1.5-floors": "1,5 våningar",
+      "2-floors": "2 våningar",
+      "3+-floor": "3+ våningar",
+      "gableRoof": "Satteltak",
+      "pulpitRoof": "Pulpettak",
+      "flatRoof": "Plattak",
+      "l-shape": "L-format hus",
+      "i-shape": "I-format hus",
+      "u-shape": "U-format hus",
+      "hillsideHouse": "Sutteränghus",
+      "modern": "Modern",
+      "classic": "Klassisk",
+      "traditional": "Traditionell",
+      "i-kitchen": "I-kök",
+      "u-kitchen": "U-kök",
+      "l-kitchen": "L-kök",
+      "openKitchenIsland": "Öppet kök med ö",
+      "noKitchen": "Jag vill inte ha kök inkluderat i offerten",
+      "breakfastCabinet": "Frukostskåp",
+      "stoneCountertops": "Stenbänkskivor"
     },
     "validation": {
       "required": "Obligatoriskt fält",
@@ -218,5 +249,7 @@
       "title": "Senaste Artiklar",
       "readMore": "Läs Mer →"
     }
-  }
+  },
+  "kiertoilmaTakka": "Öppen spis med cirkulerande luft",
+  "avotakka": "Öppen spis"
 }

@@ -21,7 +21,7 @@
     "myOffers": "Saapuneet Tarjoukset",
     "allApplications": "Kaikki hakemukset",
     "previous": "Edellinen",
-    "startAgain": "Aloita Uudestaan", 
+    "startAgain": "Aloita Uudestaan",
     "next": "Seuraava",
     "sendApplication": "Lähetä Hakemus"
   },
@@ -101,10 +101,12 @@
       "exterior": "Ulkopuoli",
       "interior": "Sisäpuoli",
       "heating": "Lämmitys",
+      "kitchen": "Keittiö",
       "technical": "Talotekniikka",
       "personalInfo": "Omat Tiedot"
     },
     "fields": {
+      "applicationName": "Hakemuksen otsikko",
       "city": "Kaupunki",
       "province": "Maakunta",
       "budget": "Budjetti",
@@ -120,22 +122,34 @@
       "carportDetails": "Autokatos - Lisätietoja",
       "garage": "Autotalli",
       "garageDetails": "Autotalli - Lisätietoja",
+      "houseType": "Talon tyyppi",
       "houseMaterial": "Talon Materiaali",
       "houseMaterialOther": "Muu materiaali",
+      "houseShape": "Talon muoto",
+      "houseStyle": "Talon tyyli",
       "roof": "Vesikatto",
       "roofOther": "Muu vesikatto",
+      "cieling": "Sisäkatto",
       "floor": "Lattia",
       "floorDetails": "Lattiamateriaali",
       "interiorWalls": "Väliseinät",
       "interiorWallsDetails": "Väliseinämateriaali",
       "ceiling": "Sisäkatto",
       "ceilingDetails": "Sisäkaton materiaali",
+
       "heatingType": "Lämmitysmuoto",
       "heatingTypeOther": "Muu lämmitysmuoto",
+      "heatingMethod": "Lämmitystapa",
+      "heatingMethodOther": "Muu lämmitystapa",
+      "delivery": "Toimitus",
+      "deliveryOther": "",
+
       "fireplace": "Takka/Tulisija",
       "fireplaceHeatStorage": "Varaavuus",
       "bakingOven": "Leivinuuni",
       "bakingOvenDetails": "Leivinuunin lisätiedot",
+      "kitchenType": "Keittiö",
+      "kitchenAccessories": "Keittiön lisävarusteet",
       "otherInfoIndoor": "Muu tieto",
       "interestedIn": "Minua kiinnostaa",
       "interestedInOther": "Muu kiinnostava asia",
@@ -156,78 +170,184 @@
       "other": "Muu",
       "otherWhat": "Muu, mikä?",
       "selectOption": "Valitse vaihtoehto",
+      "selectDeliveryOption": "Valitse toimitustapa",
       "selectCity": "Valitse kaupunki",
+      "selectcieling": "Valitse sisäkatto",
+      "selectinteriorWalls": "Valitse väliseinät",
+      "selectkitchenType": "Valitse keittiö",
+      "selectkitchenAccessories": "Valitse keittiökalusteet",
+
+      "selectfloor": "Valitse lattia",
       "selectProvince": "Valitse maakunta",
       "selectAmount": "Valitse määrä",
+      "selecthouseType": "Valitse talon tyyppi",
+      "selecthouseMaterial": "Valitse talon Materiaali",
+      "selecthouseShape": "Valitse talon muoto",
+      "selecthouseStyle": "Valitse talon tyyli",
+      "selectdelivery": "Valitse toimitustapa",
+
+      "selectDeliveryType": "",
       "selectMaterial": "Valitse materiaali",
-      "selectRoof": "Valitse vesikatto",
+      "selectroof": "Valitse vesikatto",
       "enterDetails": "Syötä lisätietoja...",
       "enterOther": "Muu - mikä?",
-      "privatePerson": "Yksityishenkilö",
-      "company": "Yritys",
-      "association": "Yhdistys",
-      "municipality": "Kunta",
-      "fieldRequired": "Pakollinen Kenttä",
-      "wood": "Puu",
-      "timber": "Hirsi",
-      "CLT": "CLT",
-      "concrete": "Betoni / Kivi",
-      "noPreference": "Ei Merkitystä",
-      "metalRoof": "Pelti / Saumakatto",
-      "brick": "Tiili",
-      "felt": "Huopa",
 
-      "parquet": "Parketti",
-      "laminate": "Laminaatti",
-      "vinyl": "Vinyyli",
-      "cork": "Korkki",
-      "tile": "Laatta",
-      "plasterBoard": "Kipsilevy",
-      "lightConcrete": "Kevytbetoni",
-      "woodPanel": "Puuverhous",
-    
+      "houseMaterial": {
+        "wood": "Puu",
+        "timber": "Hirsi",
+        "CLT": "CLT",
+        "concrete": "Betoni / Kivi",
+        "noPreference": "Ei Merkitystä",
+        "metalRoof": "Pelti / Saumakatto",
+        "brick": "Tiili",
+        "felt": "Huopa",
+        "enterOther": "Muu - mikä?"
+      },
+
+      "roof": {
+        "metalRoof": "Pelti / Saumakatto",
+        "brick": "Tiili",
+        "felt": "Huopa",
+        "gableRoof": "Harjakatto",
+        "pulpitRoof": "Pulpettikatto",
+        "flatRoof": "Tasakatto",
+        "noPreference": "Ei Merkitystä",
+        "enterOther": "Muu - mikä?"
+      },
+
+      "floor": {
+        "parquet": "Parketti",
+        "laminate": "Laminaatti",
+        "vinyl": "Vinyyli",
+        "cork": "Korkki",
+        "tile": "Laatta",
+        "enterOther": "Muu - mikä?"
+      },
+
+      "interiorWalls": {
+        "plasterBoard": "Kipsilevy",
+        "lightConcrete": "Kevytbetoni",
+        "woodPanel": "Puuverhous",
+        "enterOther": "Muu - mikä?"
+      },
+
+      "cieling": {
+        "plasterBoard": "Kipsilevy",
+        "woodPanel": "Puuverhous",
+        "vinyl": "Vinyyli",
+        "enterOther": "Muu - mikä?"
+      },
+
       "lead1": "Talopaketin harkinta (Ei rahoitusta)",
       "lead2": "Etsin sopivaa talopakettia",
       "lead3": "Kilpailutan talopaketteja (rahoitus on kunnossa)",
 
+      "houseType": {
+        "ownHouse": "Omakotitalo",
+        "pairHouse": "Paritalo",
+        "leisureHouse": "Vapaa-ajan asunto",
+        "otherHouseType": "Muu?",
+        "enterOther": "Muu - mikä?"
+      },
 
-      "airSourceHeatPump": "Ilmalämpöpumppu",
-      "geothermalHeat": "Maalämpö",
-      "electric": "Sähkö",
-      "waterCirculatedHeating": "Vesikiertoinen lattialämmitys",
-      "woodHeating": "Puulämmitys",
-      "districtHeating": "Kaukolämpö",
+      "delivery": {
+        "movingReady": "MuuttoValmis",
+        "decorationReady": "Sisustusvalmis",
+        "basicPackage": "Peruspaketti",
+        "enterOther": "Muu - mikä?"
+      },
+
+      "stories": {
+        "1-floor": "1 kerros",
+        "1.5-floors": "1,5 kerrosta",
+        "2-floors": "2 kerrosta",
+        "3+-floor": "3+ kerrosta",
+        "enterOther": "Muu - mikä?"
+      },
+
+      "houseShape": {
+        "l-shape": "L-mallinen talo",
+        "i-shape": "I-mallinen talo",
+        "u-shape": "U-mallinen talo",
+        "hillsideHouse": "Rinnetalo",
+        "enterOther": "Muu - mikä?"
+      },
+
+      "houseStyle": {
+        "modern": "Moderni",
+        "classic": "Klassinen",
+        "traditional": "Perinteinen",
+        "enterOther": "Muu - mikä?"
+      },
+
+      "kitchenType": {
+        "i-kitchen": "I-keittiö",
+        "u-kitchen": "U-keittiö",
+        "l-kitchen": "L-keittiö",
+        "openKitchenIsland": "Saarekkeellinen avokeittiö",
+        "noKitchen": "En halua keittiön sisältyvän tarjoukseen",
+        "enterOther": "Muu - mikä?"
+      },
+
+      "kitchenAccessories": {
+        "breakfastCabinet": "Aamiaiskaappi",
+        "stoneCountertops": "Kivitasot",
+        "enterOther": "Muu - mikä?"
+      },
+
+      "heatingType": {
+        "geothermalHeating": "Maalämpö",
+        "airToWaterHeatPump": "Ilma-vesilämpöpumppu",
+        "districtHeating": "Kaukolämpö",
+        "directElectricHeating": "Suora sähkölämmitys",
+        "fireplaceOrStove": "Tulisija",
+        "excludeFromOfferHeating": "En halua sisältyvän tarjoukseen",
+        "enterOther": "Muu - mikä?"
+      },
+
+      "heatingMethod": {
+        "waterCirculatingUnderfloorHeating": "Vesikiertoinen lattialämmitys",
+        "electricRadiators": "Sähköpatterit",
+        "heatRecoveryVentilationUnit": "Lämmön talteenottokone",
+        "airHeatPump": "Ilmalämpöpumppu",
+        "otherHeatingSystem": "Muu",
+        "excludeFromOfferHeatingSystem": "En halua sisältyvän tarjoukseen",
+        "enterOther": "Muu - mikä?"
+      },
 
       "minSize": "Min koko (m²)",
       "maxSize": "Max koko (m²)",
       "heatStoring": "Varaava",
       "airCirculationFireplace": "Kiertoilmatakka",
-      "openFireplace": "Avotakka", 
-      "hasPlot": "Onko sinulla tontti?"
+      "openFireplace": "Avotakka",
+      "hasPlot": "Onko sinulla tontti?",
+
+      "interestedIn": {
+        "homeAutomation": "Taloautomaatio",
+        "solarElectricity": "Aurinkosähkö",
+        "evCharging": "Sähköauton latausasema",
+        "surveillanceSystem": "Valvontajärjestelmä",
+        "other": "Muu",
+        "earthworks": "Maatyöt",
+        "foundations": "Perustukset",
+        "constructionManagement": "Rakennuttamispalvelut",
+        "enterOther": "Muu - mikä?"
+      },
+      "wantsInOffer": {
+        "hvac": "LVI-työt",
+        "electrical": "Sähkötyöt",
+        "earthworks": "Maatyöt",
+        "foundations": "Perustukset",
+        "constructionManagement": "Rakennuttamispalvelut",
+        "enterOther": "Muu - mikä?"
+      }
     },
     "validation": {
       "required": "Pakollinen kenttä",
       "selectOne": "Valitse vähintään yksi"
     },
-    "technicalOptions": {
-      "homeAutomation": "Taloautomaatio",
-      "solarElectricity": "Aurinkosähkö",
-      "evCharging": "Sähköauton latausasema",
-      "surveillanceSystem": "Valvontajärjestelmä",
-      "other": "Muu",
-      "earthworks": "Maatyöt",
-      "foundations": "Perustukset",
-      "constructionManagement": "Rakennuttamispalvelut"
-    },
-    "quoteOptions": {
-      "hvac": "LVI-työt",
-      "electrical": "Sähkötyöt",
-      "earthworks": "Maatyöt",
-      "foundations": "Perustukset",
-      "constructionManagement": "Rakennuttamispalvelut",
-      "other": "Muu"
-    },
+
     "kiertoilmaTakka": "Kiertoilmatakka",
     "avotakka": "Avotakka"
   }
-} 
+}

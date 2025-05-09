@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { OptionRender } from "../../components/optionRender";
 
 export const SisapuoliForm = ({ formData, setFormData, validationErrors }) => {
   const { t } = useTranslation();
@@ -20,42 +21,7 @@ export const SisapuoliForm = ({ formData, setFormData, validationErrors }) => {
     });
   }, [formData.floor, formData.interiorWalls, formData.ceiling, t]);
 
-  const dropdownFields = [
-    {
-      label: t("form.fields.floor"),
-      field: "floor",
-      options: [
-        t("form.options.parquet"),
-        t("form.options.laminate"),
-        t("form.options.vinyl"),
-        t("form.options.cork"),
-        t("form.options.tile"),
-        t("form.options.other"),
-      ],
-      placeholder: t("form.fields.floorDetails"),
-    },
-    {
-      label: t("form.fields.interiorWalls"),
-      field: "interiorWalls",
-      options: [
-        t("form.options.plasterBoard"),
-        t("form.options.lightConcrete"),
-        t("form.options.other"),
-      ],
-      placeholder: t("form.fields.interiorWallsDetails"),
-    },
-    {
-      label: t("form.fields.ceiling"),
-      field: "ceiling",
-      options: [
-        t("form.options.woodPanel"),
-        t("form.options.plasterBoard"),
-        t("form.options.vinyl"),
-        t("form.options.other"),
-      ],
-      placeholder: t("form.fields.ceilingDetails"),
-    },
-  ];
+  const dropdownFields = ["cieling", "interiorWalls", "floor"];
 
   // Map Finnish details field names to English translation keys for translation
   const detailsFieldTranslationMap = {
@@ -86,45 +52,13 @@ export const SisapuoliForm = ({ formData, setFormData, validationErrors }) => {
         {t("form.steps.interior")}
       </h2>
 
-      {dropdownFields.map(({ label, field, options, placeholder }) => (
-        <div key={field}>
-          <label className="block text-lg font-medium text-gray-700">
-            {label} *
-            {validationErrors[field] && (
-              <span className="text-red-500 text-sm ml-2">
-                {validationErrors[field]}
-              </span>
-            )}
-          </label>
-          <select
-            className={`w-full p-3 border rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 ${
-              validationErrors[field] ? "border-red-500" : ""
-            }`}
-            value={formData[field] || ""}
-            onChange={(e) => handleDropdownChange(field, e.target.value)}
-            required
-          >
-            <option value="">{t("form.options.selectOption")}</option>
-            {options.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-          {showDetails[field] && (
-            <input
-              type="text"
-              placeholder={t(
-                `form.fields.${detailsFieldTranslationMap[`${field}Details`]}`
-              )}
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3 border mt-3"
-              value={formData[`${field}Details`] || ""}
-              onChange={(e) =>
-                handleTextInput(`${field}Details`, e.target.value)
-              }
-            />
-          )}
-        </div>
+      {dropdownFields.map((label) => (
+        <OptionRender
+          field={label}
+          formData={formData}
+          setFormData={setFormData}
+          validationErrors={validationErrors}
+        />
       ))}
     </div>
   );

@@ -6,10 +6,14 @@ import { useTranslation } from "react-i18next";
 const createDefaultForm = () => {
   const defaultFormData = {
     // Basic Info
+    applicationName: "",
     city: "",
     province: "",
     budget: "",
     houseSize: "",
+    houseType: "", // Uusi
+    delivery: "", // Uusi
+    stories: "", // Uusi, how many stories (1, 2 or 3)
     bedrooms: "",
     utilityRoom: "",
     utilityRoomDetails: "",
@@ -25,8 +29,10 @@ const createDefaultForm = () => {
     // Exterior
     houseMaterial: "",
     houseMaterialOther: "",
-    roof: "",
+    roof: "", // New options
     roofOther: "",
+    shape: "", // Uusi
+    houseStyle: "", // Uusi
 
     // Interior
     floor: "",
@@ -36,9 +42,15 @@ const createDefaultForm = () => {
     ceiling: "",
     ceilingDetails: "",
 
-    // Heating
-    heatingType: [],
-    heatingTypeOther: "",
+    // Kitchen : Add this new step, gets its own page
+    kitchenType: "",
+    kitchenAccessories: "",
+
+    // Heating'
+    heatingType: "", // Uusi
+    heatingTypeOther: "", // Uusi
+    heatingMethod: [], // I split heating type to heating method and heating type
+    heatingMethodOther: "", // Uusi
     directElectricHeating: "",
     fireplace: "",
     fireplaceHeatStorage: "",
@@ -78,7 +90,7 @@ export const FormProvider = ({ children }) => {
   const { currentLanguage } = useLanguage();
   const { t } = useTranslation();
   console.log("Current language is: ", currentLanguage);
-  console.log("testing t", t("form.options.fieldRequired"))
+  console.log("testing t", t("form.options.fieldRequired"));
   const [formData, setFormData] = useState(() => {
     const savedData = localStorage.getItem("formData");
     return savedData ? JSON.parse(savedData) : createDefaultForm();
@@ -103,7 +115,6 @@ export const FormProvider = ({ children }) => {
     localStorage.setItem("formStep", currentStep.toString());
   }, [currentStep]);
 
-
   // Function to validate the current step
   const validateStep = (step) => {
     const errors = {};
@@ -111,14 +122,18 @@ export const FormProvider = ({ children }) => {
     switch (step) {
       case 1: // Perustiedot
         if (!formData.city) errors.city = t("form.options.fieldRequired");
-        if (!formData.province) errors.province = t("form.options.fieldRequired");
-        if (!formData.bedrooms) errors.bedrooms = t("form.options.fieldRequired");
+        if (!formData.province)
+          errors.province = t("form.options.fieldRequired");
+        if (!formData.bedrooms)
+          errors.bedrooms = t("form.options.fieldRequired");
+        if (!formData.houseType) errors.houseType = t("form.options.fieldRequired");
         if (!formData.utilityRoom)
           errors.utilityRoom = t("form.options.fieldRequired");
         if (!formData.mudroom) errors.mudroom = t("form.options.fieldRequired");
         if (!formData.terrace) errors.terrace = t("form.options.fieldRequired");
         if (!formData.carport) errors.carport = t("form.options.fieldRequired");
         if (!formData.garage) errors.garage = t("form.options.fieldRequired");
+        if (!formData.delivery) errors.delivery = t("form.options.fieldRequired");
         // Budget and house size required
         if (!formData.budget || formData.budget.trim() === "") {
           errors.budget = t("form.options.fieldRequired");
@@ -134,7 +149,8 @@ export const FormProvider = ({ children }) => {
         break;
       case 3: // Sisäpuoli
         if (!formData.floor) errors.floor = t("form.options.fieldRequired");
-        if (!formData.interiorWalls) errors.interiorWalls = t("form.options.fieldRequired");
+        if (!formData.interiorWalls)
+          errors.interiorWalls = t("form.options.fieldRequired");
         if (!formData.ceiling) errors.ceiling = t("form.options.fieldRequired");
         break;
       case 4: // Lämmitys
@@ -160,9 +176,9 @@ export const FormProvider = ({ children }) => {
 
   // Function to update form data and clear validation errors for the updated field
   const updateFormData = (newData) => {
-    setFormData(prevData => ({
+    setFormData((prevData) => ({
       ...prevData,
-      ...newData
+      ...newData,
     }));
 
     // Clear validation errors only for the fields that were updated
