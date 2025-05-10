@@ -120,29 +120,32 @@
       "terraceDetails": "Terassi - Lisätietoja",
       "carport": "Autokatos",
       "carportDetails": "Autokatos - Lisätietoja",
+      "carportHowMany": "Monelle autolle?",
       "garage": "Autotalli",
       "garageDetails": "Autotalli - Lisätietoja",
+      "garageHowMany": "Monelle autolle?",
       "houseType": "Talon tyyppi",
       "houseMaterial": "Talon Materiaali",
       "houseMaterialOther": "Muu materiaali",
       "houseShape": "Talon muoto",
+      "houseShapeOther": "Muu talon muoto",
       "houseStyle": "Talon tyyli",
       "roof": "Vesikatto",
       "roofOther": "Muu vesikatto",
-      "cieling": "Sisäkatto",
+      "ceiling": "Sisäkatto",
       "floor": "Lattia",
       "floorDetails": "Lattiamateriaali",
       "interiorWalls": "Väliseinät",
       "interiorWallsDetails": "Väliseinämateriaali",
-      "ceiling": "Sisäkatto",
       "ceilingDetails": "Sisäkaton materiaali",
+      "stories": "Kerrokset",
 
       "heatingType": "Lämmitysmuoto",
       "heatingTypeOther": "Muu lämmitysmuoto",
       "heatingMethod": "Lämmitystapa",
       "heatingMethodOther": "Muu lämmitystapa",
       "delivery": "Toimitus",
-      "deliveryOther": "",
+      "deliveryOther": "Muu toimitustapa",
 
       "fireplace": "Takka/Tulisija",
       "fireplaceHeatStorage": "Varaavuus",
@@ -172,10 +175,12 @@
       "selectOption": "Valitse vaihtoehto",
       "selectDeliveryOption": "Valitse toimitustapa",
       "selectCity": "Valitse kaupunki",
-      "selectcieling": "Valitse sisäkatto",
+      "selectstories": "Kuinka monta kerrosta?",
+      "selectceiling": "Valitse sisäkatto",
       "selectinteriorWalls": "Valitse väliseinät",
       "selectkitchenType": "Valitse keittiö",
       "selectkitchenAccessories": "Valitse keittiökalusteet",
+      "fieldRequired": "Pakollinen kenttä",
 
       "selectfloor": "Valitse lattia",
       "selectProvince": "Valitse maakunta",
@@ -231,7 +236,7 @@
         "enterOther": "Muu - mikä?"
       },
 
-      "cieling": {
+      "ceiling": {
         "plasterBoard": "Kipsilevy",
         "woodPanel": "Puuverhous",
         "vinyl": "Vinyyli",
@@ -246,7 +251,6 @@
         "ownHouse": "Omakotitalo",
         "pairHouse": "Paritalo",
         "leisureHouse": "Vapaa-ajan asunto",
-        "otherHouseType": "Muu?",
         "enterOther": "Muu - mikä?"
       },
 
@@ -310,7 +314,6 @@
         "electricRadiators": "Sähköpatterit",
         "heatRecoveryVentilationUnit": "Lämmön talteenottokone",
         "airHeatPump": "Ilmalämpöpumppu",
-        "otherHeatingSystem": "Muu",
         "excludeFromOfferHeatingSystem": "En halua sisältyvän tarjoukseen",
         "enterOther": "Muu - mikä?"
       },
@@ -327,7 +330,6 @@
         "solarElectricity": "Aurinkosähkö",
         "evCharging": "Sähköauton latausasema",
         "surveillanceSystem": "Valvontajärjestelmä",
-        "other": "Muu",
         "earthworks": "Maatyöt",
         "foundations": "Perustukset",
         "constructionManagement": "Rakennuttamispalvelut",

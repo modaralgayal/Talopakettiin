@@ -14,6 +14,7 @@ import {
   FaCheck,
 } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
+import { RenderFormData } from "../components/renderFormData";
 export const ViewCustomerApplications = () => {
   const [applications, setApplications] = useState([]);
   const [openedAppIndex, setOpenedAppIndex] = useState(null);
@@ -25,51 +26,6 @@ export const ViewCustomerApplications = () => {
 
   const { t } = useTranslation();
 
-// Example for both files:
-const sectionOrder = [
-  {
-    title: "Perustiedot",
-    fields: [
-      "city", "province", "budget", "houseSize", "bedrooms",
-      "utilityRoom", "utilityRoomDetails", "mudroom", "mudroomDetails",
-      "terrace", "terraceDetails", "carport", "carportDetails",
-      "garage", "garageDetails"
-    ],
-  },
-  {
-    title: "Ulkopuoli",
-    fields: [
-      "houseMaterial", "houseMaterialOther", "roof", "roofOther"
-    ],
-  },
-  {
-    title: "Sisäpuoli",
-    fields: [
-      "floor", "floorDetails", "interiorWalls", "interiorWallsDetails",
-      "ceiling", "ceilingDetails"
-    ],
-  },
-  {
-    title: "Lämmitys",
-    fields: [
-      "heatingType", "heatingTypeOther", "fireplace", "fireplaceHeatStorage",
-      "directElectricHeating", // <-- add this
-      "bakingOven", "bakingOvenDetails", "otherInfoIndoor"
-    ],
-  },
-  {
-    title: "Talotekniikka",
-    fields: [
-      "interestedIn", "interestedInOther", "wantsInOffer", "wantsInOfferOther"
-    ],
-  },
-  {
-    title: "Omat Tiedot",
-    fields: [
-      "customerStatus", "hasPlot", "additionalInfo" // <-- add hasPlot
-    ],
-  },
-];
   useEffect(() => {
     getAllEntries()
       .then((response) => {
@@ -256,36 +212,7 @@ const sectionOrder = [
 
                 {/* Application details */}
                 {openedAppIndex === index && (
-                  <div className="border-t border-gray-200 p-6 bg-gray-50">
-                    {sectionOrder.map((section) => {
-                      const sectionFields = section.fields.filter(
-                        (field) => formData[field]
-                      );
-                      if (sectionFields.length === 0) return null;
-                      return (
-                        <div key={section.title} className="mb-6">
-                          <h4 className="text-lg font-semibold text-gray-900 mb-3">
-                            {section.title}
-                          </h4>
-                          <div className="flex flex-col space-y-2 w-full">
-                            {sectionFields.map((field) => (
-                              <div
-                                key={field}
-                                className="text-sm flex justify-between border-b pb-1"
-                              >
-                                <span className="font-medium text-gray-700">
-                                  {t(`form.fields.${field}`)}:
-                                </span>
-                                <span className="text-gray-600">
-                                  {formData[field]}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
+                  <RenderFormData formData={formData} />
                 )}
               </div>
             );

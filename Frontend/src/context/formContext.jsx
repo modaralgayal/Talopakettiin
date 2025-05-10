@@ -31,7 +31,7 @@ const createDefaultForm = () => {
     houseMaterialOther: "",
     roof: "", // New options
     roofOther: "",
-    shape: "", // Uusi
+    houseShape: "", // Uusi
     houseStyle: "", // Uusi
 
     // Interior
@@ -126,14 +126,16 @@ export const FormProvider = ({ children }) => {
           errors.province = t("form.options.fieldRequired");
         if (!formData.bedrooms)
           errors.bedrooms = t("form.options.fieldRequired");
-        if (!formData.houseType) errors.houseType = t("form.options.fieldRequired");
+        if (!formData.houseType)
+          errors.houseType = t("form.options.fieldRequired");
         if (!formData.utilityRoom)
           errors.utilityRoom = t("form.options.fieldRequired");
         if (!formData.mudroom) errors.mudroom = t("form.options.fieldRequired");
         if (!formData.terrace) errors.terrace = t("form.options.fieldRequired");
         if (!formData.carport) errors.carport = t("form.options.fieldRequired");
         if (!formData.garage) errors.garage = t("form.options.fieldRequired");
-        if (!formData.delivery) errors.delivery = t("form.options.fieldRequired");
+        if (!formData.delivery)
+          errors.delivery = t("form.options.fieldRequired");
         // Budget and house size required
         if (!formData.budget || formData.budget.trim() === "") {
           errors.budget = t("form.options.fieldRequired");
@@ -141,11 +143,20 @@ export const FormProvider = ({ children }) => {
         if (!formData.houseSize || formData.houseSize.trim() === "") {
           errors.houseSize = t("form.options.fieldRequired");
         }
+        if (!formData.stories) errors.stories = t("form.options.fieldRequired");
+        if (!formData.applicationName)
+          errors.applicationName = t("form.options.fieldRequired");
+
         break;
       case 2: // Ulkopuoli
         if (!formData.houseMaterial)
           errors.houseMaterial = t("form.options.fieldRequired");
         if (!formData.roof) errors.roof = t("form.options.fieldRequired");
+        if (!formData.houseShape)
+          errors.houseShape = t("form.options.fieldRequired");
+        if (!formData.houseStyle)
+          errors.houseStyle = t("form.options.fieldRequired");
+
         break;
       case 3: // Sisäpuoli
         if (!formData.floor) errors.floor = t("form.options.fieldRequired");
@@ -153,15 +164,26 @@ export const FormProvider = ({ children }) => {
           errors.interiorWalls = t("form.options.fieldRequired");
         if (!formData.ceiling) errors.ceiling = t("form.options.fieldRequired");
         break;
-      case 4: // Lämmitys
+      case 4:
+        if (!formData.kitchenType) {
+          console.log("Error in type");
+          errors.kitchenType = t("form.options.fieldRequired");
+        }
+        if (!formData.kitchenAccessories) {
+          console.log("Error in accessories");
+          errors.kitchenAccessories = t("form.options.fieldRequired");
+        }
+        break;
+
+      case 5: // Lämmitys
         if (!formData.heatingType || formData.heatingType.length === 0) {
           errors.heatingType = "Valitse vähintään yksi";
         }
         break;
-      case 5: // Talotekniikka
+      case 6: // Talotekniikka
         // No required fields in this step
         break;
-      case 6: // Omat Tiedot
+      case 7: // Omat Tiedot
         if (!formData.customerStatus || formData.customerStatus.length === 0) {
           errors.customerStatus = "Valitse vähintään yksi";
         }

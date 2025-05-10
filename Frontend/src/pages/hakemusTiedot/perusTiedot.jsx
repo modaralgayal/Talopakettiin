@@ -3,27 +3,349 @@ import { useTranslation } from "react-i18next";
 import { useLanguage } from "../../context/languageContext";
 import { OptionRender } from "../../components/optionRender";
 
-const finnishCities = [
-  "Helsinki",
-  "Espoo",
-  "Tampere",
-  "Vantaa",
-  "Oulu",
-  "Turku",
-  "Jyväskylä",
-  "Lahti",
-  "Kuopio",
-  "Pori",
-];
-
-const provinces = [
-  "Uusimaa",
-  "Pirkanmaa",
-  "Varsinais-Suomi",
-  "Pohjois-Pohjanmaa",
-  "Keski-Suomi",
-  "Satakunta",
-];
+const provinces = {
+  Ahvenanmaa: [
+    "Brändö",
+    "Eckerö",
+    "Finström",
+    "Föglö",
+    "Geta",
+    "Hammarland",
+    "Jomala",
+    "Kumlinge",
+    "Kökar",
+    "Lemland",
+    "Lumparland",
+    "Mariehamn",
+    "Saltvik",
+    "Sottunga",
+    "Sund",
+    "Vårdö",
+  ],
+  "Etelä-Karjala": [
+    "Imatra",
+    "Lappeenranta",
+    "Lemi",
+    "Luumäki",
+    "Parikkala",
+    "Rautjärvi",
+    "Ruokolahti",
+    "Savitaipale",
+    "Taipalsaari",
+  ],
+  "Etelä-Pohjanmaa": [
+    "Alajärvi",
+    "Alavus",
+    "Evijärvi",
+    "Ilmajoki",
+    "Isojoki",
+    "Isokyrö",
+    "Jalasjärvi",
+    "Kauhajoki",
+    "Kauhava",
+    "Kuortane",
+    "Kurikka",
+    "Lappajärvi",
+    "Lapua",
+    "Seinäjoki",
+    "Soini",
+    "Teuva",
+    "Vimpeli",
+    "Ähtäri",
+  ],
+  "Etelä-Savo": [
+    "Enonkoski",
+    "Hirvensalmi",
+    "Juva",
+    "Kangasniemi",
+    "Mikkeli",
+    "Pertunmaa",
+    "Pieksämäki",
+    "Puumala",
+    "Rantasalmi",
+    "Savonlinna",
+    "Sulkava",
+  ],
+  Kainuu: [
+    "Hyrynsalmi",
+    "Kajaani",
+    "Kuhmo",
+    "Paltamo",
+    "Puolanka",
+    "Ristijärvi",
+    "Sotkamo",
+    "Suomussalmi",
+  ],
+  "Kanta-Häme": [
+    "Forssa",
+    "Hattula",
+    "Hausjärvi",
+    "Humppila",
+    "Hämeenlinna",
+    "Janakkala",
+    "Jokioinen",
+    "Loppi",
+    "Riihimäki",
+    "Tammela",
+    "Ypäjä",
+  ],
+  "Keski-Pohjanmaa": [
+    "Halsua",
+    "Kannus",
+    "Kaustinen",
+    "Kokkola",
+    "Lestijärvi",
+    "Perho",
+    "Toholampi",
+    "Veteli",
+  ],
+  "Keski-Suomi": [
+    "Hankasalmi",
+    "Jämsä",
+    "Jyväskylä",
+    "Joutsa",
+    "Kannonkoski",
+    "Karstula",
+    "Keuruu",
+    "Kinnula",
+    "Kivijärvi",
+    "Konnevesi",
+    "Kyyjärvi",
+    "Laukaa",
+    "Luhanka",
+    "Multia",
+    "Muurame",
+    "Petäjävesi",
+    "Pihtipudas",
+    "Saarijärvi",
+    "Toivakka",
+    "Uurainen",
+    "Viitasaari",
+  ],
+  Kymenlaakso: [
+    "Hamina",
+    "Kotka",
+    "Kouvola",
+    "Miehikkälä",
+    "Pyhtää",
+    "Virolahti",
+  ],
+  Lappi: [
+    "Enontekiö",
+    "Inari",
+    "Kemi",
+    "Kemijärvi",
+    "Keminmaa",
+    "Kittilä",
+    "Kolari",
+    "Muonio",
+    "Pelkosenniemi",
+    "Pello",
+    "Posio",
+    "Ranua",
+    "Rovaniemi",
+    "Salla",
+    "Savukoski",
+    "Simo",
+    "Sodankylä",
+    "Tervola",
+    "Tornio",
+    "Utsjoki",
+    "Ylitornio",
+  ],
+  Pirkanmaa: [
+    "Akaa",
+    "Hämeenkyrö",
+    "Ikaalinen",
+    "Juupajoki",
+    "Kangasala",
+    "Kihniö",
+    "Lempäälä",
+    "Mänttä-Vilppula",
+    "Nokia",
+    "Orivesi",
+    "Parkano",
+    "Pirkkala",
+    "Pälkäne",
+    "Ruovesi",
+    "Sastamala",
+    "Tampere",
+    "Valkeakoski",
+    "Vesilahti",
+    "Virrat",
+    "Ylöjärvi",
+  ],
+  Pohjanmaa: [
+    "Isokyrö",
+    "Kaskinen",
+    "Korsnäs",
+    "Kristiinankaupunki",
+    "Kruunupyy",
+    "Laihia",
+    "Luoto",
+    "Maalahti",
+    "Mustasaari",
+    "Närpiö",
+    "Pedersören kunta",
+    "Pietarsaari",
+    "Uusikaarlepyy",
+    "Vaasa",
+    "Vöyri",
+  ],
+  "Pohjois-Karjala": [
+    "Heinävesi",
+    "Ilomantsi",
+    "Joensuu",
+    "Juuka",
+    "Kontiolahti",
+    "Lieksa",
+    "Liperi",
+    "Nurmes",
+    "Outokumpu",
+    "Polvijärvi",
+    "Rääkkylä",
+    "Tohmajärvi",
+  ],
+  "Pohjois-Pohjanmaa": [
+    "Haapajärvi",
+    "Haapavesi",
+    "Hailuoto",
+    "Haukipudas",
+    "Ii",
+    "Kalajoki",
+    "Kempele",
+    "Kestilä",
+    "Kiiminki",
+    "Kuivaniemi",
+    "Kuusamo",
+    "Liminka",
+    "Lumijoki",
+    "Merijärvi",
+    "Muhos",
+    "Nivala",
+    "Oulainen",
+    "Oulu",
+    "Pudasjärvi",
+    "Pyhäjoki",
+    "Pyhäjärvi",
+    "Pyhäntä",
+    "Raahe",
+    "Reisjärvi",
+    "Sievi",
+    "Siikajoki",
+    "Siikalatva",
+    "Tyrnävä",
+    "Utajärvi",
+    "Vaala",
+    "Vihanti",
+    "Yli-Ii",
+    "Ylivieska",
+  ],
+  "Pohjois-Savo": [
+    "Iisalmi",
+    "Joroinen",
+    "Kaavi",
+    "Keitele",
+    "Kiuruvesi",
+    "Kuopio",
+    "Lapinlahti",
+    "Leppävirta",
+    "Pielavesi",
+    "Rautalampi",
+    "Rautavaara",
+    "Siilinjärvi",
+    "Sonkajärvi",
+    "Suonenjoki",
+    "Tervo",
+    "Tuusniemi",
+    "Varkaus",
+    "Vesanto",
+    "Vieremä",
+  ],
+  "Päijät-Häme": [
+    "Asikkala",
+    "Hartola",
+    "Heinola",
+    "Hollola",
+    "Iitti",
+    "Kärkölä",
+    "Lahti",
+    "Orimattila",
+    "Padasjoki",
+    "Sysmä",
+  ],
+  Satakunta: [
+    "Eura",
+    "Eurajoki",
+    "Harjavalta",
+    "Huittinen",
+    "Jämijärvi",
+    "Kankaanpää",
+    "Karvia",
+    "Kokemäki",
+    "Merikarvia",
+    "Nakkila",
+    "Pomarkku",
+    "Pori",
+    "Rauma",
+    "Siikainen",
+    "Säkylä",
+    "Ulvila",
+  ],
+  Uusimaa: [
+    "Askola",
+    "Espoo",
+    "Hanko",
+    "Helsinki",
+    "Hyvinkää",
+    "Inkoo",
+    "Järvenpää",
+    "Kauniainen",
+    "Kerava",
+    "Kirkkonummi",
+    "Lapinjärvi",
+    "Loviisa",
+    "Lohja",
+    "Mäntsälä",
+    "Nurmijärvi",
+    "Pornainen",
+    "Porvoo",
+    "Raasepori",
+    "Sipoo",
+    "Siuntio",
+    "Tuusula",
+    "Vantaa",
+    "Vihti",
+  ],
+  "Varsinais-Suomi": [
+    "Aura",
+    "Kaarina",
+    "Kemiönsaari",
+    "Kustavi",
+    "Laitila",
+    "Lieto",
+    "Loimaa",
+    "Marttila",
+    "Masku",
+    "Mynämäki",
+    "Naantali",
+    "Nousiainen",
+    "Oripää",
+    "Paimio",
+    "Parainen",
+    "Pöytyä",
+    "Raisio",
+    "Rusko",
+    "Rymättylä",
+    "Salo",
+    "Sauvo",
+    "Somero",
+    "Taivassalo",
+    "Turku",
+    "Uusikaupunki",
+    "Vehmaa",
+  ],
+};
 
 export const PerustiedotForm = ({
   formData,
@@ -32,20 +354,7 @@ export const PerustiedotForm = ({
 }) => {
   //console.log("These are the validationErrors: ", validationErrors)
   const { t } = useTranslation();
-  const { currentLanguage } = useLanguage();
-  const [houseTypeOptions, setHouseTypeOptions] = useState([]);
-  const [deliveryOptions, setDeliveryOptions] = useState([]);
-
-  useEffect(() => {
-    //console.log("Here");
-    const houseTypes = t("form.options.houseTypes", { returnObjects: true });
-    const deliveryOptions = t("form.options.delivery", { returnObjects: true });
-    //console.log("These are the deliveryOptions:", deliveryOptions);
-    if (houseTypes) {
-      setHouseTypeOptions(Object.keys(houseTypes));
-      setDeliveryOptions(Object.keys(deliveryOptions));
-    }
-  }, [currentLanguage, t]);
+  const [filteredCities, setFilteredCities] = useState([]);
 
   // Initialize all possible fields in formData
   const initialDetailsState = {
@@ -75,6 +384,19 @@ export const PerustiedotForm = ({
     formData.garage,
     t,
   ]);
+
+  useEffect(() => {
+    if (formData.province && provinces[formData.province]) {
+      setFilteredCities(provinces[formData.province]);
+      // Reset city if it no longer matches
+      if (!provinces[formData.province].includes(formData.city)) {
+        setFormData((prev) => ({ ...prev, city: "" }));
+      }
+    } else {
+      setFilteredCities([]);
+      setFormData((prev) => ({ ...prev, city: "" }));
+    }
+  }, [formData.province]);
 
   // Handle radio button changes
   const handleRadioChange = (field, value) => {
@@ -128,19 +450,13 @@ export const PerustiedotForm = ({
     setFormData({ ...formData, [field]: value });
   };
 
-  // Field configurations for dynamic rendering
+  // Modular radio fields
   const radioFields = [
-    {
-      label: t("form.fields.utilityRoom").split(" ")[0],
-      field: "utilityRoom",
-    },
-    { label: t("form.fields.mudroom"), field: "mudroom" },
-    { label: t("form.fields.terrace"), field: "terrace" },
-  ];
-
-  const garageFields = [
-    { label: t("form.fields.carport"), field: "carport" },
-    { label: t("form.fields.garage"), field: "garage" },
+    { field: "utilityRoom" },
+    { field: "mudroom" },
+    { field: "terrace" },
+    { field: "carport" },
+    { field: "garage" },
   ];
 
   // Map Finnish details field names to English translation keys for translation
@@ -158,31 +474,29 @@ export const PerustiedotForm = ({
         {t("form.steps.basicInfo")}
       </h2>
 
-      {/* City (Required) */}
+      {/* Application Name (Required, max 30 chars) */}
       <div>
         <label className="block text-lg font-medium text-gray-700">
-          {t("form.fields.city")} *
-          {validationErrors.city && (
+          {t("form.fields.applicationName")} *
+          {validationErrors.applicationName && (
             <span className="text-red-500 text-sm ml-2">
-              {validationErrors.city}
+              {validationErrors.applicationName}
             </span>
           )}
         </label>
-        <select
+        <input
+          type="text"
           className={`w-full p-3 border rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 ${
-            validationErrors.city ? "border-red-500" : ""
+            validationErrors.applicationName ? "border-red-500" : ""
           }`}
-          value={formData.city || ""}
-          onChange={(e) => handleTextInput("city", e.target.value)}
+          value={formData.applicationName || ""}
+          onChange={(e) =>
+            handleTextInput("applicationName", e.target.value.slice(0, 30))
+          }
+          maxLength={30}
           required
-        >
-          <option value="">{t("form.options.selectCity")}</option>
-          {finnishCities.map((city) => (
-            <option key={city} value={city}>
-              {city}
-            </option>
-          ))}
-        </select>
+          placeholder={t("form.fields.applicationName")}
+        />
       </div>
 
       {/* Province (Required) */}
@@ -204,13 +518,43 @@ export const PerustiedotForm = ({
           required
         >
           <option value="">{t("form.options.selectProvince")}</option>
-          {provinces.map((province) => (
+          {Object.keys(provinces).map((province) => (
             <option key={province} value={province}>
               {province}
             </option>
           ))}
         </select>
       </div>
+
+      {/* City (Required) */}
+
+      {formData.province && (
+        <>
+          <label className="block text-lg font-medium text-gray-700">
+            {t("form.fields.city")} *
+            {validationErrors.province && (
+              <span className="text-red-500 text-sm ml-2">
+                {validationErrors.province}
+              </span>
+            )}
+          </label>
+          <select
+            className={`w-full p-3 border rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 ${
+              validationErrors.city ? "border-red-500" : ""
+            }`}
+            value={formData.city || ""}
+            onChange={(e) => handleTextInput("city", e.target.value)}
+            required
+          >
+            <option value="">{t("form.options.selectCity")}</option>
+            {filteredCities.map((city) => (
+              <option key={city} value={city}>
+                {city}
+              </option>
+            ))}
+          </select>
+        </>
+      )}
 
       <OptionRender
         field={"houseType"}
@@ -219,7 +563,6 @@ export const PerustiedotForm = ({
         validationErrors={validationErrors}
       />
 
-
       <OptionRender
         field={"delivery"}
         formData={formData}
@@ -227,9 +570,13 @@ export const PerustiedotForm = ({
         validationErrors={validationErrors}
       />
 
-
-    
       {/* Floors */}
+      <OptionRender
+        field={"stories"}
+        formData={formData}
+        setFormData={setFormData}
+        validationErrors={validationErrors}
+      />
 
       {/* Budget (Required) */}
       <div>
@@ -334,114 +681,17 @@ export const PerustiedotForm = ({
         </select>
       </div>
 
-      {/* Dynamic Radio Fields */}
-      {radioFields.map(({ label, field }) => (
-        <div key={field}>
-          <label className="block text-lg font-medium text-gray-700">
-            {label} *
-            {validationErrors[field] && (
-              <span className="text-red-500 text-sm ml-2">
-                {validationErrors[field]}
-              </span>
-            )}
-          </label>
-          <div className="flex gap-4 mt-2">
-            {[t("form.options.yes"), t("form.options.no")].map((option) => (
-              <label key={option} className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  name={field}
-                  value={option}
-                  checked={formData[field] === option}
-                  onChange={(e) => handleRadioChange(field, e.target.value)}
-                  className="accent-blue-500"
-                  required
-                />
-                {option}
-              </label>
-            ))}
-          </div>
-          {showDetails[field] && (
-            <input
-              type="text"
-              className="w-full mt-2 p-3 border rounded-lg"
-              placeholder={t(
-                `form.fields.${detailsFieldTranslationMap[`${field}Details`]}`
-              )}
-              value={formData[`${field}Details`] || ""}
-              onChange={(e) =>
-                handleTextInput(`${field}Details`, e.target.value)
-              }
-            />
-          )}
-        </div>
-      ))}
-
-      {/* Garage Options */}
-      {garageFields.map(({ label, field }) => (
-        <div key={field}>
-          <label className="block text-lg font-medium text-gray-700">
-            {label} *
-            {validationErrors[field] && (
-              <span className="text-red-500 text-sm ml-2">
-                {validationErrors[field]}
-              </span>
-            )}
-          </label>
-          <div className="flex gap-4 mt-2">
-            {[t("form.options.yes"), t("form.options.no")].map((option) => (
-              <label key={option} className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  name={field}
-                  value={option}
-                  checked={formData[field] === option}
-                  onChange={(e) => handleRadioChange(field, e.target.value)}
-                  className="accent-blue-500"
-                  required
-                />
-                {option}
-              </label>
-            ))}
-          </div>
-          {showDetails[field] && (
-            <>
-              <div className="flex gap-2 mt-2">
-                <input
-                  type="number"
-                  placeholder={t("form.options.minSize")}
-                  className="w-1/2 p-3 border rounded-lg"
-                  value={formData[`${field}Min`] ?? ""}
-                  onChange={(e) =>
-                    handleNumberInput(`${field}Min`, e.target.value)
-                  }
-                  min="0"
-                />
-                <input
-                  type="number"
-                  placeholder="Max koko (m²)"
-                  className="w-1/2 p-3 border rounded-lg"
-                  value={formData[`${field}Max`] ?? ""}
-                  onChange={(e) =>
-                    handleNumberInput(`${field}Max`, e.target.value)
-                  }
-                  min={formData[`${field}Min`] || "0"}
-                />
-              </div>
-              <input
-                type="text"
-                className="w-full mt-2 p-3 border rounded-lg"
-                placeholder={t(
-                  `form.fields.${detailsFieldTranslationMap[`${field}Details`]}`
-                )}
-                value={formData[`${field}Details`] || ""}
-                onChange={(e) =>
-                  handleTextInput(`${field}Details`, e.target.value)
-                }
-              />
-            </>
-          )}
-        </div>
+      {/* Modularized Radio Fields */}
+      {radioFields.map(({ field }) => (
+        <OptionRender
+          key={field}
+          field={field}
+          formData={formData}
+          setFormData={setFormData}
+          validationErrors={validationErrors}
+          fieldType="radio"
+          showDetailsOnYes
+        />
       ))}
     </div>
   );

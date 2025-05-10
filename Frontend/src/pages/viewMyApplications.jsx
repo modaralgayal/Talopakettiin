@@ -1,7 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { getUserForms, deleteUserEntry } from "../controllers/formController";
-import { FaTrash, FaChevronDown, FaChevronUp, FaExclamationTriangle, FaEdit } from "react-icons/fa";
-import { useTranslation } from 'react-i18next';
+import { RenderFormData } from "../components/renderFormData";
+import {
+  FaTrash,
+  FaChevronDown,
+  FaChevronUp,
+  FaExclamationTriangle,
+  FaEdit,
+} from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 export const MyApplications = () => {
@@ -12,7 +19,7 @@ export const MyApplications = () => {
   const [deleteConfirmation, setDeleteConfirmation] = useState({
     show: false,
     entryId: null,
-    kaupunki: null
+    kaupunki: null,
   });
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -21,17 +28,17 @@ export const MyApplications = () => {
     try {
       const response = await getUserForms();
       //console.log("Fetched applications:", response);
-      
+
       // Ensure each application has a unique ID and valid entryId
       const uniqueApplications = response.map((app, index) => {
         console.log(`Processing application ${index}:`, app);
         return {
           ...app,
           uniqueId: `${app.entryId}-${index}`,
-          entryId: app.entryId || `temp-${index}` // Ensure entryId is never undefined
+          entryId: app.entryId || `temp-${index}`, // Ensure entryId is never undefined
         };
       });
-      
+
       //console.log("Processed applications with unique IDs:", uniqueApplications);
       setApplications(uniqueApplications);
     } catch (error) {
@@ -45,25 +52,28 @@ export const MyApplications = () => {
 
   const handleDeleteClick = (entryId, kaupunki) => {
     console.log("Delete clicked for entryId:", entryId, "kaupunki:", kaupunki);
-    
+
     if (!entryId) {
       console.error("Invalid entryId:", entryId);
       setDeleteError("Invalid application ID. Please try again.");
       return;
     }
-    
+
     setDeleteConfirmation({
       show: true,
       entryId,
-      kaupunki
+      kaupunki,
     });
   };
 
   const handleDeleteConfirm = async () => {
     console.log("Delete confirmed for entryId:", deleteConfirmation.entryId);
-    
+
     if (!deleteConfirmation.entryId) {
-      console.error("Invalid entryId in confirmation:", deleteConfirmation.entryId);
+      console.error(
+        "Invalid entryId in confirmation:",
+        deleteConfirmation.entryId
+      );
       setDeleteError("Invalid application ID. Please try again.");
       setDeleteConfirmation({ show: false, entryId: null, kaupunki: null });
       return;
@@ -73,7 +83,7 @@ export const MyApplications = () => {
       console.log("Attempting to delete entryId:", deleteConfirmation.entryId);
       await deleteUserEntry(deleteConfirmation.entryId);
       console.log("Successfully deleted entryId:", deleteConfirmation.entryId);
-      
+
       setDeleteError(null);
       setDeleteConfirmation({ show: false, entryId: null, kaupunki: null });
       fetchApplications();
@@ -102,266 +112,12 @@ export const MyApplications = () => {
     return result;
   };
 
-  // Function to render rows for each key-value pair
-  const renderFormDataRows = (formData, sectionTitle) => {
-    const entries = Object.entries(formData);
-    return entries.map(([key, value]) => {
-      // Get the translated label for the field
-      const label = t(`form.fields.${key}`);
-
-      // Special handling for different field types
-      if (["interestedIn", "wantsInOffer"].includes(key)) {
-        let displayValue = "-";
-        if (Array.isArray(value) && value.length > 0) {
-          // Try to translate each value based on the field type
-          displayValue = value
-            .map((v) => {
-              if (key === "interestedIn") {
-                return t(`form.technicalOptions.${v}`) !== `form.technicalOptions.${v}` 
-                  ? t(`form.technicalOptions.${v}`) 
-                  : v;
-              }
-              if (key === "wantsInOffer") {
-                return t(`form.quoteOptions.${v}`) !== `form.quoteOptions.${v}` 
-                  ? t(`form.quoteOptions.${v}`) 
-                  : v;
-              }
-              return v;
-            })
-            .join(", ");
-        }
-        return (
-          <div
-            key={`${sectionTitle}-${key}`}
-            className="flex justify-between items-center py-2 border-b"
-          >
-            <span className="font-medium">{label}:</span>
-            <span className="text-gray-700">{displayValue}</span>
-          </div>
-        );
-      }
-
-      // Handle yes/no/dontKnow fields
-      if (["utilityRoom", "mudroom", "terrace", "carport", "garage", "fireplace", "bakingOven"].includes(key)) {
-        const displayValue = value === t("form.options.yes") ? t("form.options.yes") : 
-                           value === t("form.options.no") ? t("form.options.no") : 
-                           value === t("form.options.dontKnow") ? t("form.options.dontKnow") :
-                           value || "-";
-        return (
-          <div
-            key={`${sectionTitle}-${key}`}
-            className="flex justify-between items-center py-2 border-b"
-          >
-            <span className="font-medium">{label}:</span>
-            <span className="text-gray-700">{displayValue}</span>
-          </div>
-        );
-      }
-
-      // Handle select fields with predefined options
-      if (["houseMaterial", "roof", "floor", "interiorWalls", "ceiling"].includes(key)) {
-        let displayValue = "-";
-        if (value) {
-          // Try to translate the value
-          const translated = t(`form.options.${value}`);
-          displayValue = translated !== `form.options.${value}` ? translated : value;
-        }
-        return (
-          <div
-            key={`${sectionTitle}-${key}`}
-            className="flex justify-between items-center py-2 border-b"
-          >
-            <span className="font-medium">{label}:</span>
-            <span className="text-gray-700">{displayValue}</span>
-          </div>
-        );
-      }
-
-      // Handle heating type array
-      if (key === "heatingType") {
-        let displayValue = "-";
-        if (Array.isArray(value) && value.length > 0) {
-          displayValue = value
-            .map(v => {
-              const translated = t(`form.options.${v}`);
-              return translated !== `form.options.${v}` ? translated : v;
-            })
-            .join(", ");
-        }
-        return (
-          <div
-            key={`${sectionTitle}-${key}`}
-            className="flex justify-between items-center py-2 border-b"
-          >
-            <span className="font-medium">{label}:</span>
-            <span className="text-gray-700">{displayValue}</span>
-          </div>
-        );
-      }
-
-      // Handle customer status
-      if (key === "customerStatus") {
-        let displayValue = "-";
-        if (value) {
-          const translated = t(`form.options.${value}`);
-          displayValue = translated !== `form.options.${value}` ? translated : value;
-        }
-        return (
-          <div
-            key={`${sectionTitle}-${key}`}
-            className="flex justify-between items-center py-2 border-b"
-          >
-            <span className="font-medium">{label}:</span>
-            <span className="text-gray-700">{displayValue}</span>
-          </div>
-        );
-      }
-
-      // Handle fireplaceHeatStorage and directElectricHeating with translation
-      if (["fireplaceHeatStorage", "directElectricHeating"].includes(key)) {
-        let displayValue = "-";
-        if (value) {
-          const translated = t(`form.options.${value}`);
-          displayValue = translated !== `form.options.${value}` ? translated : value;
-        }
-        return (
-          <div
-            key={`${sectionTitle}-${key}`}
-            className="flex justify-between items-center py-2 border-b"
-          >
-            <span className="font-medium">{label}:</span>
-            <span className="text-gray-700">{displayValue}</span>
-          </div>
-        );
-      }
-
-      // Handle hasPlot with translation
-      if (key === "hasPlot") {
-        let displayValue = "-";
-        if (value) {
-          const translated = t(`form.options.${value}`);
-          displayValue = translated !== `form.options.${value}` ? translated : value;
-        }
-        return (
-          <div
-            key={`${sectionTitle}-${key}`}
-            className="flex justify-between items-center py-2 border-b"
-          >
-            <span className="font-medium">{label}:</span>
-            <span className="text-gray-700">{displayValue}</span>
-          </div>
-        );
-      }
-
-      // Handle other fields (city, province, budget, etc.)
-      const displayValue = value || "-";
-      return (
-        <div
-          key={`${sectionTitle}-${key}`}
-          className="flex justify-between items-center py-2 border-b"
-        >
-          <span className="font-medium">{label}:</span>
-          <span className="text-gray-700">{displayValue}</span>
-        </div>
-      );
-    });
-  };
-
-  // Define the order of sections
-  const sectionOrder = [
-    {
-      title: t("form.steps.basicInfo"),
-      fields: [
-        "city",
-        "province",
-        "budget",
-        "houseSize",
-        "bedrooms",
-        "utilityRoom",
-        "utilityRoomDetails",
-        "mudroom",
-        "mudroomDetails",
-        "terrace",
-        "terraceDetails",
-        "carport",
-        "carportDetails",
-        "garage",
-        "garageDetails",
-      ],
-    },
-    {
-      title: t("form.steps.exterior"),
-      fields: [
-        "houseMaterial",
-        "houseMaterialOther",
-        "roof",
-        "roofOther",
-      ],
-    },
-    {
-      title: t("form.steps.interior"),
-      fields: [
-        "floor",
-        "floorDetails",
-        "interiorWalls",
-        "interiorWallsDetails",
-        "ceiling",
-        "ceilingDetails",
-      ],
-    },
-    {
-      title: t("form.steps.heating"),
-      fields: [
-        "heatingType",
-        "heatingTypeOther",
-        "fireplace",
-        "fireplaceHeatStorage",
-        "directElectricHeating",
-        "bakingOven",
-        "bakingOvenDetails",
-        "otherInfoIndoor",
-      ],
-    },
-    {
-      title: t("form.steps.technical"),
-      fields: [
-        "interestedIn",
-        "interestedInOther",
-        "wantsInOffer",
-        "wantsInOfferOther",
-      ],
-    },
-    {
-      title: t("form.steps.personalInfo"),
-      fields: [
-        "customerStatus",
-        "hasPlot",
-        "additionalInfo",
-      ],
-    },
-  ];
-
-  // Function to format field values
-  const formatFieldValue = (key, value) => {
-    if (Array.isArray(value)) {
-      return value.join(", ");
-    }
-    if (key === "budget" && value) {
-      return value;
-    }
-    if (key === "houseSize" && value) {
-      return value;
-    }
-    return value;
-  };
-
   const filteredApplications = applications.filter((app) => {
     const formData = filterEmptyValues(app.formData);
     const searchLower = searchTerm.toLowerCase();
 
     return (
-      (formData.city &&
-        formData.city.toLowerCase().includes(searchLower)) ||
+      (formData.city && formData.city.toLowerCase().includes(searchLower)) ||
       (formData.province &&
         formData.province.toLowerCase().includes(searchLower))
     );
@@ -406,7 +162,7 @@ export const MyApplications = () => {
           <div className="space-y-4">
             {filteredApplications.map((application, index) => {
               const formData = filterEmptyValues(application.formData);
-              const kaupunki = formData.city || "Tuntematon kaupunki";
+              const title = formData.applicationName || "No Data";
               const isExpanded = expandedIndex === index;
 
               return (
@@ -418,7 +174,7 @@ export const MyApplications = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <h2 className="text-xl font-semibold text-gray-900">
-                          {kaupunki}
+                          {title}
                         </h2>
                         <p className="text-gray-600">
                           Tila: {application.status}
@@ -426,7 +182,9 @@ export const MyApplications = () => {
                       </div>
                       <div className="flex items-center space-x-4">
                         <button
-                          onClick={() => setExpandedIndex(isExpanded ? null : index)}
+                          onClick={() =>
+                            setExpandedIndex(isExpanded ? null : index)
+                          }
                           className="text-gray-500 hover:text-gray-700"
                         >
                           {isExpanded ? (
@@ -437,7 +195,14 @@ export const MyApplications = () => {
                         </button>
                         <button
                           onClick={() => {
-                            navigate("/formpage", { state: { formData, id: application.id, entryId: application.entryId, edit: true } });
+                            navigate("/formpage", {
+                              state: {
+                                formData,
+                                id: application.id,
+                                entryId: application.entryId,
+                                edit: true,
+                              },
+                            });
                           }}
                           className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-colors"
                         >
@@ -445,7 +210,9 @@ export const MyApplications = () => {
                           <span>Edit</span>
                         </button>
                         <button
-                          onClick={() => handleDeleteClick(application.id, kaupunki)}
+                          onClick={() =>
+                            handleDeleteClick(application.id, kaupunki)
+                          }
                           className="text-red-600 hover:text-red-800"
                         >
                           <FaTrash className="h-5 w-5" />
@@ -453,35 +220,7 @@ export const MyApplications = () => {
                       </div>
                     </div>
 
-                    {isExpanded && (
-                      <div className="mt-6 space-y-6">
-                        {sectionOrder.map((section) => {
-                          const sectionFields = section.fields.reduce(
-                            (acc, field) => {
-                              if (formData[field]) {
-                                acc[field] = formData[field];
-                              }
-                              return acc;
-                            },
-                            {}
-                          );
-
-                          if (Object.keys(sectionFields).length > 0) {
-                            return (
-                              <div key={`${application.uniqueId}-${section.title}`}>
-                                <h4 className="text-lg font-semibold text-gray-900 mb-3">
-                                  {section.title}
-                                </h4>
-                                <div className="bg-gray-50 rounded-lg p-4">
-                                  {renderFormDataRows(sectionFields, section.title)}
-                                </div>
-                              </div>
-                            );
-                          }
-                          return null;
-                        })}
-                      </div>
-                    )}
+                    {isExpanded && <RenderFormData formData={formData} />}
                   </div>
                 </div>
               );
@@ -500,8 +239,8 @@ export const MyApplications = () => {
                 </h3>
               </div>
               <p className="text-gray-600 mb-6">
-                Haluatko varmasti poistaa hakemuksen kaupungista "{deleteConfirmation.kaupunki}"?
-                Tätä toimintoa ei voi perua.
+                Haluatko varmasti poistaa hakemuksen kaupungista "
+                {deleteConfirmation.kaupunki}"? Tätä toimintoa ei voi perua.
               </p>
               <div className="flex justify-end space-x-4">
                 <button

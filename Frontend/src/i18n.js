@@ -21,6 +21,7 @@ i18n
         translation: fiTranslations
       }
     },
+    lng: 'fi',
     fallbackLng: 'fi',
     debug: process.env.NODE_ENV === 'development',
     interpolation: {

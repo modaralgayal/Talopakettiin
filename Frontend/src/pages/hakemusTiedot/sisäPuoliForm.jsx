@@ -21,7 +21,7 @@ export const SisapuoliForm = ({ formData, setFormData, validationErrors }) => {
     });
   }, [formData.floor, formData.interiorWalls, formData.ceiling, t]);
 
-  const dropdownFields = ["cieling", "interiorWalls", "floor"];
+  const dropdownFields = ["ceiling", "interiorWalls", "floor"];
 
   // Map Finnish details field names to English translation keys for translation
   const detailsFieldTranslationMap = {

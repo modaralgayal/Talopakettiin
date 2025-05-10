@@ -10,6 +10,7 @@ import {
 } from "react-icons/fa";
 import { sendOffer } from "../controllers/offerController";
 import { useTranslation } from "react-i18next";
+import { RenderFormData } from "../components/renderFormData";
 
 const MakeOffer = () => {
   const { offerData, updateOfferData } = useOfferContext();
@@ -21,69 +22,7 @@ const MakeOffer = () => {
   const location = useLocation();
   const applicationId = location.state?.id;
   console.log("This is the application: ", applicationId);
-  console.log("This is the offerData: ", offerData)
-  const { t } = useTranslation()
- 
-  // Define the order of sections
- // Example for both files:
-const sectionOrder = [
-  {
-    title: "Perustiedot",
-    fields: [
-      "city", "province", "budget", "houseSize", "bedrooms",
-      "utilityRoom", "utilityRoomDetails", "mudroom", "mudroomDetails",
-      "terrace", "terraceDetails", "carport", "carportDetails",
-      "garage", "garageDetails"
-    ],
-  },
-  {
-    title: "Ulkopuoli",
-    fields: [
-      "houseMaterial", "houseMaterialOther", "roof", "roofOther"
-    ],
-  },
-  {
-    title: "Sisäpuoli",
-    fields: [
-      "floor", "floorDetails", "interiorWalls", "interiorWallsDetails",
-      "ceiling", "ceilingDetails"
-    ],
-  },
-  {
-    title: "Lämmitys",
-    fields: [
-      "heatingType", "heatingTypeOther", "fireplace", "fireplaceHeatStorage",
-      "directElectricHeating", // <-- add this
-      "bakingOven", "bakingOvenDetails", "otherInfoIndoor"
-    ],
-  },
-  {
-    title: "Talotekniikka",
-    fields: [
-      "interestedIn", "interestedInOther", "wantsInOffer", "wantsInOfferOther"
-    ],
-  },
-  {
-    title: "Omat Tiedot",
-    fields: [
-      "customerStatus", "hasPlot", "additionalInfo" // <-- add hasPlot
-    ],
-  },
-];
-
-  // Function to format field values
-  const formatFieldValue = (key, value) => {
-    if (Array.isArray(value)) {
-      return value.join(", ");
-    }
-    if (key === "budjetti" && value) {
-      return value;
-    }
-    if (key === "talonKoko" && value) {
-      return value;
-    }
-    return value;
-  };
+  console.log("This is the offerData: ", offerData);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -109,7 +48,10 @@ const sectionOrder = [
 
       // Ensure customerEmail is set
       if (!updatedOfferData.customerEmail && updatedOfferData.formData) {
-        updatedOfferData.customerEmail = updatedOfferData.formData.customerEmail || updatedOfferData.formData.email || "";
+        updatedOfferData.customerEmail =
+          updatedOfferData.formData.customerEmail ||
+          updatedOfferData.formData.email ||
+          "";
       }
 
       await sendOffer(updatedOfferData, pdfFile);
@@ -178,33 +120,7 @@ const sectionOrder = [
           </button>
 
           {/* Application Preview */}
-          {isPreviewOpen && (
-            <div className="mt-4 bg-white rounded-lg shadow-lg p-6">
-              {sectionOrder.map((section) => (
-                <div key={section.title} className="mb-8 last:mb-0">
-                  <h3 className="text-2xl font-semibold text-gray-900 mb-4">
-                    {section.title}
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {section.fields.map((field) => {
-                      const value = offerData.formData[field];
-                      if (value === undefined || value === "") return null;
-                      return (
-                        <div key={field} className="bg-gray-50 p-4 rounded-lg">
-                          <span className="block text-lg font-medium text-gray-700 mb-1">
-                            {t(`form.fields.${field}`)}
-                          </span>
-                          <span className="text-lg text-gray-600">
-                            {formatFieldValue(field, value)}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+          {isPreviewOpen && <RenderFormData formData={offerData.formData} />}
         </div>
 
         {/* Offer Form */}
@@ -316,4 +232,3 @@ const sectionOrder = [
   );
 };
 export default MakeOffer;
-

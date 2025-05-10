@@ -7,7 +7,12 @@ import { TalotekniikkaForm } from "./hakemusTiedot/talotekniikkaForm";
 import { OmatTiedotForm } from "./hakemusTiedot/omatTiedotForm";
 import { KitchenForm } from "./hakemusTiedot/keittioForm";
 import { useFormContext } from "../context/formContext";
-import { sendFormData, getUserForms, updateApplication, deleteUserEntry } from "../controllers/formController";
+import {
+  sendFormData,
+  getUserForms,
+  updateApplication,
+  deleteUserEntry,
+} from "../controllers/formController";
 import { FaExclamationTriangle } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -47,7 +52,9 @@ export const ApplicationForm = (prop) => {
   //console.log(isAuthenticated);
 
   const nextStep = () => {
+    console.log(currentStep, "AND", steps.length);
     if (currentStep < steps.length) {
+      console.log(validateStep(currentStep));
       if (validateStep(currentStep)) {
         setCurrentStep(currentStep + 1);
       }
@@ -92,7 +99,7 @@ export const ApplicationForm = (prop) => {
   };
 
   const handleGuestSubmit = () => {
-    console.log("Calling guest submit")
+    console.log("Calling guest submit");
     setShowGoogleSignInPrompt(true);
   };
 
